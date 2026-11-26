@@ -61,3 +61,25 @@ models:
         tests: [not_null]
       - name: fecha
         tests: [not_null]
+
+  - name: stg_bcra__versiones
+    description: Todas las versiones de las series del bcra.
+    columns:
+      - name: descargado_utc
+        tests: [not_null]
+
+  - name: stg_bcra
+    description: Series del bcra vigentes, la ultima version de cada dato.
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [id_variable, fecha]
+    columns:
+      - name: variable
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [tipo_cambio_mayorista, rem_12m]
+      - name: valor
+        tests: [not_null]

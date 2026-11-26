@@ -59,3 +59,15 @@ models:
 
   - name: fct_revisiones
     description: Datos que el indec corrigio despues de publicarlos (indices y precios promedio).
+
+  - name: fct_bcra_mensual
+    description: >
+      Dolar mayorista y expectativa de inflacion del REM por mes. tc_quincena es el
+      promedio del 1 al 15, que ya se conoce cuando se hace el pronostico.
+    columns:
+      - name: fecha
+        tests: [unique, not_null]
+      - name: tc_promedio
+        tests: [not_null]
+      - name: tc_quincena
+        tests: [not_null]

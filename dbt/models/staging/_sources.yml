@@ -15,3 +15,5 @@ sources:
         description: ipc_nacional, desde abr-2016
       - name: mayorista
         description: sipm_precios_mayoristas, desde dic-2015
+      - name: bcra
+        description: Dolar mayorista (com. A 3500) y mediana del REM a 12 meses, desde 2015

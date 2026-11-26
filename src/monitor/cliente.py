@@ -1,4 +1,4 @@
-"""Cliente para la API del INDEC."""
+"""Clientes para las apis del INDEC y del BCRA."""
 
 import contextlib
 import logging
@@ -18,11 +18,12 @@ class ErrorApi(RuntimeError):
     pass
 
 
-class ClienteIndec:
+class ClienteHttp:
+    """Lo comun a las dos apis: reintentos con espera creciente."""
+
     def __init__(
         self,
         base_url: str,
-        token: str,
         limite_filas: int = 1000,
         timeout_seg: int = 60,
         reintentos: int = 3,
@@ -34,7 +35,6 @@ class ClienteIndec:
         self.timeout = timeout_seg
         self.reintentos = reintentos
         self.session = session or requests.Session()
-        self.session.headers.update({"Authorization": f"Bearer {token}"})
         self.dormir = dormir  # en los tests lo piso para no esperar
 
     def _espera(self, intento: int, respuesta=None) -> float:
@@ -71,6 +71,12 @@ class ClienteIndec:
             return r
         raise ErrorApi(f"{endpoint}: se agotaron los reintentos")
 
+
+class ClienteIndec(ClienteHttp):
+    def __init__(self, base_url: str, token: str, **kwargs):
+        super().__init__(base_url, **kwargs)
+        self.session.headers.update({"Authorization": f"Bearer {token}"})
+
     def contar(self, endpoint: str, filtros: dict | None = None) -> int:
         r = self._get(endpoint, {**(filtros or {}), "limit": 1}, {"Prefer": "count=exact"})
         rango = r.headers.get("Content-Range", "")  # viene como 0-0/235683
@@ -104,4 +110,31 @@ class ClienteIndec:
         else:
             raise ErrorApi(f"{endpoint}: se pasaron las {max_paginas} paginas esperadas, corto")
         log.info("%s: %d filas en %d paginas", endpoint, len(filas), offset // self.limite + 1)
+        return filas
+
+
+class ClienteBcra(ClienteHttp):
+    """Api de estadisticas del BCRA (principales variables v4). No pide token."""
+
+    def serie(self, id_variable: int, desde: str, hasta: str) -> list[dict]:
+        endpoint = f"monetarias/{id_variable}"
+        filas: list[dict] = []
+        total = None
+        for _ in range(MAX_PAGINAS):
+            params = {"desde": desde, "hasta": hasta, "limit": self.limite, "offset": len(filas)}
+            datos = self._get(endpoint, params).json()
+            if total is None:
+                total = datos.get("metadata", {}).get("resultset", {}).get("count")
+            resultados = datos.get("results") or []
+            if isinstance(resultados, dict):
+                resultados = [resultados]
+            pagina = [d for r in resultados for d in r.get("detalle", [])]
+            filas.extend(pagina)
+            if not pagina or len(pagina) < self.limite or (total and len(filas) >= total):
+                break
+        else:
+            raise ErrorApi(f"{endpoint}: se pasaron las {MAX_PAGINAS} paginas, corto")
+        if total is not None and len(filas) != total:
+            raise ErrorApi(f"{endpoint}: se esperaban {total} filas y llegaron {len(filas)}")
+        log.info("%s: %d filas", endpoint, len(filas))
         return filas

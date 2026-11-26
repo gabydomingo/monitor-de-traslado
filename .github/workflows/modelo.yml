@@ -1,0 +1,61 @@
+name: modelo
+
+# corre despues de cada ingesta. casi todos los dias no hay nada nuevo y termina enseguida;
+# cuando ya salieron el ipc y el mayorista del mes y pasaron 15 dias de dolar, pronostica
+on:
+  workflow_run:
+    workflows: [ingesta]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      forzar:
+        description: "correr aunque ya este pronosticado"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# mismo grupo que la ingesta para no pisarse los push
+concurrency:
+  group: ingesta
+  cancel-in-progress: false
+
+jobs:
+  modelo:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # main y no el commit que disparo la ingesta: asi trae los datos que acaba de subir
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - run: uv sync --locked --no-dev
+
+      - name: warehouse
+        working-directory: dbt
+        run: uv run dbt build
+
+      - name: modelos
+        env:
+          FORZAR: ${{ inputs.forzar && '--forzar' || '' }}
+        run: uv run python -m monitor.mensual $FORZAR
+
+      - name: commitear resultados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/resultados
+          if git diff --cached --quiet; then
+            echo "Sin resultados nuevos"
+            exit 0
+          fi
+          git commit -m "modelo: pronostico $(date -u +%Y-%m-%d)"
+          git pull --rebase
+          git push

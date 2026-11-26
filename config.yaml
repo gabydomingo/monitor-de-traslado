@@ -4,6 +4,13 @@ api:
   timeout_seg: 60
   reintentos: 3
 
+# estadisticas del bcra, no pide token
+bcra:
+  base_url: https://api.bcra.gob.ar/estadisticas/v4.0
+  limite_filas: 3000
+  timeout_seg: 60
+  reintentos: 3
+
 ingesta:
   meses_recientes: 6    # el indec corrige los ultimos meses, con esto alcanza
   carpeta_raw: data/raw
@@ -36,3 +43,13 @@ datasets:
       indicador: [IPIM, IPIB, IPP]
       region: [Total del pais]
       tipo_de_indicador: [Indice, v_m, v_ia, v_acum, incidencia]
+
+  # del bcra uso dos series: el dolar y lo que esperan los analistas
+  bcra:
+    fuente: bcra
+    desde: "2015-01-01"
+    variables:
+      5: tipo_cambio_mayorista   # com. A 3500, diario
+      29: rem_12m                # mediana del REM, inflacion esperada a 12 meses, mensual
+    clave: [id_variable, fecha]
+    columnas: [id_variable, variable, fecha, periodo, valor]

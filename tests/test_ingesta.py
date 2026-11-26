@@ -59,9 +59,10 @@ def test_main_sigue_si_falla_un_dataset(monkeypatch, filas_ipc, tmp_path):
 
     monkeypatch.setenv("INDEC_API_TOKEN", "tok")
     monkeypatch.setattr("monitor.ingesta.ingerir", ingerir_falso)
+    monkeypatch.setattr("monitor.ingesta.ingerir_bcra", ingerir_falso)
     codigo = main(["--modo", "reciente", "--salida", str(tmp_path)])
     assert codigo == 1
-    assert llamados == ["ipc", "mayorista"]
+    assert llamados == ["ipc", "mayorista", "bcra"]
 
 
 def test_main_rechaza_dataset_desconocido(monkeypatch):

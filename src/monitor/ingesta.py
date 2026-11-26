@@ -1,20 +1,22 @@
-"""Baja los datos del INDEC y guarda una version nueva si algo cambio.
+"""Baja los datos del INDEC y del BCRA y guarda una version nueva si algo cambio.
 
 uv run python -m monitor.ingesta --modo reciente
 uv run python -m monitor.ingesta --modo completo
 uv run python -m monitor.ingesta --modo reciente --dataset ipc --salida data/prueba
+uv run python -m monitor.ingesta --modo completo --dataset bcra
 """
 
 import argparse
 import logging
 import os
 import sys
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
 
 from monitor.almacenamiento import Resultado, guardar
-from monitor.cliente import ClienteIndec, ErrorApi
+from monitor.cliente import ClienteBcra, ClienteIndec, ErrorApi
 from monitor.config import RAIZ, cargar_config, token_indec
 from monitor.validacion import ErrorValidacion, validar
 
@@ -52,6 +54,31 @@ def ingerir(
     return guardar(df, nombre, modo, conf["clave"], carpeta)
 
 
+def ingerir_bcra(
+    cliente: ClienteBcra,
+    nombre: str,
+    conf: dict,
+    modo: str,
+    meses_recientes: int,
+    carpeta: Path,
+    hoy: date | None = None,
+) -> Resultado:
+    hoy = pd.Timestamp(hoy or date.today())
+    if modo == "completo":
+        desde = conf["desde"]
+    else:
+        desde = (hoy - pd.DateOffset(months=meses_recientes)).strftime("%Y-%m-%d")
+    filas = []
+    for id_variable, variable in conf["variables"].items():
+        for d in cliente.serie(id_variable, desde, hoy.strftime("%Y-%m-%d")):
+            filas.append({"id_variable": id_variable, "variable": variable, **d})
+    df = pd.DataFrame(filas)
+    if not df.empty:
+        df["periodo"] = df["fecha"].str[:7].str.replace("-", "")
+    df = validar(df, conf, nombre)
+    return guardar(df, nombre, modo, conf["clave"], carpeta)
+
+
 def escribir_resumen(resultados: list[Resultado], errores: list[str]) -> None:
     lineas = ["| dataset | ventana | filas | periodos | nueva version |", "|---|---|---|---|---|"]
     for r in resultados:
@@ -69,7 +96,7 @@ def escribir_resumen(resultados: list[Resultado], errores: list[str]) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Baja datos de la API del INDEC")
+    parser = argparse.ArgumentParser(description="Baja datos de las apis del INDEC y del BCRA")
     parser.add_argument("--modo", choices=["reciente", "completo"], default="reciente")
     parser.add_argument("--dataset", help="uno solo (por defecto, todos)")
     parser.add_argument("--salida", help="carpeta de salida (por defecto, la de config.yaml)")
@@ -82,22 +109,23 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"dataset desconocido: {args.dataset}. Opciones: {list(datasets)}")
 
     carpeta = Path(args.salida) if args.salida else RAIZ / config["ingesta"]["carpeta_raw"]
-    cliente = ClienteIndec(token=token_indec(), **config["api"])
+    meses = config["ingesta"]["meses_recientes"]
+    clientes = {}  # se arman cuando hacen falta: el del bcra no necesita el token
 
     resultados, errores = [], []
     for nombre in [args.dataset] if args.dataset else list(datasets):
+        conf = datasets[nombre]
         log.info("== %s (%s)", nombre, args.modo)
         try:
-            resultados.append(
-                ingerir(
-                    cliente,
-                    nombre,
-                    datasets[nombre],
-                    args.modo,
-                    config["ingesta"]["meses_recientes"],
-                    carpeta,
-                )
-            )
+            if conf.get("fuente") == "bcra":
+                if "bcra" not in clientes:
+                    clientes["bcra"] = ClienteBcra(**config["bcra"])
+                r = ingerir_bcra(clientes["bcra"], nombre, conf, args.modo, meses, carpeta)
+            else:
+                if "indec" not in clientes:
+                    clientes["indec"] = ClienteIndec(token=token_indec(), **config["api"])
+                r = ingerir(clientes["indec"], nombre, conf, args.modo, meses, carpeta)
+            resultados.append(r)
         except (ErrorApi, ErrorValidacion) as e:
             # si falla uno sigo con el otro
             log.error("%s: %s", nombre, e)

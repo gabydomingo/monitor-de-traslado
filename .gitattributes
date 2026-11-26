@@ -1,0 +1,3 @@
+# archivos donde solo se agregan filas: si el bot y yo agregamos a la vez, quedan las dos
+data/raw/manifest.csv merge=union
+data/resultados/registro_pronosticos.csv merge=union

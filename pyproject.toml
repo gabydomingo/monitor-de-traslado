@@ -1,7 +1,7 @@
 [project]
 name = "monitor-de-traslado"
 version = "0.1.0"
-description = "Cuanto y en cuanto tiempo llega a la gondola una suba de precios mayoristas. Datos de la API del INDEC."
+description = "Cuanto y en cuanto tiempo llega a la gondola una suba de precios mayoristas. Datos del INDEC y del BCRA."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
@@ -16,6 +16,7 @@ dependencies = [
     "matplotlib>=3.11.2",
     "statsmodels>=0.15.0",
     "scipy>=1.18.1",
+    "lightgbm>=4.7.0",
 ]
 
 [dependency-groups]

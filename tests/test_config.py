@@ -7,14 +7,18 @@ def test_config_tiene_lo_basico():
     config = cargar_config()
     assert config["api"]["base_url"].startswith("https://")
     assert config["api"]["limite_filas"] == 1000
-    assert set(config["datasets"]) == {"ipc", "mayorista"}
+    assert config["bcra"]["base_url"].startswith("https://")
+    assert set(config["datasets"]) == {"ipc", "mayorista", "bcra"}
 
 
 def test_cada_dataset_esta_completo():
     for nombre, d in cargar_config()["datasets"].items():
-        assert d["endpoint"], nombre
-        # sin periodo en la clave la paginacion repite filas
-        assert "periodo" in d["clave"], nombre
+        if d.get("fuente") == "bcra":
+            assert d["variables"], nombre
+        else:
+            assert d["endpoint"], nombre
+            # sin periodo en la clave la paginacion repite filas
+            assert "periodo" in d["clave"], nombre
         assert set(d["clave"]) <= set(d["columnas"]), nombre
         assert "valor" in d["columnas"], nombre
 
