@@ -16,7 +16,9 @@ models:
     staging:
       +materialized: view
     intermediate:
-      +materialized: view
+      # tabla y no vista: la vista lee los parquet con ruta relativa y se rompe
+      # si se consulta desde otra carpeta que no sea dbt/ o notebooks/
+      +materialized: table
     marts:
       +materialized: table
 
