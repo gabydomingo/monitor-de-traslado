@@ -1,0 +1,19 @@
+# Configuracion del pipeline. Los secretos van en .env, nunca aca.
+
+api:
+  base_url: https://api.indec.gob.ar/v1
+  limite_filas: 1000      # tope por consulta de la API
+  timeout_seg: 60
+  reintentos: 3
+
+datasets:
+  ipc:
+    endpoint: ipc_nacional
+    orden: clasificador,codigo,region,tipo_de_indicador,periodo
+  mayorista:
+    endpoint: sipm_precios_mayoristas
+    orden: indicador,clasificador,codigo_apertura,region,tipo_de_indicador,periodo
+
+ingesta:
+  meses_recientes: 6      # ventana diaria, donde caen las revisiones
+  carpeta_raw: data/raw
