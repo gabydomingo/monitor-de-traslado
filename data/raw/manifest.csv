@@ -1,0 +1,3 @@
+fecha_utc,dataset,ventana,filas,periodo_desde,periodo_hasta,hash,archivo
+2026-11-26T04:28:28+00:00,ipc,completo,235683,201604,202610,acefee0345ee7effcebb592a2597b944ea9086370543b652ed87228d088e79ec,ipc/completo/20261126T042828Z_acefee0345ee.parquet
+2026-11-26T04:35:27+00:00,mayorista,completo,236062,201512,202610,cd051987d9f65efb2214d334a4c30ab2ef28d42bf3672c365c44c7f667b983c3,mayorista/completo/20261126T043527Z_cd051987d9f6.parquet
