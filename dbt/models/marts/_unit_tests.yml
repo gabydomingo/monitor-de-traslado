@@ -1,0 +1,45 @@
+version: 2
+
+# Tests unitarios: datos inventados para probar la logica sin depender de los datos reales.
+
+unit_tests:
+  - name: revisiones_detecta_un_dato_corregido
+    description: >
+      Un indice provisorio que despues se corrige tiene que aparecer una vez.
+      Si la version siguiente repite el mismo valor, no es una revision.
+    model: fct_revisiones
+    given:
+      - input: ref('stg_ipc__versiones')
+        rows:
+          - {clasificador: IPC, nivel: Nivel General, codigo: "0", region: GBA,
+             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 100.0,
+             es_provisorio: true, descargado_utc: "2026-11-12 20:00:00"}
+          - {clasificador: IPC, nivel: Nivel General, codigo: "0", region: GBA,
+             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 100.5,
+             es_provisorio: false, descargado_utc: "2026-12-12 20:00:00"}
+          - {clasificador: IPC, nivel: Nivel General, codigo: "0", region: GBA,
+             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 100.5,
+             es_provisorio: false, descargado_utc: "2026-12-13 20:00:00"}
+      - input: ref('stg_mayorista__versiones')
+        rows: []
+    expect:
+      rows:
+        - {dataset: ipc, codigo: "0", region: GBA, valor_anterior: 100.0, valor_nuevo: 100.5,
+           era_provisorio: true, es_provisorio: false}
+
+  - name: revisiones_ignora_versiones_repetidas
+    description: La misma version en la bajada reciente y en la completa no cuenta como cambio.
+    model: fct_revisiones
+    given:
+      - input: ref('stg_ipc__versiones')
+        rows: []
+      - input: ref('stg_mayorista__versiones')
+        rows:
+          - {indicador: IPIM, clasificador: CIIU3, nivel: Clase, codigo: "1511", region: Total del país,
+             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 50.0,
+             es_provisorio: true, descargado_utc: "2026-11-12 20:00:00", ventana: reciente}
+          - {indicador: IPIM, clasificador: CIIU3, nivel: Clase, codigo: "1511", region: Total del país,
+             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 50.0,
+             es_provisorio: true, descargado_utc: "2026-11-12 20:00:00", ventana: completo}
+    expect:
+      rows: []

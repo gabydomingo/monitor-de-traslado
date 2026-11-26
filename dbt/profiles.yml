@@ -1,0 +1,8 @@
+# dbt se corre desde la carpeta dbt/: la base queda en dbt/monitor.duckdb (no se sube)
+monitor_traslado:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: monitor.duckdb
+      threads: 4

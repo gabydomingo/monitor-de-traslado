@@ -1,0 +1,28 @@
+version: 2
+
+unit_tests:
+  - name: stg_ipc_normaliza_nombres_del_indec
+    description: Unifica "Estacionales"/"Estacional", el nombre del nivel general y marca el "///".
+    model: stg_ipc__versiones
+    given:
+      # la fuente es un Parquet externo: dbt no puede leer sus columnas, asi que van todas en SQL
+      - input: source('raw', 'ipc')
+        format: sql
+        rows: |
+          select * from (values
+            ('Estacionales, Núcleo y Regulados', 'Categoría', 'N', 'Núcleo', 'GBA', 'Indice',
+             202610, 'Unidad', 10.0, null, null, '2026-11-26T04:28:28+00:00', 'completo'),
+            ('IPC', 'Nivel General', '0', 'NIVEL GENERAL', 'GBA', 'Indice',
+             202003, 'Unidad', 20.0, null, null, '2026-11-26T04:28:28+00:00', 'completo'),
+            ('COICOP Argentina 2019', 'Grupo', '11.1', 'Restaurantes', 'GBA', 'Indice',
+             202004, 'Unidad', null, '///', null, '2026-11-26T04:28:28+00:00', 'completo')
+          ) as t(clasificador, nivel, codigo, descripcion, region, tipo_de_indicador,
+                 periodo, unidad_de_medida, valor, valor_null, observaciones,
+                 _descargado_utc, _ventana)
+    expect:
+      rows:
+        - {clasificador: "Estacional, Núcleo y Regulados", descripcion: Núcleo,
+           fecha: 2026-10-01, sin_dato_indec: false}
+        - {clasificador: IPC, descripcion: Nivel general, fecha: 2020-03-01, sin_dato_indec: false}
+        - {clasificador: COICOP Argentina 2019, descripcion: Restaurantes,
+           fecha: 2020-04-01, sin_dato_indec: true}

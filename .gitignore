@@ -17,3 +17,4 @@ dbt/dbt_packages/
 *.duckdb
 *.duckdb.wal
 data/prueba/
+dbt/.user.yml

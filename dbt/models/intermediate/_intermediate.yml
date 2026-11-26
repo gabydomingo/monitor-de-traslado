@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: int_series_indice
+    description: >
+      Series de indices del IPC y del mayorista en formato largo, con variacion mensual
+      (var_mensual, en %) y logaritmica (var_log) calculadas desde el indice.
+    columns:
+      - name: indice
+        description: Puede venir vacio solo si el INDEC lo marco como sin dato.
+        tests:
+          - not_null:
+              config:
+                where: "not sin_dato_indec"
+      - name: sin_dato_indec
+        description: >
+          true si el INDEC no pudo relevar el dato ("///"). Pasa en la cuarentena de 2020:
+          restaurantes (abr-jul) y prendas y calzado (abr). No se imputa: se deja vacio.

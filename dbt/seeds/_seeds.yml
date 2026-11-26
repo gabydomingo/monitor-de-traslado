@@ -1,0 +1,34 @@
+version: 2
+
+seeds:
+  - name: correspondencia_ciiu_coicop
+    description: >
+      Que ramas del mayorista (CIIU rev. 3) se comparan con que rubro del IPC (COICOP 2019).
+      Una fila por par rubro-codigo mayorista. etapa: primaria (precio del productor
+      agropecuario) o industria. calidad: que tan bien se corresponden los dos lados.
+    columns:
+      - name: par_id
+        tests: [not_null]
+      - name: etapa
+        tests:
+          - accepted_values:
+              arguments:
+                values: [primaria, industria]
+      - name: calidad
+        tests:
+          - accepted_values:
+              arguments:
+                values: [alta, media, baja]
+
+  - name: provincias
+    description: >
+      Provincia -> region del IPC, para pintar el mapa. El INDEC no publica precios por
+      provincia. Codigos de provincia del INDEC (sirven para cruzar con el GeoJSON).
+    columns:
+      - name: provincia_id
+        tests: [unique, not_null]
+      - name: region
+        tests:
+          - accepted_values:
+              arguments:
+                values: [GBA, Pampeana, Noreste, Noroeste, Cuyo, Patagonia]

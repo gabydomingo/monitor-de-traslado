@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: stg_ipc__versiones
+    description: Todas las versiones del IPC. Base para medir revisiones.
+    columns:
+      - name: descargado_utc
+        tests: [not_null]
+
+  - name: stg_ipc
+    description: IPC vigente (ultima version de cada dato).
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [clasificador, nivel, codigo, region, tipo_de_indicador, periodo]
+    columns:
+      - name: clasificador
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [IPC, COICOP Argentina 2019, Bienes y servicios,
+                         "Estacional, Núcleo y Regulados"]
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [Nacional, GBA, Pampeana, Noreste, Noroeste, Cuyo, Patagonia]
+      - name: codigo
+        tests: [not_null]
+      - name: fecha
+        tests: [not_null]
+
+  - name: stg_mayorista__versiones
+    description: Todas las versiones del mayorista. Base para medir revisiones.
+    columns:
+      - name: descargado_utc
+        tests: [not_null]
+
+  - name: stg_mayorista
+    description: Mayorista vigente (ultima version de cada dato).
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [indicador, clasificador, nivel, codigo, region,
+                       tipo_de_indicador, periodo]
+    columns:
+      - name: indicador
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [IPIM, IPIB, IPP]
+      - name: codigo
+        tests: [not_null]
+      - name: fecha
+        tests: [not_null]

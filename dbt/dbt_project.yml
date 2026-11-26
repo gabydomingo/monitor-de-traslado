@@ -1,0 +1,32 @@
+name: monitor_traslado
+version: "1.0.0"
+profile: monitor_traslado
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages", "logs"]
+
+flags:
+  send_anonymous_usage_stats: false
+
+models:
+  monitor_traslado:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  monitor_traslado:
+    # los codigos van como texto: si no, "0121" se convierte en 121
+    correspondencia_ciiu_coicop:
+      +column_types:
+        coicop_codigo: varchar
+        ciiu_codigo: varchar
+    provincias:
+      +column_types:
+        provincia_id: varchar

@@ -1,31 +1,31 @@
-par_id,rubro,coicop_codigo,coicop_nivel,ipc_region,ciiu_codigo,ciiu_nivel,etapa,calidad,nota
-carnes,Carnes,01.1.2,Clase,GBA,0121,Clase,primaria,alta,Ganado vacuno y leche
-carnes,Carnes,01.1.2,Clase,GBA,1511,Clase,industria,alta,Productos carnicos
-lacteos,Lacteos y huevos,01.1.4,Clase,GBA,0121,Clase,primaria,media,Ganado vacuno y leche (mezcla carne y leche)
-lacteos,Lacteos y huevos,01.1.4,Clase,GBA,152,Grupo,industria,alta,Productos lacteos
-pan_cereales,Pan y cereales,01.1.1,Clase,GBA,0111,Clase,primaria,media,Cereales y oleaginosas
-pan_cereales,Pan y cereales,01.1.1,Clase,GBA,1531,Clase,industria,alta,Harinas
-pan_cereales,Pan y cereales,01.1.1,Clase,GBA,1541,Clase,industria,alta,Productos de panaderia
-pan_cereales,Pan y cereales,01.1.1,Clase,GBA,1544,Clase,industria,alta,Productos farinaceos
-aceites,Aceites y grasas,01.1.5,Clase,GBA,1514,Clase,industria,alta,Aceites y grasas vegetales
-frutas,Frutas,01.1.6,Clase,GBA,0113,Clase,primaria,alta,Frutas
-verduras,Verduras y legumbres,01.1.7,Clase,GBA,0112,Clase,primaria,alta,Hortalizas y legumbres
-azucar_golosinas,Azucar y golosinas,01.1.8,Clase,GBA,1542,Clase,industria,alta,Azucar
-azucar_golosinas,Azucar y golosinas,01.1.8,Clase,GBA,1543,Clase,industria,alta,Chocolate y golosinas
-bebidas_sin_alcohol,Aguas gaseosas y jugos,01.2.2,Clase,GBA,1554,Clase,industria,alta,Bebidas no alcoholicas
-bebidas_alcoholicas,Bebidas alcoholicas,02.1,Grupo,GBA,1551,Clase,industria,alta,Destiladas
-bebidas_alcoholicas,Bebidas alcoholicas,02.1,Grupo,GBA,1552,Clase,industria,alta,Vinos y sidra
-bebidas_alcoholicas,Bebidas alcoholicas,02.1,Grupo,GBA,1553,Clase,industria,alta,Cervezas
-tabaco,Tabaco,02.2,Grupo,GBA,16,Division,industria,alta,Tabaco
-prendas,Prendas de vestir,03.1,Grupo,GBA,17,Division,industria,media,Productos textiles (insumo)
-prendas,Prendas de vestir,03.1,Grupo,GBA,18,Division,industria,alta,Prendas de materiales textiles
-calzado,Calzado,03.2,Grupo,GBA,192,Grupo,industria,alta,Calzado
-medicamentos,Productos medicinales,06.1,Grupo,GBA,2423,Clase,industria,alta,Farmaceuticos y veterinarios
-combustibles,Combustibles,07.2.2,Clase,GBA,23,Division,industria,alta,Refinados del petroleo (precio en parte regulado)
-autos,Compra de vehiculos,07.1,Grupo,GBA,341,Grupo,industria,alta,Vehiculos automotores
-cuidado_personal,Cuidado personal,12.1,Grupo,GBA,2424,Clase,industria,media,Jabones y detergentes (cubre solo una parte del rubro)
-libreria,Diarios libros y papeleria,09.5,Grupo,GBA,221,Grupo,industria,alta,Diarios y revistas
-libreria,Diarios libros y papeleria,09.5,Grupo,GBA,222,Grupo,industria,alta,Articulos de libreria
-hogar,Equipamiento del hogar,05,Division,Nacional,293,Grupo,industria,baja,Electrodomesticos (la division mezcla bienes y servicios)
-hogar,Equipamiento del hogar,05,Division,Nacional,361,Grupo,industria,baja,Muebles y colchones
-energia,Electricidad gas y combustibles,04.5,Grupo,GBA,40,Division,industria,baja,Tarifa regulada: no es traslado de mercado. Usar solo como contraste
+par_id,rubro,coicop_codigo,coicop_nivel,ciiu_codigo,ciiu_nivel,etapa,calidad,nota
+carnes,Carnes,01.1.2,Clase,0121,Clase,primaria,alta,Ganado vacuno y leche
+carnes,Carnes,01.1.2,Clase,1511,Clase,industria,alta,Productos carnicos
+lacteos,Lacteos y huevos,01.1.4,Clase,0121,Clase,primaria,media,Ganado vacuno y leche (mezcla carne y leche)
+lacteos,Lacteos y huevos,01.1.4,Clase,152,Grupo,industria,alta,Productos lacteos
+pan_cereales,Pan y cereales,01.1.1,Clase,0111,Clase,primaria,media,Cereales y oleaginosas
+pan_cereales,Pan y cereales,01.1.1,Clase,1531,Clase,industria,alta,Harinas
+pan_cereales,Pan y cereales,01.1.1,Clase,1541,Clase,industria,alta,Productos de panaderia
+pan_cereales,Pan y cereales,01.1.1,Clase,1544,Clase,industria,alta,Productos farinaceos
+aceites,Aceites y grasas,01.1.5,Clase,1514,Clase,industria,alta,Aceites y grasas vegetales
+frutas,Frutas,01.1.6,Clase,0113,Clase,primaria,alta,Frutas
+verduras,Verduras y legumbres,01.1.7,Clase,0112,Clase,primaria,alta,Hortalizas y legumbres
+azucar_golosinas,Azucar y golosinas,01.1.8,Clase,1542,Clase,industria,alta,Azucar
+azucar_golosinas,Azucar y golosinas,01.1.8,Clase,1543,Clase,industria,alta,Chocolate y golosinas
+bebidas_sin_alcohol,Aguas gaseosas y jugos,01.2.2,Clase,1554,Clase,industria,alta,Bebidas no alcoholicas
+bebidas_alcoholicas,Bebidas alcoholicas,02.1,Grupo,1551,Clase,industria,alta,Destiladas
+bebidas_alcoholicas,Bebidas alcoholicas,02.1,Grupo,1552,Clase,industria,alta,Vinos y sidra
+bebidas_alcoholicas,Bebidas alcoholicas,02.1,Grupo,1553,Clase,industria,alta,Cervezas
+tabaco,Tabaco,02.2,Grupo,16,División,industria,alta,Tabaco
+prendas,Prendas de vestir,03.1,Grupo,17,División,industria,media,Productos textiles (insumo)
+prendas,Prendas de vestir,03.1,Grupo,18,División,industria,alta,Prendas de materiales textiles
+calzado,Calzado,03.2,Grupo,192,Grupo,industria,alta,Calzado
+medicamentos,Productos medicinales,06.1,Grupo,2423,Clase,industria,alta,Farmaceuticos y veterinarios
+combustibles,Combustibles,07.2.2,Clase,23,División,industria,alta,Refinados del petroleo (precio en parte regulado)
+autos,Compra de vehiculos,07.1,Grupo,341,Grupo,industria,alta,Vehiculos automotores
+cuidado_personal,Cuidado personal,12.1,Grupo,2424,Clase,industria,media,Jabones y detergentes (cubre solo una parte del rubro)
+libreria,Diarios libros y papeleria,09.5,Grupo,221,Grupo,industria,alta,Diarios y revistas
+libreria,Diarios libros y papeleria,09.5,Grupo,222,Grupo,industria,alta,Articulos de libreria
+hogar,Equipamiento del hogar,05,División,293,Grupo,industria,baja,Electrodomesticos (la division mezcla bienes y servicios)
+hogar,Equipamiento del hogar,05,División,361,Grupo,industria,baja,Muebles y colchones
+energia,Electricidad gas y combustibles,04.5,Grupo,40,División,industria,baja,Tarifa regulada: no es traslado de mercado. Usar solo como contraste

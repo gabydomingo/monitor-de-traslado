@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Crudos versionados que guarda la ingesta en data/raw (todas las versiones juntas)
+    meta:
+      external_location: "read_parquet('../data/raw/{name}/*/*.parquet', union_by_name = true)"
+    config:
+      loaded_at_field: "cast(_descargado_utc as timestamp)"
+      freshness:
+        # la ingesta corre todos los dias; si pasan dias sin datos nuevos algo se rompio
+        warn_after: {count: 3, period: day}
+        error_after: {count: 10, period: day}
+    tables:
+      - name: ipc
+        description: IPC (ipc_nacional), desde abr-2016, 6 regiones + nacional
+      - name: mayorista
+        description: Precios mayoristas (sipm_precios_mayoristas), desde dic-2015, total del pais

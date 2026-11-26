@@ -24,3 +24,8 @@ jobs:
 
       - name: tests
         run: uv run pytest
+
+      # los datos crudos estan en el repo, asi que los tests de dbt corren sobre datos reales
+      - name: dbt build
+        working-directory: dbt
+        run: uv run dbt build

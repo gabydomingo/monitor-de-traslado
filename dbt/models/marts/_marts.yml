@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: dim_rubro
+    description: Rubros comparables entre mayorista e IPC (19), con la calidad de la correspondencia.
+    columns:
+      - name: par_id
+        tests: [unique, not_null]
+      - name: tiene_etapa_primaria
+        description: true si hay precio del productor agropecuario (carnes, lacteos, pan, frutas, verduras).
+      - name: es_contraste
+        description: true en energia (tarifa regulada). Se muestra como contraste, no como traslado de mercado.
+
+  - name: dim_region
+    description: Regiones del IPC + Nacional + "Total del pais" (unica region del mayorista).
+    columns:
+      - name: region
+        tests: [unique, not_null]
+
+  - name: dim_provincia
+    description: Provincia -> region del IPC, para el mapa.
+    columns:
+      - name: provincia_id
+        tests: [unique, not_null]
+      - name: region
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_region')
+                field: region
+
+  - name: fct_precios
+    description: >
+      Series mensuales de cada rubro en cada etapa (primaria, industria, gondola).
+      Gondola viene por region; el mayorista solo como "Total del pais".
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [par_id, etapa, indicador, codigo, region, fecha]
+    columns:
+      - name: par_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_rubro')
+                field: par_id
+      - name: etapa
+        tests:
+          - accepted_values:
+              arguments:
+                values: [primaria, industria, gondola]
+      - name: region
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_region')
+                field: region
+
+  - name: fct_revisiones
+    description: >
+      Cambios del INDEC sobre datos ya publicados (indices y precios promedio).
+      Se llena a medida que la ingesta guarda versiones nuevas.

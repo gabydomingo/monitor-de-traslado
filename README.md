@@ -8,7 +8,7 @@
 
 - [x] Fase 0: base del repo (uv, ruff, pytest, CI)
 - [x] Fase 1: ingesta incremental con crudos versionados
-- [ ] Fase 2: warehouse con dbt + DuckDB
+- [x] Fase 2: warehouse con dbt + DuckDB
 - [ ] Fase 3: análisis exploratorio
 - [ ] Fase 4: modelo de traslado
 - [ ] Fase 5: pronóstico
@@ -39,6 +39,24 @@ Para probarla en local sin tocar `data/raw`:
 ```
 uv run python -m monitor.ingesta --modo reciente --salida data/prueba
 ```
+
+## Warehouse (dbt + DuckDB)
+
+dbt lee los Parquet de `data/raw` directamente con DuckDB y arma tres capas:
+
+- **staging**: normaliza lo que viene de la API. Unifica nombres inconsistentes del INDEC ("Estacional" / "Estacionales", "NIVEL GENERAL" / "Nivel general"), pasa el período a fecha y marca los datos que el INDEC no pudo relevar (`///`, por ejemplo restaurantes en la cuarentena de 2020). Hay un modelo con **todas las versiones** y otro con la **última versión de cada dato**.
+- **intermediate**: todas las series de índices en un mismo formato, con variación mensual y logarítmica calculadas por nosotros.
+- **marts**: `fct_precios` (cada rubro en cada etapa: productor, industria, góndola por región), `fct_revisiones` (cada corrección del INDEC sobre un dato ya publicado), `dim_rubro`, `dim_region` y `dim_provincia`.
+
+Tests: claves únicas, valores aceptados, relaciones entre tablas, que nuestra variación mensual coincida con la que publica el INDEC (±0,1 puntos), que no falten meses, que cada código de la tabla de correspondencia tenga datos, frescura de la ingesta y tests unitarios con datos inventados para la lógica de revisiones y de normalización.
+
+```
+cd dbt
+uv run dbt build                                # modelos + tests
+uv run dbt docs generate && uv run dbt docs serve   # documentacion y linaje
+```
+
+**Energía** está como contraste: la tarifa es regulada, así que su relación con el mayorista no es un traslado de mercado.
 
 ## Estructura
 
