@@ -9,7 +9,7 @@ En LinkedIn lo vengo contando como **Efecto Gondola**. Esta en construccion.
 - [x] Fase 0: base del repo (uv, ruff, pytest, CI)
 - [x] Fase 1: ingesta diaria con los crudos versionados
 - [x] Fase 2: warehouse con dbt y DuckDB
-- [ ] Fase 3: analisis exploratorio
+- [x] Fase 3: analisis exploratorio
 - [ ] Fase 4: modelo de traslado
 - [ ] Fase 5: pronostico
 - [ ] Fase 6: analisis de las revisiones
@@ -58,11 +58,23 @@ uv run dbt docs generate && uv run dbt docs serve
 
 Energia esta solo como contraste: la tarifa es regulada, asi que no es traslado de mercado.
 
+## Analisis exploratorio
+
+En [`notebooks/01_eda.ipynb`](notebooks/01_eda.ipynb). Lo principal:
+
+- Hay tres etapas de inflacion bien distintas (cerca del 2% mensual, entre 3 y 4%, y muy alta en 2022-2024), asi que el traslado se va a estimar por etapa.
+- Las series no son estacionarias en niveles y si en variaciones: se trabaja con variaciones logaritmicas.
+- Si se comparan las variaciones tal cual, mayorista y gondola parecen moverse casi igual en todos los rubros. Es la inflacion general moviendo todo junto. Restandola, combustibles, tabaco y carnes siguen mostrando un traslado claro y rapido; en equipamiento del hogar, prendas y calzado llega con 1 o 2 meses de rezago.
+- Solo verduras, frutas y prendas tienen estacionalidad fuerte.
+
+Las funciones estan en `src/monitor/analisis.py`, el notebook solo las usa.
+
 ## Carpetas
 
 ```
 src/monitor/   el pipeline
 scripts/       la exploracion inicial de la API
+notebooks/     analisis
 dbt/           modelos, seeds y tests
 data/raw/      crudos versionados
 tests/         tests de python
