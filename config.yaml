@@ -6,14 +6,36 @@ api:
   timeout_seg: 60
   reintentos: 3
 
-datasets:
-  ipc:
-    endpoint: ipc_nacional
-    orden: clasificador,codigo,region,tipo_de_indicador,periodo
-  mayorista:
-    endpoint: sipm_precios_mayoristas
-    orden: indicador,clasificador,codigo_apertura,region,tipo_de_indicador,periodo
-
 ingesta:
   meses_recientes: 6      # ventana diaria, donde caen las revisiones
   carpeta_raw: data/raw
+
+# clave: columnas que identifican una fila. Se usan para ordenar al paginar y para el hash.
+# columnas: las que el pipeline necesita (si falta alguna, frena).
+# columnas_extra: las que vienen hoy pero no usamos (si aparece otra nueva, avisa).
+# valores_conocidos: si aparece un valor nuevo, avisa pero no frena.
+# Los valores tienen tildes porque tienen que coincidir con lo que devuelve la API.
+datasets:
+  ipc:
+    endpoint: ipc_nacional
+    clave: [clasificador, nivel, codigo, region, tipo_de_indicador, periodo]
+    columnas: [clasificador, nivel, codigo, descripcion, periodo, indicador,
+               tipo_de_indicador, region, unidad_de_medida, valor]
+    columnas_extra: [anio, mes, tipo_de_indicador_descripcion, valor_null, observaciones]
+    valores_conocidos:
+      region: [Nacional, GBA, Pampeana, Noreste, Noroeste, Cuyo, Patagonia]
+      nivel: [Nivel General, División, Grupo, Clase, Producto, Categoría]
+      tipo_de_indicador: [Indice, v_m, v_ia, v_acum, Incidencia_m, Incidencia_ia,
+                          Incidencia_acum, Precio promedio]
+
+  mayorista:
+    endpoint: sipm_precios_mayoristas
+    clave: [indicador, clasificador, nivel, codigo_apertura, region, tipo_de_indicador, periodo]
+    columnas: [indicador, clasificador, nivel, codigo_apertura, descripcion, periodo,
+               tipo_de_indicador, region, unidad_de_medida, valor]
+    columnas_extra: [operativo, anio, mes, tipo_de_indicador_descripcion, valor_null,
+                     observaciones]
+    valores_conocidos:
+      indicador: [IPIM, IPIB, IPP]
+      region: [Total del país]
+      tipo_de_indicador: [Indice, v_m, v_ia, v_acum, incidencia]

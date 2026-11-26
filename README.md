@@ -7,7 +7,7 @@
 ## Estado
 
 - [x] Fase 0: base del repo (uv, ruff, pytest, CI)
-- [ ] Fase 1: ingesta incremental con crudos versionados
+- [x] Fase 1: ingesta incremental con crudos versionados
 - [ ] Fase 2: warehouse con dbt + DuckDB
 - [ ] Fase 3: análisis exploratorio
 - [ ] Fase 4: modelo de traslado
@@ -24,6 +24,20 @@ Hace falta [uv](https://docs.astral.sh/uv/) y un token gratis de la API del INDE
 uv sync
 cp .env.example .env      # y pegar el token
 uv run pytest
+```
+
+## Cómo funciona la ingesta
+
+Un workflow de GitHub Actions corre todos los días y baja los **últimos 6 meses** del IPC y de los precios mayoristas, que es donde el INDEC corrige sus datos provisorios. Una vez por mes baja **toda la historia**.
+
+1. **Cliente** (`src/monitor/cliente.py`): pagina de a 1000 filas con orden fijo, reintenta con espera progresiva si la API devuelve 429 o 5xx, y antes de bajar cuenta cuántas filas tendrían que llegar. Si no llegan todas, no guarda nada.
+2. **Validación** (`src/monitor/validacion.py`, con pandera): columnas, tipos, períodos válidos y filas sin repetir. Si algo grave cambia en la API, el pipeline frena. Si aparece una columna o un valor nuevo, solo avisa.
+3. **Versionado** (`src/monitor/almacenamiento.py`): se calcula un hash del contenido y **solo se guarda una versión nueva si cambió algo**. Cada versión queda en `data/raw/<dataset>/<ventana>/` en Parquet y se anota en `data/raw/manifest.csv`. Comparando versiones sale el historial de revisiones.
+
+Para probarla en local sin tocar `data/raw`:
+
+```
+uv run python -m monitor.ingesta --modo reciente --salida data/prueba
 ```
 
 ## Estructura

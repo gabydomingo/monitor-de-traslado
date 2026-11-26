@@ -10,11 +10,13 @@ def test_config_tiene_lo_basico():
     assert set(config["datasets"]) == {"ipc", "mayorista"}
 
 
-def test_cada_dataset_tiene_endpoint_y_orden():
-    for dataset in cargar_config()["datasets"].values():
-        assert dataset["endpoint"]
-        # el orden fijo es lo que evita filas repetidas o perdidas al paginar
-        assert "periodo" in dataset["orden"]
+def test_cada_dataset_esta_completo():
+    for nombre, d in cargar_config()["datasets"].items():
+        assert d["endpoint"], nombre
+        # la clave define el orden de la paginacion: sin periodo se repetirian filas
+        assert "periodo" in d["clave"], nombre
+        assert set(d["clave"]) <= set(d["columnas"]), nombre
+        assert "valor" in d["columnas"], nombre
 
 
 def test_token_falta(monkeypatch):
