@@ -10,7 +10,7 @@ En LinkedIn lo vengo contando como **Efecto Gondola**. Esta en construccion.
 - [x] Fase 1: ingesta diaria con los crudos versionados
 - [x] Fase 2: warehouse con dbt y DuckDB
 - [x] Fase 3: analisis exploratorio
-- [ ] Fase 4: modelo de traslado
+- [x] Fase 4: modelo de traslado
 - [ ] Fase 5: pronostico
 - [ ] Fase 6: analisis de las revisiones
 - [ ] Fase 7: web con mapa por regiones
@@ -69,6 +69,24 @@ En [`notebooks/01_eda.ipynb`](notebooks/01_eda.ipynb). Lo principal:
 
 Las funciones estan en `src/monitor/analisis.py`, el notebook solo las usa.
 
+## Modelo de traslado
+
+En [`notebooks/02_traslado.ipynb`](notebooks/02_traslado.ipynb), con el codigo en `src/monitor/traslado.py`. Para cada rubro y region, un modelo de rezagos distribuidos sobre precios relativos (a cada serie le resto su inflacion general), con los rezagos elegidos por BIC, errores Newey-West y correccion por comparaciones multiples. Para carnes, lacteos y pan hay ademas un VAR con la cadena completa: productor, industria y gondola.
+
+Lo que sale (GBA, datos a oct-2026):
+
+- Una suba mayorista llega a la gondola en el mismo mes o en el siguiente. Despues de 2 meses casi no queda nada.
+- Carnes, combustibles, autos y prendas trasladan entre 70 y 80%. Lacteos, aceites y calzado casi nada.
+- Con inflacion alta se traslada mas en 11 de 17 rubros.
+- Entre regiones cambia poco, salvo combustibles (bastante menos en Patagonia) y autos.
+- Con el IPIB en vez del IPIM da lo mismo, salvo tabaco y combustibles, que tienen impuestos pesados.
+
+Es un modelo de asociacion, no causal. Los resultados quedan en `data/resultados/`:
+
+```
+uv run python -m monitor.traslado
+```
+
 ## Carpetas
 
 ```
@@ -77,6 +95,7 @@ scripts/       la exploracion inicial de la API
 notebooks/     analisis
 dbt/           modelos, seeds y tests
 data/raw/      crudos versionados
+data/resultados/  resultados del modelo
 tests/         tests de python
 docs/          metodologia
 ```

@@ -159,3 +159,19 @@ def mapa_calor(
     ax.set_title(titulo)
     plt.colorbar(im, ax=ax, shrink=0.8)
     return ax
+
+
+def intervalos(tabla: pd.DataFrame, titulo: str, ax=None):
+    """Estimacion con su intervalo del 95%. tabla: indice = etiqueta, columnas largo_plazo,
+    ic_inf, ic_sup y significativo_fdr. Los no significativos van en gris."""
+    tabla = tabla.sort_values("largo_plazo")
+    ax = ax or plt.subplots(figsize=(8, 0.35 * len(tabla) + 1))[1]
+    y = np.arange(len(tabla))
+    color = np.where(tabla["significativo_fdr"], "tab:blue", "lightgray")
+    ax.hlines(y, tabla["ic_inf"], tabla["ic_sup"], color=color, lw=2)
+    ax.scatter(tabla["largo_plazo"], y, color=color, zorder=3)
+    ax.axvline(0, color="black", lw=0.8)
+    ax.axvline(1, color="black", lw=0.8, ls="--")
+    ax.set_yticks(y, tabla.index)
+    ax.set_title(titulo)
+    return ax
