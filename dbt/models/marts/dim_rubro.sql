@@ -1,4 +1,4 @@
--- Un rubro por fila, con que tan buena es la correspondencia entre mayorista e IPC.
+-- un rubro por fila
 
 with seed as (
     select * from {{ ref('correspondencia_ciiu_coicop') }}
@@ -12,11 +12,11 @@ select
     count(*) as codigos_mayorista,
     string_agg(distinct etapa, ', ' order by etapa) as etapas,
     bool_or(etapa = 'primaria') as tiene_etapa_primaria,
-    -- la peor calidad de sus codigos manda
+    -- si un codigo tiene calidad baja, el rubro queda en baja
     case min(case calidad when 'baja' then 1 when 'media' then 2 else 3 end)
         when 1 then 'baja' when 2 then 'media' else 'alta'
     end as calidad,
-    -- energia: tarifa regulada, se muestra solo como contraste
+    -- energia es tarifa regulada, va solo como contraste
     par_id = 'energia' as es_contraste
 from seed
 group by par_id

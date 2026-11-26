@@ -1,4 +1,4 @@
--- Ninguna serie puede tener huecos entre su primer y su ultimo mes.
+-- ninguna serie puede tener meses salteados
 
 select fuente, indicador, clasificador, codigo, region,
     min(fecha) as desde, max(fecha) as hasta, count(*) as meses

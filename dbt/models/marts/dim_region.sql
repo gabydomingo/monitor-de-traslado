@@ -1,4 +1,4 @@
--- Regiones del IPC, mas el total nacional y el "Total del pais" del mayorista.
+-- regiones del ipc, el total nacional y el total del pais del mayorista
 
 with provincias as (
     select region, count(*) as provincias, string_agg(provincia, ', ' order by provincia) as lista
@@ -15,7 +15,7 @@ regiones as (
         ('Noroeste', 4, 'ipc'),
         ('Cuyo', 5, 'ipc'),
         ('Patagonia', 6, 'ipc'),
-        ('Total del país', 7, 'mayorista')
+        ('Total del pais', 7, 'mayorista')
     ) as t(region, orden, fuente)
 )
 

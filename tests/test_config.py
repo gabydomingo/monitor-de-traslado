@@ -13,7 +13,7 @@ def test_config_tiene_lo_basico():
 def test_cada_dataset_esta_completo():
     for nombre, d in cargar_config()["datasets"].items():
         assert d["endpoint"], nombre
-        # la clave define el orden de la paginacion: sin periodo se repetirian filas
+        # sin periodo en la clave la paginacion repite filas
         assert "periodo" in d["clave"], nombre
         assert set(d["clave"]) <= set(d["columnas"]), nombre
         assert "valor" in d["columnas"], nombre

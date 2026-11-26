@@ -1,8 +1,4 @@
-"""Crudos versionados: se escribe una version nueva solo si el contenido cambio.
-
-Cada version queda en data/raw/<dataset>/<ventana>/<fecha>_<hash>.parquet y se anota en
-data/raw/manifest.csv. Comparando versiones despues sale el historial de revisiones.
-"""
+"""Guarda los crudos versionados. Si el contenido no cambio, no escribe nada."""
 
 import hashlib
 from dataclasses import dataclass
@@ -27,7 +23,7 @@ class Resultado:
 
 
 def hash_contenido(df: pd.DataFrame, clave: list[str]) -> str:
-    # mismo contenido, mismo hash, aunque la API devuelva filas o columnas en otro orden
+    # ordeno filas y columnas para que el hash no dependa de como vino la respuesta
     ordenado = df[sorted(df.columns)].sort_values(clave).reset_index(drop=True)
     return hashlib.sha256(ordenado.to_csv(index=False).encode("utf-8")).hexdigest()
 
@@ -65,7 +61,7 @@ def guardar(
 
     destino = carpeta / dataset / ventana / f"{ahora:%Y%m%dT%H%M%SZ}_{h[:12]}.parquet"
     destino.parent.mkdir(parents=True, exist_ok=True)
-    # las columnas de control no entran en el hash, solo se guardan
+    # estas dos columnas se agregan despues del hash, no cuentan como cambio
     salida = df.assign(_descargado_utc=ahora.isoformat(timespec="seconds"), _ventana=ventana)
     salida.to_parquet(destino, index=False, compression="zstd")
     resultado.archivo = destino.relative_to(carpeta).as_posix()

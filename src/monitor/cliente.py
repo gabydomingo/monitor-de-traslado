@@ -1,4 +1,4 @@
-"""Cliente de la API del INDEC: reintentos, paginacion con orden fijo y conteo de filas."""
+"""Cliente para la API del INDEC."""
 
 import contextlib
 import logging
@@ -9,10 +9,9 @@ import requests
 
 log = logging.getLogger(__name__)
 
-# errores que suelen ser pasajeros: limite de consultas o caida del servidor
 REINTENTABLES = {429, 500, 502, 503, 504}
-ESPERA_MAXIMA_SEG = 120  # aunque la API pida mas, no espero mas que esto
-MAX_PAGINAS = 2000  # techo por si no se pasa el total esperado (2 millones de filas)
+ESPERA_MAXIMA_SEG = 120
+MAX_PAGINAS = 2000
 
 
 class ErrorApi(RuntimeError):
@@ -36,13 +35,13 @@ class ClienteIndec:
         self.reintentos = reintentos
         self.session = session or requests.Session()
         self.session.headers.update({"Authorization": f"Bearer {token}"})
-        self.dormir = dormir  # en los tests se reemplaza para no esperar de verdad
+        self.dormir = dormir  # en los tests lo piso para no esperar
 
     def _espera(self, intento: int, respuesta=None) -> float:
-        # si la API dice cuanto esperar, le hago caso; si no, 5s, 10s, 20s...
+        # 5, 10, 20... salvo que la api mande Retry-After
         espera = 5.0 * 2**intento
         if respuesta is not None:
-            with contextlib.suppress(ValueError):  # si no es un numero, sigo con la mia
+            with contextlib.suppress(ValueError):
                 espera = float(respuesta.headers.get("Retry-After", ""))
         return min(espera, ESPERA_MAXIMA_SEG)
 
@@ -73,9 +72,8 @@ class ClienteIndec:
         raise ErrorApi(f"{endpoint}: se agotaron los reintentos")
 
     def contar(self, endpoint: str, filtros: dict | None = None) -> int:
-        """Total de filas que cumplen los filtros, sin bajarlas."""
         r = self._get(endpoint, {**(filtros or {}), "limit": 1}, {"Prefer": "count=exact"})
-        rango = r.headers.get("Content-Range", "")  # ej: 0-0/235683
+        rango = r.headers.get("Content-Range", "")  # viene como 0-0/235683
         try:
             return int(rango.rsplit("/", 1)[1])
         except (IndexError, ValueError) as e:
@@ -91,11 +89,8 @@ class ClienteIndec:
     def bajar(
         self, endpoint: str, filtros: dict, orden: list[str], esperadas: int | None = None
     ) -> list[dict]:
-        """Baja todas las filas de a paginas. El orden fijo evita repetir o perder filas.
-
-        `esperadas` (de contar) pone un techo de paginas: si la API ignorara el offset y
-        devolviera siempre la misma pagina, el loop corta en vez de seguir para siempre.
-        """
+        # sin orden fijo la api puede repetir o saltear filas entre paginas.
+        # el tope de paginas es por si algun dia ignora el offset y devuelve siempre lo mismo
         max_paginas = MAX_PAGINAS if esperadas is None else esperadas // self.limite + 2
         base = {**filtros, "order": ",".join(orden)}
         filas: list[dict] = []

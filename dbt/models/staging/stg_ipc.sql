@@ -1,4 +1,4 @@
--- IPC vigente: de cada dato, la ultima version descargada.
+-- ultima version de cada dato
 
 select *
 from {{ ref('stg_ipc__versiones') }}

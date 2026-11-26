@@ -1,5 +1,5 @@
--- La variacion mensual que calculamos desde el indice tiene que coincidir con la que
--- publica el INDEC. Tolerancia de 0,1 puntos porque el indice viene redondeado.
+-- la variacion que calculo tiene que dar igual que la del indec.
+-- dejo 0.1 de margen porque el indice viene redondeado
 
 with nuestra as (
     select fuente, indicador, clasificador, codigo, region, fecha, var_mensual

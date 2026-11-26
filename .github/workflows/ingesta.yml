@@ -2,8 +2,8 @@ name: ingesta
 
 on:
   schedule:
-    - cron: "23 23 * * *"   # todos los dias 20:23 (hora argentina): ultimos meses
-    - cron: "47 23 20 * *"  # el 20 de cada mes: toda la historia
+    - cron: "23 23 * * *"   # 20:23 hora arg, ultimos meses
+    - cron: "47 23 20 * *"  # el 20 de cada mes, todo
   workflow_dispatch:
     inputs:
       modo:
@@ -13,10 +13,10 @@ on:
         default: reciente
 
 permissions:
-  contents: write   # para commitear los datos nuevos
+  contents: write
 
 concurrency:
-  group: ingesta    # nunca dos corridas a la vez escribiendo en data/raw
+  group: ingesta
   cancel-in-progress: false
 
 jobs:
@@ -52,7 +52,7 @@ jobs:
           INDEC_API_TOKEN: ${{ secrets.INDEC_API_TOKEN }}
         run: uv run python -m monitor.ingesta --modo "${{ steps.modo.outputs.modo }}"
 
-      # corre aunque falle un dataset: lo que si se bajo bien se guarda igual
+      # aunque falle un dataset, lo que se bajo bien se guarda
       - name: commitear versiones nuevas
         if: success() || failure()
         env:

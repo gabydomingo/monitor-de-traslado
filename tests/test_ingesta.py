@@ -44,7 +44,7 @@ def test_dos_corridas_iguales_guardan_una_sola_version(filas_ipc, conf_ipc, tmp_
 
 def test_si_faltan_filas_no_guarda(filas_ipc, conf_ipc, tmp_path):
     cliente, _ = cliente_falso(filas_ipc)
-    cliente.bajar = lambda *a, **k: filas_ipc[:-1]  # simula que el INDEC publico a mitad
+    cliente.bajar = lambda *a, **k: filas_ipc[:-1]  # el indec publico a mitad
     with pytest.raises(ErrorApi, match="se esperaban"):
         ingerir(cliente, "ipc", conf_ipc, "completo", 6, tmp_path)
     assert not (tmp_path / "manifest.csv").exists()

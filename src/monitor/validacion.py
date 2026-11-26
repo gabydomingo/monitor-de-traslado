@@ -1,10 +1,7 @@
-"""Validacion de lo que devuelve la API antes de guardarlo.
-
-Si cambia algo grave (faltan columnas, tipos rotos, filas repetidas) frena con error.
-Si aparece algo nuevo pero inofensivo (una columna o un valor que no conociamos) solo avisa.
-"""
+"""Chequeos sobre lo que devuelve la api antes de guardarlo."""
 
 import logging
+import unicodedata
 
 import pandas as pd
 import pandera.pandas as pa
@@ -15,6 +12,11 @@ log = logging.getLogger(__name__)
 
 class ErrorValidacion(ValueError):
     pass
+
+
+def sin_tildes(texto: str) -> str:
+    normal = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in normal if not unicodedata.combining(c))
 
 
 def esquema(conf: dict) -> pa.DataFrameSchema:
@@ -48,15 +50,17 @@ def validar(df: pd.DataFrame, conf: dict, nombre: str = "") -> pd.DataFrame:
     if nuevas:
         log.warning("%s: columnas nuevas en la API: %s", nombre, sorted(nuevas))
 
-    # indice limpio: con indices repetidos pandera falla por dentro en vez de reportar
+    # pandera se rompe con indices repetidos, lo reseteo antes
     df = df.reset_index(drop=True)
     try:
         df = esquema(conf).validate(df, lazy=True)
     except (SchemaError, SchemaErrors) as e:
         raise ErrorValidacion(f"{nombre}: no pasa el esquema\n{e}") from e
 
+    # un valor nuevo no frena, solo aviso. comparo sin tildes porque el indec no es parejo
     for col, valores in conf.get("valores_conocidos", {}).items():
-        aparecen = set(df[col].dropna().unique()) - set(valores)
+        conocidos = {sin_tildes(v) for v in valores}
+        aparecen = {v for v in df[col].dropna().unique() if sin_tildes(v) not in conocidos}
         if aparecen:
             log.warning("%s: valores nuevos en %s: %s", nombre, col, sorted(aparecen))
 

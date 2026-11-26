@@ -1,20 +1,17 @@
-# Configuracion del pipeline. Los secretos van en .env, nunca aca.
-
 api:
   base_url: https://api.indec.gob.ar/v1
-  limite_filas: 1000      # tope por consulta de la API
+  limite_filas: 1000
   timeout_seg: 60
   reintentos: 3
 
 ingesta:
-  meses_recientes: 6      # ventana diaria, donde caen las revisiones
+  meses_recientes: 6    # el indec corrige los ultimos meses, con esto alcanza
   carpeta_raw: data/raw
 
-# clave: columnas que identifican una fila. Se usan para ordenar al paginar y para el hash.
-# columnas: las que el pipeline necesita (si falta alguna, frena).
-# columnas_extra: las que vienen hoy pero no usamos (si aparece otra nueva, avisa).
-# valores_conocidos: si aparece un valor nuevo, avisa pero no frena.
-# Los valores tienen tildes porque tienen que coincidir con lo que devuelve la API.
+# clave: lo que identifica una fila (se usa para ordenar y para el hash)
+# columnas: si falta alguna frena
+# columnas_extra y valores_conocidos: si aparece algo nuevo solo avisa
+# los valores se comparan sin tildes
 datasets:
   ipc:
     endpoint: ipc_nacional
@@ -24,7 +21,7 @@ datasets:
     columnas_extra: [anio, mes, tipo_de_indicador_descripcion, valor_null, observaciones]
     valores_conocidos:
       region: [Nacional, GBA, Pampeana, Noreste, Noroeste, Cuyo, Patagonia]
-      nivel: [Nivel General, División, Grupo, Clase, Producto, Categoría]
+      nivel: [Nivel General, Division, Grupo, Clase, Producto, Categoria]
       tipo_de_indicador: [Indice, v_m, v_ia, v_acum, Incidencia_m, Incidencia_ia,
                           Incidencia_acum, Precio promedio]
 
@@ -37,5 +34,5 @@ datasets:
                      observaciones]
     valores_conocidos:
       indicador: [IPIM, IPIB, IPP]
-      region: [Total del país]
+      region: [Total del pais]
       tipo_de_indicador: [Indice, v_m, v_ia, v_acum, incidencia]

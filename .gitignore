@@ -1,20 +1,18 @@
-# secretos
 .env
 
-# entornos y caches
 .venv/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# salidas locales de exploracion (se regeneran con scripts/explorar_api.py)
+# salidas locales
 exploracion/
+data/prueba/
 
 # dbt
 dbt/target/
 dbt/logs/
 dbt/dbt_packages/
+dbt/.user.yml
 *.duckdb
 *.duckdb.wal
-data/prueba/
-dbt/.user.yml

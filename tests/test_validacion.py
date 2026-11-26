@@ -58,3 +58,10 @@ def test_columna_nueva_avisa_pero_no_frena(df_ipc, conf_ipc, caplog):
     with caplog.at_level(logging.WARNING):
         validar(df_ipc, conf_ipc, "ipc")
     assert "fecha_publicacion" in caplog.text
+
+
+def test_tildes_no_cuentan_como_valor_nuevo(df_ipc, conf_ipc, caplog):
+    # la api manda "Division" con tilde y en el config esta sin
+    with caplog.at_level(logging.WARNING):
+        validar(df_ipc, conf_ipc, "ipc")
+    assert "valores nuevos" not in caplog.text

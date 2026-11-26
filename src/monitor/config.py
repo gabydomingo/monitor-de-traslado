@@ -1,5 +1,3 @@
-"""Lectura de config.yaml y del token desde el entorno."""
-
 import os
 from pathlib import Path
 
@@ -19,5 +17,5 @@ def token_indec() -> str:
     load_dotenv(RAIZ / ".env")
     token = os.getenv("INDEC_API_TOKEN")
     if not token:
-        raise RuntimeError("Falta INDEC_API_TOKEN (en .env local o como secreto en GitHub)")
+        raise RuntimeError("Falta INDEC_API_TOKEN (en el .env o en los secrets de GitHub)")
     return token

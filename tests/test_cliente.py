@@ -26,7 +26,7 @@ def test_pagina_hasta_la_ultima_pagina():
     assert len(bajadas) == 2500
     offsets = [ll["params"]["offset"] for ll in sesion.llamadas]
     assert offsets == [0, 1000, 2000]
-    # el orden va en todas las paginas, si no la API puede repetir o saltear filas
+    # el orden tiene que ir en todas las paginas
     assert all(ll["params"]["order"] == "codigo,periodo" for ll in sesion.llamadas)
 
 
@@ -108,13 +108,13 @@ def test_corta_si_la_api_ignora_el_offset():
     class SesionQueRepite(SesionFalsa):
         def get(self, url, params=None, headers=None, timeout=None):
             self.llamadas.append({"params": params})
-            return Respuesta([fila_ipc()] * 1000)  # siempre la misma pagina llena
+            return Respuesta([fila_ipc()] * 1000)  # siempre la misma pagina
 
     sesion = SesionQueRepite()
     c, _ = cliente(sesion)
     with pytest.raises(ErrorApi, match="paginas"):
         c.bajar("x", {}, ["periodo"], esperadas=2500)
-    assert len(sesion.llamadas) == 4  # 2500 // 1000 + 2, y corta
+    assert len(sesion.llamadas) == 4  # 2500 // 1000 + 2
 
 
 def test_espera_tiene_techo():

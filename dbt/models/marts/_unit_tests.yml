@@ -1,12 +1,8 @@
 version: 2
 
-# Tests unitarios: datos inventados para probar la logica sin depender de los datos reales.
-
 unit_tests:
   - name: revisiones_detecta_un_dato_corregido
-    description: >
-      Un indice provisorio que despues se corrige tiene que aparecer una vez.
-      Si la version siguiente repite el mismo valor, no es una revision.
+    description: Si la tercera version repite el valor no cuenta como otra revision.
     model: fct_revisiones
     given:
       - input: ref('stg_ipc__versiones')
@@ -28,18 +24,20 @@ unit_tests:
            era_provisorio: true, es_provisorio: false}
 
   - name: revisiones_ignora_versiones_repetidas
-    description: La misma version en la bajada reciente y en la completa no cuenta como cambio.
+    description: La misma version en la bajada reciente y en la completa no es un cambio.
     model: fct_revisiones
     given:
       - input: ref('stg_ipc__versiones')
         rows: []
       - input: ref('stg_mayorista__versiones')
         rows:
-          - {indicador: IPIM, clasificador: CIIU3, nivel: Clase, codigo: "1511", region: Total del país,
-             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 50.0,
-             es_provisorio: true, descargado_utc: "2026-11-12 20:00:00", ventana: reciente}
-          - {indicador: IPIM, clasificador: CIIU3, nivel: Clase, codigo: "1511", region: Total del país,
-             tipo_de_indicador: Indice, fecha: 2026-10-01, valor: 50.0,
-             es_provisorio: true, descargado_utc: "2026-11-12 20:00:00", ventana: completo}
+          - {indicador: IPIM, clasificador: CIIU3, nivel: Clase, codigo: "1511",
+             region: Total del pais, tipo_de_indicador: Indice, fecha: 2026-10-01,
+             valor: 50.0, es_provisorio: true, descargado_utc: "2026-11-12 20:00:00",
+             ventana: reciente}
+          - {indicador: IPIM, clasificador: CIIU3, nivel: Clase, codigo: "1511",
+             region: Total del pais, tipo_de_indicador: Indice, fecha: 2026-10-01,
+             valor: 50.0, es_provisorio: true, descargado_utc: "2026-11-12 20:00:00",
+             ventana: completo}
     expect:
       rows: []

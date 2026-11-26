@@ -1,4 +1,4 @@
-# Usa el ruff del entorno de uv, asi la version es la misma que en el lockfile
+# uso el ruff del entorno de uv para que sea la misma version que en el lock
 repos:
   - repo: local
     hooks:

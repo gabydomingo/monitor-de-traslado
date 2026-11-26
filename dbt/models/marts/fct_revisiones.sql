@@ -1,5 +1,5 @@
--- Cada vez que el INDEC cambio un dato ya publicado: valor anterior, valor nuevo y cuando.
--- Sale de comparar versiones sucesivas. Arranca vacia y se va llenando con el tiempo.
+-- cada vez que el indec cambio un dato que ya habia publicado.
+-- sale de comparar versiones, arranca vacia y se va llenando
 
 with versiones as (
     select
@@ -13,7 +13,7 @@ with versiones as (
     from {{ ref('stg_mayorista__versiones') }}
 ),
 
--- la misma version puede estar en la bajada reciente y en la completa: me quedo con una
+-- la misma version puede estar en la bajada reciente y en la completa
 sin_repetir as (
     select distinct * from versiones
     where tipo_de_indicador in ('Indice', 'Precio promedio')

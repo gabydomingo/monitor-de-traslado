@@ -1,5 +1,5 @@
--- Cada codigo de la tabla de correspondencia tiene que tener datos en las dos fuentes.
--- Si el INDEC deja de publicar un codigo, esto avisa.
+-- cada codigo de la correspondencia tiene que tener datos.
+-- si el indec deja de publicar alguno salta aca
 
 with corr as (select * from {{ ref('correspondencia_ciiu_coicop') }}),
 precios as (select distinct par_id, etapa, codigo from {{ ref('fct_precios') }})

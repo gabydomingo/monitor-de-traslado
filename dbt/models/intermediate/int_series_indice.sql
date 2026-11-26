@@ -1,5 +1,4 @@
--- Todas las series de indices (IPC y mayorista) en un mismo formato largo,
--- con la variacion mensual calculada por nosotros.
+-- todos los indices (ipc y mayorista) en formato largo, con la variacion calculada aca
 
 with ipc as (
     select
@@ -30,7 +29,7 @@ series as (
 select
     *,
     100 * (indice / lag(indice) over serie - 1) as var_mensual,
-    -- variacion logaritmica: es la que se usa en los modelos (se puede sumar entre meses)
+    -- la logaritmica es la que voy a usar en los modelos, se puede sumar entre meses
     ln(indice) - ln(lag(indice) over serie) as var_log
 from series
 window serie as (partition by fuente, indicador, clasificador, codigo, region order by fecha)

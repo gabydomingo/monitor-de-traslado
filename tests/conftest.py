@@ -1,5 +1,3 @@
-"""Fixtures compartidas por los tests."""
-
 import pandas as pd
 import pytest
 

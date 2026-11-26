@@ -1,6 +1,5 @@
--- Series mensuales de cada rubro en cada etapa de la cadena:
--- primaria (productor agropecuario) -> industria (mayorista) -> gondola (IPC por region).
--- Grano: rubro x etapa x indicador x codigo x region x mes.
+-- cada rubro en cada etapa: primaria (productor) -> industria (mayorista) -> gondola (ipc).
+-- grano: rubro x etapa x indicador x codigo x region x mes
 
 with corr as (
     select * from {{ ref('correspondencia_ciiu_coicop') }}

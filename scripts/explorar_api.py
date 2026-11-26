@@ -1,9 +1,5 @@
-# Exploracion de la API del INDEC antes de armar el observatorio de precios
-# Revisa tres cosas:
-#   1. que codigos y niveles traen el IPC y el mayorista (SIPM), para ver si se pueden cruzar
-#   2. desde cuando hay datos y cuantas filas tiene cada dataset
-#   3. si la API muestra alguna fecha de publicacion o version (para el historial de revisiones)
-# Todo queda en la carpeta exploracion/
+# Primera mirada a la api antes de armar el pipeline: que codigos trae el ipc y el
+# mayorista, desde cuando hay datos y si hay algo de versiones. Deja todo en exploracion/
 
 import json
 import os
@@ -44,7 +40,7 @@ def pedir(endpoint, params, extra_headers=None):
     headers = {**HEADERS, **(extra_headers or {})}
     for _ in range(3):
         r = requests.get(f"{BASE}/{endpoint}", headers=headers, params=params, timeout=60)
-        if r.status_code == 429:  # limite de consultas
+        if r.status_code == 429:
             time.sleep(10)
             continue
         return r
@@ -52,7 +48,7 @@ def pedir(endpoint, params, extra_headers=None):
 
 
 def pedir_todo(endpoint, params, orden):
-    # ordeno siempre igual para no repetir ni perder filas entre paginas
+    # mismo orden en todas las paginas
     base = {**params, "order": orden}
     prueba = pedir(endpoint, {**base, "limit": 1})
     if prueba.status_code == 400:
@@ -70,7 +66,7 @@ def pedir_todo(endpoint, params, orden):
         offset += 1000
 
 
-# La raiz de una API PostgREST suele devolver la especificacion OpenAPI con todos los endpoints
+# la raiz de postgrest devuelve el openapi con todos los endpoints
 r = pedir("", {})
 if r.ok and "json" in r.headers.get("Content-Type", ""):
     with open(f"{SALIDA}/openapi.json", "w", encoding="utf-8") as f:
@@ -82,7 +78,7 @@ else:
 for endpoint, conf in DATASETS.items():
     anotar("\n==========", endpoint, "==========")
 
-    # total de filas y headers que podrian indicar version o fecha de actualizacion
+    # total de filas y headers, por si hay algo de versiones
     r = pedir(endpoint, {"limit": 1}, {"Prefer": "count=exact"})
     r.raise_for_status()
     anotar("Total de filas:", r.headers.get("Content-Range", "sin dato"))
@@ -107,7 +103,7 @@ for endpoint, conf in DATASETS.items():
     periodo = ultimo[0]["periodo"]
     anotar("Primer periodo:", primero[0]["periodo"], "| Ultimo periodo:", periodo)
 
-    # todo lo del ultimo mes alcanza para ver todos los codigos y valores posibles
+    # con el ultimo mes alcanza para ver todos los codigos
     df = pedir_todo(endpoint, {"periodo": f"eq.{periodo}"}, conf["orden"])
     df.to_csv(f"{SALIDA}/{endpoint}_ultimo_mes.csv", index=False, encoding="utf-8")
     anotar("Filas del ultimo mes:", len(df))

@@ -1,4 +1,4 @@
-"""API del INDEC simulada para los tests: nunca se llama a la real."""
+"""Api del indec de mentira para los tests."""
 
 
 class Respuesta:
@@ -13,11 +13,11 @@ class Respuesta:
 
 
 class SesionFalsa:
-    """Imita requests.Session: devuelve paginas de `filas` o respuestas programadas."""
+    """Hace de requests.Session."""
 
     def __init__(self, filas=None, programadas=None):
         self.filas = filas or []
-        self.programadas = list(programadas or [])  # respuestas fijas para las primeras llamadas
+        self.programadas = list(programadas or [])  # se devuelven primero, en orden
         self.headers = {}
         self.llamadas = []
 
@@ -43,7 +43,7 @@ class SesionFalsa:
 def fila_ipc(codigo="01", region="GBA", periodo=202610, valor=100.0, tipo="Indice"):
     return {
         "clasificador": "COICOP Argentina 2019",
-        "nivel": "Divisi\u00f3n",  # asi viene de la API, con tilde
+        "nivel": "Divisi\u00f3n",  # la api lo manda con tilde
         "codigo": codigo,
         "descripcion": f"rubro {codigo}",
         "periodo": periodo,

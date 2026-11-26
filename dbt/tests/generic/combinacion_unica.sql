@@ -1,4 +1,4 @@
--- Falla si hay filas repetidas para la combinacion de columnas (la clave de la tabla).
+-- falla si hay filas repetidas para esas columnas
 {% test combinacion_unica(model, columnas) %}
 select {{ columnas | join(', ') }}, count(*) as repeticiones
 from {{ model }}

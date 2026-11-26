@@ -1,9 +1,8 @@
-"""Bajada de datos del INDEC.
+"""Baja los datos del INDEC y guarda una version nueva si algo cambio.
 
-Uso:
-    uv run python -m monitor.ingesta --modo reciente     # ultimos meses (corre todos los dias)
-    uv run python -m monitor.ingesta --modo completo     # toda la historia (una vez por mes)
-    uv run python -m monitor.ingesta --modo reciente --dataset ipc --salida data/prueba
+uv run python -m monitor.ingesta --modo reciente
+uv run python -m monitor.ingesta --modo completo
+uv run python -m monitor.ingesta --modo reciente --dataset ipc --salida data/prueba
 """
 
 import argparse
@@ -23,7 +22,7 @@ log = logging.getLogger("monitor.ingesta")
 
 
 def restar_meses(periodo: int, n: int) -> int:
-    """restar_meses(202603, 5) -> 202510"""
+    # restar_meses(202603, 5) = 202510
     anio, mes = divmod(periodo, 100)
     total = anio * 12 + (mes - 1) - n
     return (total // 12) * 100 + total % 12 + 1
@@ -46,7 +45,7 @@ def ingerir(
     esperado = cliente.contar(endpoint, filtros)
     filas = cliente.bajar(endpoint, filtros, conf["clave"], esperado)
     if len(filas) != esperado:
-        # puede pasar si el INDEC publica justo mientras bajamos: mejor no guardar algo a medias
+        # pasa si el indec publica justo mientras bajamos. no guardo nada a medias
         raise ErrorApi(f"{endpoint}: se esperaban {esperado} filas y llegaron {len(filas)}")
 
     df = validar(pd.DataFrame(filas), conf, nombre)
@@ -62,7 +61,7 @@ def escribir_resumen(resultados: list[Resultado], errores: list[str]) -> None:
     lineas += [f"\n**Error:** {e}" for e in errores]
     texto = "\n".join(lineas)
     log.info("Resumen:\n%s", texto)
-    # en GitHub Actions el resumen aparece en la pagina de la corrida
+    # en actions esto queda en la pagina de la corrida
     ruta = os.getenv("GITHUB_STEP_SUMMARY")
     if ruta:
         with open(ruta, "a", encoding="utf-8") as f:
@@ -100,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
         except (ErrorApi, ErrorValidacion) as e:
-            # sigo con el resto: que falle uno no tiene por que frenar al otro
+            # si falla uno sigo con el otro
             log.error("%s: %s", nombre, e)
             errores.append(f"{nombre}: {e}")
 
