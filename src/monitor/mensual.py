@@ -51,7 +51,8 @@ def que_falta(e: dict) -> tuple[pd.Timestamp, list[str]]:
 def ya_pronosticado(objetivo: pd.Timestamp, registro: Path = REGISTRO) -> bool:
     if not registro.exists():
         return False
-    fechas = pd.to_datetime(pd.read_csv(registro, usecols=["fecha"])["fecha"])
+    # iso8601: algunas filas viejas quedaron con hora ("2026-11-01 00:00:00")
+    fechas = pd.to_datetime(pd.read_csv(registro, usecols=["fecha"])["fecha"], format="ISO8601")
     return bool((fechas == objetivo).any())
 
 
@@ -65,6 +66,8 @@ def version_datos(manifest: Path | None = None) -> str:
 def registrar(prox: pd.DataFrame, registro: Path = REGISTRO, ahora: datetime | None = None):
     ahora = ahora or datetime.now(UTC)
     filas = prox.assign(
+        # siempre como texto aaaa-mm-dd: si se mezcla con timestamps el csv queda con dos formatos
+        fecha=pd.to_datetime(prox["fecha"], format="ISO8601").dt.strftime("%Y-%m-%d"),
         generado_utc=ahora.isoformat(timespec="seconds"),
         modelo=pronostico.version_modelo(),
         datos=version_datos(),
@@ -73,6 +76,7 @@ def registrar(prox: pd.DataFrame, registro: Path = REGISTRO, ahora: datetime | N
         # solo lo que no estaba: si se suma una serie nueva entra sin tocar lo ya registrado
         clave = ["par_id", "region", "fecha"]
         ya = pd.read_csv(registro, usecols=clave, dtype=str)
+        ya["fecha"] = pd.to_datetime(ya["fecha"], format="ISO8601").dt.strftime("%Y-%m-%d")
         nuevas = filas[clave].astype(str).merge(ya, how="left", indicator=True)["_merge"]
         filas = filas[(nuevas == "left_only").to_numpy()]
         if filas.empty:
@@ -81,7 +85,10 @@ def registrar(prox: pd.DataFrame, registro: Path = REGISTRO, ahora: datetime | N
         if previo != filas.columns.tolist():
             # cambiaron las columnas (por ejemplo se sumo la banda del 90%): reescribo todo
             # para que no queden filas corridas. lo ya registrado no cambia
-            todo = pd.concat([pd.read_csv(registro), filas], ignore_index=True)
+            todo = pd.concat(
+                [pd.read_csv(registro, dtype={"fecha": str}), filas], ignore_index=True
+            )
+            todo["fecha"] = pd.to_datetime(todo["fecha"], format="ISO8601").dt.strftime("%Y-%m-%d")
             todo.to_csv(registro, index=False)
             return
     filas.to_csv(registro, mode="a", header=not registro.exists(), index=False)

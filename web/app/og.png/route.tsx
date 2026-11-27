@@ -8,12 +8,11 @@ import { COLOR_REGION } from "@/lib/colores";
 import { NG } from "@/lib/consultas";
 import { nombreMes, pct } from "@/lib/formato";
 
-// la imagen que aparece al compartir el link. se arma en cada build, asi que trae el ultimo dato
+// la imagen que aparece al compartir el link. se arma en cada build, asi que trae el ultimo dato.
+// es una ruta y no opengraph-image para que el archivo salga como og.png: sin extension vercel
+// lo servia como application/octet-stream
 export const dynamic = "force-static";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
-export const alt =
-  "Efecto Góndola: mapa de las regiones del IPC con la inflación y el pronóstico";
+const size = { width: 1200, height: 630 };
 
 const fuente = (paquete: string, archivo: string) =>
   readFileSync(
@@ -27,7 +26,7 @@ const fuente = (paquete: string, archivo: string) =>
     ),
   );
 
-export default function Imagen() {
+export function GET() {
   const { resumen } = cargar();
   const mapa = armarMapa();
   const { meta } = resumen;
@@ -116,7 +115,11 @@ export default function Imagen() {
           >
             <div
               style={{ fontSize: 22, color: "#595752" }}
-            >{`Pronóstico para ${nombreMes(meta.mesPronosticado)}`}</div>
+            >
+              {meta.pronosticoVigente
+                ? `Pronóstico para ${nombreMes(meta.mesPronosticado)}`
+                : `Pronóstico de ${nombreMes(meta.mesPronosticado)}, GBA`}
+            </div>
             <div
               style={{
                 fontFamily: "Source Serif",
@@ -127,7 +130,9 @@ export default function Imagen() {
               {pct(pron.valor)}
             </div>
             <div style={{ fontSize: 20, color: "#595752" }}>
-              {`8 de cada 10 veces: ${pct(pron.banda80[0])} a ${pct(pron.banda80[1])}`}
+              {meta.pronosticoVigente
+                ? `8 de cada 10 veces: ${pct(pron.banda80[0])} a ${pct(pron.banda80[1])}`
+                : `y fue ${pct(ultimo.valor)}`}
             </div>
           </div>
         </div>

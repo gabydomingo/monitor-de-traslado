@@ -75,3 +75,30 @@ def test_registro_suma_series_nuevas_sin_repetir(tmp_path, monkeypatch):
     assert df.set_index("par_id")["inf"].to_dict() == {"pan": 1.0, "nivel_general": 2.0}
     mensual.registrar(otra, registro)
     assert len(pd.read_csv(registro)) == 2
+
+
+def test_registro_mantiene_un_solo_formato_de_fecha(tmp_path, monkeypatch):
+    # paso de verdad: el registro tenia fechas como texto y el pronostico llego como timestamp,
+    # y al reescribir quedaron filas con "00:00:00" que despues no se podian leer juntas
+    registro = tmp_path / "registro.csv"
+    manifest = tmp_path / "manifest.csv"
+    pd.DataFrame({"dataset": ["ipc"], "hash": ["a" * 64]}).to_csv(manifest, index=False)
+    monkeypatch.setattr(mensual, "MANIFEST", manifest)
+    viejo = pd.DataFrame(
+        {"par_id": ["pan"], "region": ["GBA"], "fecha": ["2026-11-01"], "inf": [1.0]}
+    )
+    mensual.registrar(viejo, registro)
+    nuevo = pd.DataFrame(
+        {
+            "par_id": ["nivel_general", "pan"],
+            "region": ["GBA", "GBA"],
+            "fecha": pd.to_datetime(["2026-11-01", "2026-12-01"]),
+            "inf": [2.0, 3.0],
+            "inf_90": [1.5, 2.5],  # columna nueva: fuerza la reescritura
+        }
+    )
+    mensual.registrar(nuevo, registro)
+    df = pd.read_csv(registro, dtype=str)
+    assert set(df["fecha"]) == {"2026-11-01", "2026-12-01"}
+    assert len(df) == 3
+    assert mensual.ya_pronosticado(pd.Timestamp("2026-12-01"), registro)

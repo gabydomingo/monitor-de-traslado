@@ -116,3 +116,21 @@ def test_los_json_subidos_cumplen_el_contrato(nombre):
     if not ruta.exists():
         pytest.skip("todavia no se genero data/web")
     web.ARCHIVOS[nombre].model_validate_json(ruta.read_text(encoding="utf-8"))
+
+
+def test_proximo_pronostico_segun_en_que_punto_del_mes_estamos():
+    pub = pd.DataFrame(
+        {
+            "dataset": ["mayorista"] * 2,
+            "fecha": pd.to_datetime(["2026-09-01", "2026-10-01"]),
+            "publicado": pd.to_datetime(["2026-10-16", "2026-11-19"]),
+        }
+    )
+    oct_, nov, dic = (pd.Timestamp(f"2026-{m}-01") for m in (10, 11, 12))
+    # ya esta pronosticado noviembre y el ultimo ipc es octubre: el que sigue es diciembre
+    p = web.proximo_pronostico(pub, oct_, nov)
+    assert (p.mes, p.publicacion, p.dia_desde, p.dia_hasta) == ("2026-12", "2026-12", 16, 19)
+    # salio el ipc de noviembre y todavia no el pronostico de diciembre: tambien diciembre
+    assert web.proximo_pronostico(pub, nov, nov).mes == "2026-12"
+    # el pronostico de diciembre ya se hizo: el que sigue es enero
+    assert web.proximo_pronostico(pub, nov, dic).mes == "2027-01"

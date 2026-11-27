@@ -25,7 +25,10 @@ export function Franja({
 
   return (
     <div className="border-y border-tinta">
-      <dl id="franja" className="mx-auto grid max-w-[1200px] grid-cols-2 md:grid-cols-4 md:px-8">
+      <dl
+        id="franja"
+        className="mx-auto grid max-w-[1200px] grid-cols-2 md:grid-cols-4 md:px-8"
+      >
         <Celda
           titulo={`Inflación de ${nombreMes(meta.ultimoMes)}`}
           className="border-r border-b border-filete md:border-b-0"
@@ -34,23 +37,50 @@ export function Franja({
           <Nota>Nivel general del IPC en {region}, según el INDEC</Nota>
         </Celda>
 
-        <Celda titulo={`Pronóstico para ${nombreMes(meta.mesPronosticado)}`} className="border-b border-filete md:border-r md:border-b-0">
-          <Cifra>{pct(pron?.valor)}</Cifra>
-          {pron && (
-            <Nota>
-              8 de cada 10 veces el dato cae entre {pct(pron.banda80[0])} y {pct(pron.banda80[1])}.{" "}
-              <a href="#pronostico">Cuánto le erra</a>
-            </Nota>
-          )}
-        </Celda>
+        {meta.pronosticoVigente ? (
+          <Celda
+            titulo={`Pronóstico para ${nombreMes(meta.mesPronosticado)}`}
+            className="border-b border-filete md:border-r md:border-b-0"
+          >
+            <Cifra>{pct(pron?.valor)}</Cifra>
+            {pron && (
+              <Nota>
+                8 de cada 10 veces el dato cae entre {pct(pron.banda80[0])} y{" "}
+                {pct(pron.banda80[1])}. <a href="#pronostico">Cuánto le erra</a>
+              </Nota>
+            )}
+          </Celda>
+        ) : (
+          // ya salio el dato del mes pronosticado y todavia no el pronostico siguiente
+          <Celda
+            titulo={`Pronóstico para ${nombreMes(meta.proximoPronostico.mes)}`}
+            className="border-b border-filete md:border-r md:border-b-0"
+          >
+            <p className="font-serif text-[1.5rem] leading-tight font-medium md:text-[1.75rem]">
+              {meta.proximoPronostico.diaDesde} al{" "}
+              {meta.proximoPronostico.diaHasta} de{" "}
+              {nombreMes(meta.proximoPronostico.publicacion)}
+            </p>
+            {pron && (
+              <Nota>
+                El de {nombreMes(meta.mesPronosticado)} dijo {pct(pron.valor)} y
+                fue {pct(ultimo?.valor)}.{" "}
+                <a href="#pronostico">Cuánto le erra</a>
+              </Nota>
+            )}
+          </Celda>
+        )}
 
-        <Celda titulo="Próximo dato del INDEC" className="border-r border-filete">
+        <Celda
+          titulo="Próximo dato del INDEC"
+          className="border-r border-filete"
+        >
           <p className="font-serif text-[1.5rem] leading-tight font-medium md:text-[1.75rem]">
             {prox.diaDesde} al {prox.diaHasta} de {nombreMes(prox.publicacion)}
           </p>
           <Nota>
-            Sale el IPC de {nombreMes(prox.mes)} y esta página se actualiza sola.{" "}
-            <a href="#como-se-actualiza">Cómo</a>
+            Sale el IPC de {nombreMes(prox.mes)} y esta página se actualiza
+            sola. <a href="#como-se-actualiza">Cómo</a>
           </Nota>
         </Celda>
 
@@ -78,7 +108,12 @@ export function Franja({
               viewBox="0 0 12 8"
               className="pointer-events-none absolute top-1/2 right-1 w-3 -translate-y-1/2"
             >
-              <path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <path
+                d="M1 1.5 6 6.5 11 1.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
             </svg>
           </div>
           <Nota>{info.queAbarca}</Nota>
@@ -98,7 +133,9 @@ function Celda({
   className?: string;
 }) {
   return (
-    <div className={`flex flex-col gap-1 px-4 py-4 md:px-5 md:py-5 md:first:pl-0 ${className}`}>
+    <div
+      className={`flex flex-col gap-1 px-4 py-4 md:px-5 md:py-5 md:first:pl-0 ${className}`}
+    >
       <dt className="text-sm text-tinta-2">{titulo}</dt>
       <dd className="flex flex-col gap-1">{children}</dd>
     </div>
@@ -114,5 +151,7 @@ function Cifra({ children }: { children: React.ReactNode }) {
 }
 
 function Nota({ children }: { children: React.ReactNode }) {
-  return <p className="text-[0.8125rem] leading-snug text-tinta-2">{children}</p>;
+  return (
+    <p className="text-[0.8125rem] leading-snug text-tinta-2">{children}</p>
+  );
 }

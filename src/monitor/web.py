@@ -59,6 +59,12 @@ class Meta(Modelo):
     ultimo_mes: Mes = Field(description="ultimo mes con IPC publicado")
     mes_pronosticado: Mes
     proximo_ipc: ProximoDato
+    pronostico_vigente: bool = Field(
+        description="false entre que sale el ipc del mes pronosticado y el pronostico siguiente"
+    )
+    proximo_pronostico: ProximoDato = Field(
+        description="mes = el que se va a pronosticar; sale cuando el indec publica el mayorista"
+    )
     datos_nuevos: datetime = Field(description="la ultima vez que la ingesta trajo algo distinto")
     version_modelo: str
     version_datos: str
@@ -440,7 +446,8 @@ def armar_registro(gondola) -> list[Registrado]:
     ruta = mensual.REGISTRO
     if not ruta.exists():
         return []
-    reg = pd.read_csv(ruta, parse_dates=["fecha"])
+    reg = pd.read_csv(ruta)
+    reg["fecha"] = pd.to_datetime(reg["fecha"], format="ISO8601")
     salida = []
     for f in reg.itertuples():
         serie = gondola.get(f.region, pd.DataFrame()).get(f.par_id)
@@ -462,16 +469,32 @@ def armar_registro(gondola) -> list[Registrado]:
     return salida
 
 
-def proximo_ipc(pub: pd.DataFrame, ultimo: pd.Timestamp) -> ProximoDato:
+def dias_de_publicacion(pub: pd.DataFrame, dataset: str) -> tuple[int, int]:
     # el rango de dias de los ultimos dos anios: el indec publica un calendario pero no hay API
-    ipc = pub[pub.dataset == "ipc"].sort_values("fecha").tail(24)
-    dias = pd.to_datetime(ipc.publicado).dt.day
+    d = pub[pub.dataset == dataset].sort_values("fecha").tail(24)
+    dias = pd.to_datetime(d.publicado).dt.day
+    return int(dias.min()), int(dias.max())
+
+
+def proximo_ipc(pub: pd.DataFrame, ultimo: pd.Timestamp) -> ProximoDato:
     siguiente = ultimo + pd.DateOffset(months=1)
+    desde, hasta = dias_de_publicacion(pub, "ipc")
     return ProximoDato(
         mes=mes(siguiente),
         publicacion=mes(siguiente + pd.DateOffset(months=1)),
-        dia_desde=int(dias.min()),
-        dia_hasta=int(dias.max()),
+        dia_desde=desde,
+        dia_hasta=hasta,
+    )
+
+
+def proximo_pronostico(
+    pub: pd.DataFrame, ultimo: pd.Timestamp, pronosticado: pd.Timestamp
+) -> ProximoDato:
+    """El proximo mes a pronosticar y cuando: el mismo mes, al salir el mayorista del anterior."""
+    objetivo = max(pronosticado, ultimo) + pd.DateOffset(months=1)
+    desde, hasta = dias_de_publicacion(pub, "mayorista")
+    return ProximoDato(
+        mes=mes(objetivo), publicacion=mes(objetivo), dia_desde=desde, dia_hasta=hasta
     )
 
 
@@ -555,6 +578,10 @@ def armar(con) -> dict[str, Modelo]:
         ultimo_mes=mes(ultimo),
         mes_pronosticado=mes(prox.fecha.max()),
         proximo_ipc=proximo_ipc(pub, ultimo),
+        # cuando sale el ipc del mes pronosticado y todavia no el mayorista, el pronostico que
+        # hay ya es viejo: la web lo muestra como resultado y no como lo que viene
+        pronostico_vigente=bool(prox.fecha.max() > ultimo),
+        proximo_pronostico=proximo_pronostico(pub, ultimo, prox.fecha.max()),
         # sin la hora de la corrida: si no, el json cambiaria todos los dias sin datos nuevos
         datos_nuevos=pd.to_datetime(manifest.fecha_utc).max().to_pydatetime(),
         version_modelo=pronostico.version_modelo(),

@@ -337,6 +337,15 @@
     "proximoIpc": {
      "$ref": "#/$defs/ProximoDato"
     },
+    "pronosticoVigente": {
+     "description": "false entre que sale el ipc del mes pronosticado y el pronostico siguiente",
+     "title": "Pronosticovigente",
+     "type": "boolean"
+    },
+    "proximoPronostico": {
+     "$ref": "#/$defs/ProximoDato",
+     "description": "mes = el que se va a pronosticar; sale cuando el indec publica el mayorista"
+    },
     "datosNuevos": {
      "description": "la ultima vez que la ingesta trajo algo distinto",
      "format": "date-time",
@@ -367,6 +376,8 @@
     "ultimoMes",
     "mesPronosticado",
     "proximoIpc",
+    "pronosticoVigente",
+    "proximoPronostico",
     "datosNuevos",
     "versionModelo",
     "versionDatos",

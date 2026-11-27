@@ -22,6 +22,14 @@ export const metadata: Metadata = {
     description: descripcion,
     type: "website",
     locale: "es_AR",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Efecto Góndola: mapa de las regiones del IPC con la inflación y el pronóstico",
+      },
+    ],
   },
   twitter: { card: "summary_large_image" },
 };

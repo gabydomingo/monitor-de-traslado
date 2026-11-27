@@ -36,6 +36,11 @@ export interface Meta {
   mesPronosticado: string;
   proximoIpc: ProximoDato;
   /**
+   * false entre que sale el ipc del mes pronosticado y el pronostico siguiente
+   */
+  pronosticoVigente: boolean;
+  proximoPronostico: ProximoDato1;
+  /**
    * la ultima vez que la ingesta trajo algo distinto
    */
   datosNuevos: string;
@@ -49,6 +54,21 @@ export interface Meta {
  * via the `definition` "ProximoDato".
  */
 export interface ProximoDato {
+  /**
+   * el mes que se va a publicar
+   */
+  mes: string;
+  /**
+   * el mes en que sale
+   */
+  publicacion: string;
+  diaDesde: number;
+  diaHasta: number;
+}
+/**
+ * mes = el que se va a pronosticar; sale cuando el indec publica el mayorista
+ */
+export interface ProximoDato1 {
   /**
    * el mes que se va a publicar
    */

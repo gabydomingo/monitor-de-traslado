@@ -2,7 +2,7 @@
 
 Cuando sube el precio mayorista de algo, cuanto de esa suba llega a la gondola y en cuantos meses? Este proyecto lo mide por rubro y por region con datos de la [API del INDEC](https://api.indec.gob.ar/), y pronostica el mes que viene sumando el dolar y las expectativas de inflacion de la [API del BCRA](https://www.bcra.gob.ar/apis-banco-central/). De paso guarda cada correccion que hace el INDEC a sus datos provisorios, algo que la API no guarda.
 
-En LinkedIn lo vengo contando como **Efecto Gondola**. Esta en construccion.
+En LinkedIn lo vengo contando como **Efecto Gondola**, y asi se llama la pagina: [efectogondola.vercel.app](https://efectogondola.vercel.app/).
 
 ## Estado
 
@@ -13,7 +13,7 @@ En LinkedIn lo vengo contando como **Efecto Gondola**. Esta en construccion.
 - [x] Fase 4: modelo de traslado
 - [x] Fase 5: pronostico
 - [x] Fase 6: analisis de las revisiones
-- [ ] Fase 7: web con mapa por regiones
+- [x] Fase 7: web con mapa por regiones
 - [ ] Fase 8: metodologia y documentacion
 
 ## Correrlo
@@ -163,7 +163,8 @@ La pagina publica se llama Efecto Gondola. Es un sitio estatico en Next.js (`web
 - **Datos.** `monitor.web` arma tres JSON en `data/web` (resumen, series y backtest, unos 350 KB en total) a partir del warehouse y de `data/resultados`. El contrato son los modelos de pydantic de `src/monitor/web.py`: de ahi sale `data/web/esquema.json` y de ese esquema los tipos de TypeScript (`web/lib/tipos.ts`). Si el contrato cambia y los tipos no, falla el CI.
 - **Mapa.** Regiones del IPC con limites del IGN (SIG 250, via CONAE), en GeoJSON por [mgaitan/departamentos_argentina](https://github.com/mgaitan/departamentos_argentina). GBA es la ciudad mas los 24 partidos del conurbano; el resto de Buenos Aires va en Pampeana. Se simplifica con mapshaper (`npm run geo`) y se dibuja en el build con d3-geo: al navegador llegan solo los trazos.
 - **Graficos.** Observable Plot. El pronostico va en gris tinta, nunca en el color de una region. Energia siempre en gris pizarra punteado y con la aclaracion de tarifa regulada.
-- **Publicacion.** Vercel con raiz en `web/`. Solo hace build si cambio algo en `web/` o en `data/web` (`web/vercel.json`).
+- **Publicacion.** [efectogondola.vercel.app](https://efectogondola.vercel.app/), en Vercel con raiz en `web/`. Solo hace build si cambio algo en `web/` o en `data/web` desde el ultimo deploy (`web/vercel.json`).
+- **Entre un mes y otro.** Cuando sale el IPC del mes pronosticado y todavia no el mayorista, el pronostico que hay ya es viejo: la pagina lo muestra como "dijo y fue" y avisa cuando sale el siguiente.
 
 ```
 uv run python -m monitor.web   # regenera data/web
