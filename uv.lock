@@ -906,6 +906,7 @@ dependencies = [
     { name = "requests" },
     { name = "scipy" },
     { name = "statsmodels" },
+    { name = "tzdata" },
 ]
 
 [package.dev-dependencies]
@@ -934,6 +935,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32" },
     { name = "scipy", specifier = ">=1.18.1" },
     { name = "statsmodels", specifier = ">=0.15.0" },
+    { name = "tzdata", specifier = ">=2024.1" },
 ]
 
 [package.metadata.requires-dev]

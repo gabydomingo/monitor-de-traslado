@@ -1,5 +1,6 @@
 import pandas as pd
 
+from monitor import informes
 from monitor.informes import leer_listado
 
 
@@ -34,3 +35,25 @@ def test_lee_solo_mayorista_e_ipc_desde_la_base_nueva():
     assert ipm["publicado"] == pd.Timestamp("2026-11-17")
     assert "1,6%" in ipm["resumen"]
     assert ipm["url"] == "/uploads/informesdeprensa/ipm_11_26ABC123.pdf"
+
+
+class ClienteFalso:
+    def __init__(self, html):
+        self.html = html
+        self.session = type("S", (), {"headers": {}})()
+
+    def _get(self, endpoint, params):
+        return type("R", (), {"text": self.html})()
+
+
+def test_calendario_suma_solo_lo_nuevo_y_no_toca_los_hashes(tmp_path, monkeypatch):
+    listado = tmp_path / "listado.csv"
+    monkeypatch.setattr(informes, "LISTADO", listado)
+    previo = leer_listado(HTML).iloc[:1].assign(sha256="abc")
+    previo.to_csv(listado, index=False)
+    assert informes.actualizar_calendario(ClienteFalso(HTML)) == 1
+    df = pd.read_csv(listado, dtype={"sha256": str})
+    assert len(df) == 2
+    assert df.loc[df["archivo"] == previo["archivo"].iloc[0], "sha256"].iloc[0] == "abc"
+    # la segunda vez no hay nada nuevo
+    assert informes.actualizar_calendario(ClienteFalso(HTML)) == 0

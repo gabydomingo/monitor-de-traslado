@@ -129,7 +129,7 @@ uv run python -m monitor.informes bajar      # listado y pdf del mayorista y del
 uv run python -m monitor.informes procesar   # saca la variacion mensual de cada pdf
 ```
 
-Los pdf no se suben al repo (pesan 250 MB). Se suben el listado, con el hash de cada pdf, y lo que se saco de ellos (`data/informes/`). En dbt, `fct_primer_dato` cruza cada primer dato con el valor de hoy en la API.
+Los pdf no se suben al repo (pesan 250 MB). La ingesta diaria corre `informes calendario`, que suma solo las fechas de publicacion nuevas, sin bajar pdf. Se suben el listado, con el hash de cada pdf, y lo que se saco de ellos (`data/informes/`). En dbt, `fct_primer_dato` cruza cada primer dato con el valor de hoy en la API.
 
 - En mas de 20 mil datos (IPC desde 2017, mayorista desde 2018, por division y region), el INDEC no corrigio ninguna variacion mensual al decimal que publica. El "provisorio" del mayorista nunca cambio.
 - Por eso el backtest del pronostico no esta sesgado por usar datos ya revisados.
@@ -159,8 +159,9 @@ notebooks/     analisis
 dbt/           modelos, seeds y tests
 data/raw/      crudos versionados
 data/resultados/  resultados del modelo
+data/informes/ listado y primeros datos de los informes del indec
 tests/         tests de python
-docs/          metodologia
+docs/          metodologia (fase 8)
 ```
 
 ## Datos

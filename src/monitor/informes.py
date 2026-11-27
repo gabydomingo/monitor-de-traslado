@@ -3,8 +3,9 @@
 La API solo tiene el dato vigente. Los informes de prensa quedan online tal como salieron,
 asi que comparandolos con la API se ve cuanto corrigio el indec despues.
 
-uv run python -m monitor.informes bajar      (necesita llegar a indec.gob.ar)
-uv run python -m monitor.informes procesar   (lee los pdf, tarda unos minutos)
+uv run python -m monitor.informes bajar        (necesita llegar a indec.gob.ar)
+uv run python -m monitor.informes procesar     (lee los pdf, tarda unos minutos)
+uv run python -m monitor.informes calendario   (solo suma las fechas nuevas, sin pdf)
 """
 
 import argparse
@@ -87,13 +88,30 @@ def bajar(cliente: ClienteHttp | None = None, pausa: float = 1.0) -> pd.DataFram
     return listado
 
 
+def actualizar_calendario(cliente: ClienteHttp | None = None) -> int:
+    """Suma al listado los informes nuevos, sin bajar los pdf. Lo corre la ingesta todos los
+    dias: con la fecha real de publicacion se corta el dolar que usa el pronostico. El hash
+    queda vacio hasta que se corra bajar."""
+    cliente = cliente or ClienteHttp(WEB, timeout_seg=120)
+    cliente.session.headers.update({"User-Agent": "monitor-de-traslado (proyecto personal)"})
+    web = leer_listado(cliente._get(LISTADO_URL, {}).text)
+    previo = pd.read_csv(LISTADO, parse_dates=["publicado"], dtype={"sha256": str})
+    nuevos = web[~web["archivo"].isin(previo["archivo"])].assign(sha256="")
+    if not nuevos.empty:
+        pd.concat([previo, nuevos], ignore_index=True).to_csv(LISTADO, index=False)
+    log.info("%d informes nuevos en el calendario", len(nuevos))
+    return len(nuevos)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Informes tecnicos del INDEC")
-    parser.add_argument("paso", choices=["bajar", "procesar"])
+    parser.add_argument("paso", choices=["bajar", "procesar", "calendario"])
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     if args.paso == "bajar":
         bajar()
+    elif args.paso == "calendario":
+        actualizar_calendario()
     else:
         extraer_pdf.main([str(CARPETA_PDF), str(PRIMEROS_DATOS)])
     return 0
