@@ -14,7 +14,29 @@ En LinkedIn lo vengo contando como **Efecto Gondola**, y asi se llama la pagina:
 - [x] Fase 5: pronostico
 - [x] Fase 6: analisis de las revisiones
 - [x] Fase 7: web con mapa por regiones
-- [ ] Fase 8: metodologia y documentacion
+- [x] Fase 8: [metodologia](docs/metodologia.md) y [model card](docs/model_card.md)
+
+## Como funciona
+
+```mermaid
+flowchart LR
+    indec[API del INDEC] --> ingesta
+    bcra[API del BCRA] --> ingesta
+    informes[Informes de prensa del INDEC] -. una vez .-> revisiones
+    ingesta[Ingesta diaria<br/>GitHub Actions] --> raw[(data/raw<br/>parquet versionado)]
+    raw --> dbt[dbt + DuckDB<br/>80 controles]
+    revisiones[monitor.informes] --> dbt
+    dbt --> traslado[Traslado<br/>ADL con HC3]
+    dbt --> pronostico[Pronostico<br/>LightGBM + ARX<br/>bandas conformal]
+    pronostico --> registro[(registro en vivo)]
+    traslado --> web[monitor.web<br/>json + contrato pydantic]
+    pronostico --> web
+    registro --> web
+    dbt --> web
+    web --> vercel[efectogondola.vercel.app<br/>Next.js estatico]
+```
+
+Todos los dias la ingesta trae lo nuevo, dbt arma la base y, cuando ya salio el mayorista del mes, corren los modelos. Si cambio algo, se regeneran los datos de la pagina y Vercel la publica de nuevo. El detalle esta en la [metodologia](docs/metodologia.md) y los limites del pronostico en el [model card](docs/model_card.md).
 
 ## Correrlo
 
@@ -189,7 +211,7 @@ data/informes/ listado y primeros datos de los informes del indec
 data/web/      los json que lee la pagina
 web/           la pagina (Next.js estatico)
 tests/         tests de python
-docs/          metodologia (fase 8)
+docs/          metodologia y model card
 PRODUCT.md     para quien es la pagina y que tiene que lograr
 DESIGN.md      el sistema visual de la pagina (colores, letras, graficos)
 ```

@@ -179,7 +179,9 @@ export function Metodologia({ resumen }: { resumen: Resumen }) {
           ))}
         </dl>
         <p className="mt-6 max-w-[65ch]">
-          El detalle está en el repositorio, con el código y cuatro notebooks:{" "}
+          La <a href={`${REPO}/blob/main/docs/metodologia.md`}>metodología completa</a> y la{" "}
+          <a href={`${REPO}/blob/main/docs/model_card.md`}>ficha del modelo</a> (qué hace, cuánto le
+          erra y para qué no sirve) están en el repositorio, con el código y cuatro notebooks:{" "}
           <a href={NOTEBOOK("01_eda")}>exploración</a>, <a href={NOTEBOOK("02_traslado")}>traslado</a>,{" "}
           <a href={NOTEBOOK("03_pronostico")}>pronóstico</a> y{" "}
           <a href={NOTEBOOK("04_revisiones")}>revisiones</a>. Versión de los datos:{" "}
