@@ -25,8 +25,10 @@ diario as (
 dolar as (
     select
         mes as fecha,
-        avg(valor) as tc_promedio,
-        avg(valor) filter (where fecha < corte) as tc_inicio_mes,
+        -- redondeo: duckdb suma en paralelo y el orden cambia los ultimos decimales entre
+        -- corridas. sin esto el warehouse no sale identico dos veces
+        round(avg(valor), 6) as tc_promedio,
+        round(avg(valor) filter (where fecha < corte), 6) as tc_inicio_mes,
         min(corte) as corte,
         arg_max(valor, fecha) as tc_cierre,
         count(*) as dias_con_dato,

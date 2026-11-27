@@ -179,3 +179,50 @@ def test_features_del_bcra_solo_usan_lo_que_se_sabe():
 
 def test_sin_bcra_las_columnas_quedan_vacias(panel):
     assert panel[["tc_l1", "tc_inicio_mes", "rem_l1"]].isna().all().all()
+
+
+def test_features_no_cambian_si_borro_el_futuro():
+    """La prueba mas fuerte contra la fuga: si armo el panel solo con lo que se sabia al
+    pronosticar el mes T, las features de T tienen que dar exactamente igual."""
+    rng = np.random.default_rng(5)
+    may = pd.DataFrame({r: rng.normal(0.02, 0.01, 80) for r in ["carnes", "pan"]}, index=FECHAS)
+    general = pd.DataFrame({"GBA": rng.normal(0.02, 0.005, 80)}, index=FECHAS)
+    general["mayorista"] = may.mean(axis=1)
+    gondola = {"GBA": may.shift(1).fillna(0.02) * 0.8 + rng.normal(0, 0.002, (80, 2))}
+    bcra = pd.DataFrame(
+        {
+            "tc_promedio": np.exp(np.cumsum(rng.normal(0.02, 0.01, 81))),
+            "tc_inicio_mes": np.exp(np.cumsum(rng.normal(0.02, 0.01, 81))),
+            "rem_12m": rng.uniform(20, 100, 81),
+        },
+        index=pd.date_range(FECHAS[0], periods=81, freq="MS"),
+    )
+    completo = p.armar_panel(gondola, may, general, bcra)
+    for t in [FECHAS[20], FECHAS[50], FECHAS[79]]:
+        antes = FECHAS[: FECHAS.get_loc(t)]
+        b = bcra[bcra.index <= t].copy()
+        b.loc[t, ["tc_promedio", "rem_12m"]] = np.nan  # de T solo se conoce el inicio del mes
+        trunco = p.armar_panel(
+            {"GBA": gondola["GBA"].loc[antes]}, may.loc[antes], general.loc[antes], b
+        )
+
+        def fila(d, t=t):
+            return d[d.fecha == t].sort_values("par_id")[p.FEATURES[2:]].to_numpy(float)
+
+        np.testing.assert_allclose(fila(completo), fila(trunco), equal_nan=True)
+
+
+def test_conformal_cubre_80_con_volatilidad_estable():
+    rng = np.random.default_rng(0)
+    meses = pd.date_range("2020-01-01", periods=30, freq="MS")
+    pred = pd.DataFrame(
+        [
+            {"fecha": m, "par_id": "x", "y": rng.standard_t(4), "lgbm_q10": -0.5, "lgbm_q90": 0.5}
+            for m in meses
+            for _ in range(114)
+        ]
+    )
+    pred = p.calibrar(pred)
+    pred = pred[pred["ajuste"].notna()]
+    cobertura = pred["y"].between(pred["lgbm_inf"], pred["lgbm_sup"]).mean()
+    assert 0.78 <= cobertura <= 0.82

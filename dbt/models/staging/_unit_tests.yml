@@ -28,3 +28,22 @@ unit_tests:
            fecha: 2020-03-01, sin_dato_indec: false}
         - {clasificador: COICOP Argentina 2019, nivel: Grupo, descripcion: Restaurantes,
            fecha: 2020-04-01, sin_dato_indec: true}
+
+  - name: stg_ipc_vigente_es_la_ultima_descarga_del_mes
+    description: Si una descarga nueva ya no trae una fila (el indec la borro), no queda viva.
+    model: stg_ipc
+    given:
+      - input: ref('stg_ipc__versiones')
+        rows:
+          - {codigo: "01", region: GBA, periodo: 202610, valor: 100.0,
+             descargado_utc: "2026-11-26 04:00:00"}
+          - {codigo: "02", region: GBA, periodo: 202610, valor: 50.0,
+             descargado_utc: "2026-11-26 04:00:00"}
+          - {codigo: "01", region: GBA, periodo: 202609, valor: 90.0,
+             descargado_utc: "2026-11-26 04:00:00"}
+          - {codigo: "01", region: GBA, periodo: 202610, valor: 101.0,
+             descargado_utc: "2026-12-12 19:00:00"}
+    expect:
+      rows:
+        - {codigo: "01", periodo: 202610, valor: 101.0}
+        - {codigo: "01", periodo: 202609, valor: 90.0}

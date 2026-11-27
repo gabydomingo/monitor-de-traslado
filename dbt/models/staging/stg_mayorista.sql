@@ -1,8 +1,15 @@
--- ultima version de cada dato
+-- igual que en el ipc: para cada mes, lo que trajo la ultima descarga
 
-select *
-from {{ ref('stg_mayorista__versiones') }}
-qualify row_number() over (
-    partition by indicador, clasificador, nivel, codigo, region, tipo_de_indicador, periodo
-    order by descargado_utc desc
-) = 1
+with versiones as (
+    select * from {{ ref('stg_mayorista__versiones') }}
+),
+
+ultima as (
+    select periodo, max(descargado_utc) as descargado_utc
+    from versiones
+    group by periodo
+)
+
+select v.*
+from versiones as v
+inner join ultima as u using (periodo, descargado_utc)

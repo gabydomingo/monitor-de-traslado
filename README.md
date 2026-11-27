@@ -71,14 +71,17 @@ Las funciones estan en `src/monitor/analisis.py`, el notebook solo las usa.
 
 ## Modelo de traslado
 
-En [`notebooks/02_traslado.ipynb`](notebooks/02_traslado.ipynb), con el codigo en `src/monitor/traslado.py`. Para cada rubro y region, un modelo de rezagos distribuidos sobre precios relativos (a cada serie le resto su inflacion general), con los rezagos elegidos por BIC, errores Newey-West y correccion por comparaciones multiples. Para carnes, lacteos y pan hay ademas un VAR con la cadena completa: productor, industria y gondola.
+En [`notebooks/02_traslado.ipynb`](notebooks/02_traslado.ipynb), con el codigo en `src/monitor/traslado.py`. Para cada rubro y region, un modelo de rezagos distribuidos sobre precios relativos (a cada serie le resto su inflacion general): el mayorista de este mes y de los 3 anteriores, y 2 meses de la propia gondola. Errores HC3 y correccion por comparaciones multiples. Para carnes, lacteos y pan hay ademas un VAR con la cadena completa: productor, industria y gondola.
+
+Los rezagos son fijos a proposito. Con series simuladas de traslado conocido, elegirlos por BIC y estimar con los mismos datos daba intervalos del 95% que cubrian 84% y, con traslado cero, 16% de falsos positivos. Con rezagos fijos y HC3 cubren 95% y se equivocan 5% (hay un test que lo controla).
 
 Lo que sale (GBA, datos a oct-2026):
 
-- Una suba mayorista llega a la gondola en el mismo mes o en el siguiente. Despues de 2 meses casi no queda nada.
-- Carnes, combustibles, autos y prendas trasladan entre 70 y 80%. Lacteos, aceites y calzado casi nada.
-- Con inflacion alta se traslada mas en 11 de 17 rubros.
-- Entre regiones cambia poco, salvo combustibles (bastante menos en Patagonia) y autos.
+- La mayor parte de una suba mayorista llega en el mismo mes (60% en la mediana) y el resto en los 3 meses siguientes.
+- Carnes y prendas trasladan mas de 0.8, combustibles y equipamiento del hogar 0.6. Lacteos, aceites, pan y bebidas no se distinguen de cero.
+- De 132 estimaciones, 75 son significativas despues de corregir por comparaciones multiples.
+- Con inflacion alta se traslada mas en 10 de 17 rubros.
+- Entre regiones cambia poco, salvo combustibles (bastante menos en el Noreste y Patagonia) y autos.
 - Con el IPIB en vez del IPIM da lo mismo, salvo tabaco y combustibles, que tienen impuestos pesados.
 
 Es un modelo de asociacion, no causal. Los resultados quedan en `data/resultados/`:

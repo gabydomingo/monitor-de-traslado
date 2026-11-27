@@ -44,7 +44,6 @@ def test_armar_datos():
 def test_recupera_el_traslado():
     y, x = series(0.5, 0.3)
     r = estimar(y, x)
-    assert r["rezagos_x"] == 1
     assert r["acumulado"] == pytest.approx(0.8, abs=0.05)
     assert r["ic_inf"] < 0.8 < r["ic_sup"]
     assert r["p_valor"] < 0.001
@@ -53,7 +52,6 @@ def test_recupera_el_traslado():
 def test_largo_plazo_con_inercia():
     y, x = series(0.4, 0.0, phi=0.5, seed=1)
     r = estimar(y, x)
-    assert r["rezagos_y"] >= 1
     assert r["impacto"] == pytest.approx(0.4, abs=0.05)
     # el largo plazo es un cociente y amplifica el error de la inercia: pido que el
     # intervalo contenga el valor real, no que la estimacion puntual le pegue
@@ -110,3 +108,26 @@ def test_cadena():
     assert ind.loc[0, "respuesta"] == pytest.approx(0.0, abs=0.1)
     assert ind.loc[2, "respuesta"] == pytest.approx(0.5, abs=0.1)
     assert ind.loc[2, "ic_inf"] < 0.5 < ind.loc[2, "ic_sup"]
+
+
+def test_intervalo_cubre_lo_que_dice_en_simulacion():
+    """Mini monte carlo con volatilidad que cambia por etapa, como en argentina: el intervalo
+    del 95% tiene que contener el traslado real y, con traslado cero, no tiene que dar
+    significativo de mas. Con bic + newey-west cubria 84% y daba 16% de falsos positivos."""
+    rng = np.random.default_rng(10)
+    fechas = pd.date_range("2016-01-01", periods=120, freq="MS")
+    sd = np.ones(170)
+    sd[110:146] = 3.0
+
+    def simular(b0, b1, f1):
+        x, y = np.zeros(170), np.zeros(170)
+        for i in range(1, 170):
+            x[i] = 0.3 * x[i - 1] + 0.02 * sd[i] * rng.standard_t(5)
+            y[i] = b0 * x[i] + b1 * x[i - 1] + f1 * y[i - 1] + 0.01 * sd[i] * rng.standard_t(5)
+        return pd.Series(y[50:], fechas), pd.Series(x[50:], fechas)
+
+    cubre = [estimar(*simular(0.5, 0.2, 0.2)) for _ in range(150)]
+    cubre = np.mean([r["ic_inf"] <= 0.875 <= r["ic_sup"] for r in cubre])
+    falsos = np.mean([estimar(*simular(0, 0, 0.2))["p_valor"] < 0.05 for _ in range(150)])
+    assert cubre >= 0.9
+    assert falsos <= 0.09

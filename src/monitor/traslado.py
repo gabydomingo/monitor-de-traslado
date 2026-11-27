@@ -4,7 +4,6 @@ Todo en variaciones log relativas: a cada serie le resto su inflacion general, p
 el modelo mide la inflacion y no el traslado (ver notebooks/01_eda.ipynb).
 """
 
-import itertools
 import logging
 from pathlib import Path
 
@@ -21,6 +20,10 @@ from monitor.config import RAIZ
 
 log = logging.getLogger(__name__)
 
+# rezagos fijos: 3 del mayorista y 2 de la gondola. antes se elegian por bic, pero con un
+# monte carlo (series con traslado conocido) el intervalo del 95% cubria solo 84% y con
+# traslado cero daba significativo 16% de las veces: elegir y estimar con los mismos datos
+# subestima la incertidumbre. con rezagos fijos y errores hc3 cubre 95% y se equivoca 5%
 MAX_K = 3  # rezagos del mayorista
 MAX_P = 2  # rezagos de la gondola
 ESTACIONALES = {"verduras", "frutas", "prendas", "energia"}
@@ -54,18 +57,14 @@ def armar_datos(y: pd.Series, x: pd.Series, estacional: bool = False) -> pd.Data
     return d.dropna()
 
 
-def ajustar(datos: pd.DataFrame, k: int, p: int):
+def ajustar(datos: pd.DataFrame, k: int = MAX_K, p: int = MAX_P):
     columnas = [f"x{i}" for i in range(k + 1)] + [f"y{j}" for j in range(1, p + 1)]
     columnas += [c for c in datos.columns if c.startswith("mes_")]
-    # newey-west: los residuos de series mensuales suelen estar autocorrelacionados
-    hac = int(4 * (len(datos) / 100) ** (2 / 9))
     modelo = sm.OLS(datos["y"], sm.add_constant(datos[columnas]))
-    return modelo.fit(cov_type="HAC", cov_kwds={"maxlags": hac})
-
-
-def elegir_rezagos(datos: pd.DataFrame) -> tuple[int, int]:
-    combos = itertools.product(range(MAX_K + 1), range(MAX_P + 1))
-    return min(combos, key=lambda kp: ajustar(datos, *kp).bic)
+    # hc3: robusto a que la volatilidad cambie entre etapas. probe newey-west (con y sin
+    # correccion) y con 120 meses subestima el error; la autocorrelacion ya la absorben
+    # los dos rezagos de la gondola
+    return modelo.fit(cov_type="HC3")
 
 
 def largo_plazo(res, k: int, p: int) -> tuple[float, float]:
@@ -86,16 +85,19 @@ def largo_plazo(res, k: int, p: int) -> tuple[float, float]:
 def resumir(res, k: int, p: int) -> dict:
     lp, ee = largo_plazo(res, k, p)
     z = lp / ee if ee and ee > 0 else np.nan
+    q = stats.t.ppf(0.975, res.df_resid)  # con t y no normal: son ~120 meses
     return {
         "rezagos_x": k,
         "rezagos_y": p,
         "impacto": res.params["x0"],
+        # cuanto se suma en cada mes despues: sirve para ver en cuanto tiempo llega
+        **{f"mes_{i}": res.params[f"x{i}"] for i in range(1, k + 1)},
         "acumulado": res.params[[f"x{i}" for i in range(k + 1)]].sum(),
         "largo_plazo": lp,
         "ee_largo_plazo": ee,
-        "ic_inf": lp - 1.96 * ee,
-        "ic_sup": lp + 1.96 * ee,
-        "p_valor": 2 * (1 - stats.norm.cdf(abs(z))) if not np.isnan(z) else np.nan,
+        "ic_inf": lp - q * ee,
+        "ic_sup": lp + q * ee,
+        "p_valor": 2 * stats.t.sf(abs(z), res.df_resid) if not np.isnan(z) else np.nan,
         "r2": res.rsquared,
         "n": int(res.nobs),
         # si queda autocorrelacion en los residuos faltan rezagos
@@ -105,14 +107,11 @@ def resumir(res, k: int, p: int) -> dict:
 
 def estimar(y: pd.Series, x: pd.Series, estacional: bool = False) -> dict:
     datos = armar_datos(y, x, estacional)
-    k, p = elegir_rezagos(datos)
-    return resumir(ajustar(datos, k, p), k, p)
+    return resumir(ajustar(datos), MAX_K, MAX_P)
 
 
 def estimar_por_regimen(y: pd.Series, x: pd.Series, estacional: bool = False) -> list[dict]:
-    # los rezagos se eligen con toda la muestra y se mantienen, asi los regimenes se comparan
     datos = armar_datos(y, x, estacional)
-    k, p = elegir_rezagos(datos)
     etiquetas = regimen(datos.index)
     filas = []
     for nombre in REGIMENES:
@@ -122,7 +121,7 @@ def estimar_por_regimen(y: pd.Series, x: pd.Series, estacional: bool = False) ->
             sub = sub.drop(columns=[c for c in sub.columns if c.startswith("mes_")])
         if len(sub) < 18:
             continue
-        filas.append({"regimen": nombre} | resumir(ajustar(sub, k, p), k, p))
+        filas.append({"regimen": nombre} | resumir(ajustar(sub), MAX_K, MAX_P))
     return filas
 
 
