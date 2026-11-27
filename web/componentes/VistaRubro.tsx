@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import type { Resumen, Series } from "@/lib/tipos";
+import type { Bajando } from "@/lib/cliente";
 import { COLOR_REGION, type RegionId } from "@/lib/colores";
 import { serieDe, type Indice } from "@/lib/consultas";
 import { parte } from "@/lib/formato";
@@ -35,7 +36,7 @@ export function VistaRubro({
   onRubro,
 }: {
   resumen: Resumen;
-  series: Series | undefined;
+  series: Bajando<Series>;
   idx: Indice;
   region: RegionId;
   rubro: string;
@@ -183,6 +184,7 @@ export function VistaRubro({
             <Grafico
               dibujar={dibujarSerie}
               listo={puntos.length > 0}
+              fallo={series === null}
               alto={280}
               descripcion={`Variación mensual del precio mayorista y de góndola de ${info.nombre} en ${region}`}
               className="mt-3"

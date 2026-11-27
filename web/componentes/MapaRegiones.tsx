@@ -1,6 +1,7 @@
 "use client";
 
 import type { Resumen, Series } from "@/lib/tipos";
+import type { Bajando } from "@/lib/cliente";
 import { ANCHO, ALTO, RECUADRO, type Mapa, type Trazo } from "@/lib/medidas";
 import { COLOR_REGION, REGIONES, type RegionId } from "@/lib/colores";
 import { NG, valoresDelMes, type Indice } from "@/lib/consultas";
@@ -22,7 +23,7 @@ export function MapaRegiones({
   idx: Indice;
   region: RegionId;
   onRegion: (r: RegionId) => void;
-  series: Series | undefined;
+  series: Bajando<Series>;
   mes: string;
 }) {
   // la lista de regiones muestra el mes elegido en el panel

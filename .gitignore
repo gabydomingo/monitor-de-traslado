@@ -1,4 +1,7 @@
-.env
+# cualquier .env (.env.local, web/.env...), menos el ejemplo
+.env*
+!.env.example
+.vercel/
 
 .venv/
 __pycache__/

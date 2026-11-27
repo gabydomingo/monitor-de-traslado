@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import type { Registrado, Resumen } from "@/lib/tipos";
-import { useArchivo, useCerca } from "@/lib/cliente";
+import { useArchivo, useCerca, type Bajando } from "@/lib/cliente";
 import type { RegionId } from "@/lib/colores";
 import { NG, aciertoDe, type Indice } from "@/lib/consultas";
 import { fechaLarga, mesLargo, nombreMes, num, pct } from "@/lib/formato";
@@ -169,6 +169,7 @@ export function SeccionPronostico({
             <Grafico
               dibujar={dibujar}
               listo={puntos.length > 0}
+              fallo={backtest === null}
               alto={300}
               descripcion={`Pronóstico y dato real de ${rubro.nombre} en ${region}, mes a mes. El dato cayó en la franja de 8 de cada 10 ${adentro} de ${puntos.length} veces`}
               className="mt-3"
@@ -221,7 +222,7 @@ export function SeccionPronostico({
                   </th>
                 </tr>
                 <tr className="border-b border-filete text-right text-[0.8125rem] text-tinta-2">
-                  <th />
+                  <td />
                   <th scope="col" className="py-1 pr-2 font-normal">
                     Repetir
                   </th>
@@ -324,7 +325,7 @@ export function SeccionPronostico({
 
           <Registro
             resumen={resumen}
-            registro={historial?.registro}
+            registro={historial === null ? null : historial?.registro}
             idx={idx}
             region={region}
           />
@@ -352,7 +353,7 @@ function Registro({
   region,
 }: {
   resumen: Resumen;
-  registro: Registrado[] | undefined;
+  registro: Bajando<Registrado[]>;
   idx: Indice;
   region: RegionId;
 }) {
@@ -375,6 +376,11 @@ function Registro({
           : "este mes"}{" "}
         y suma un mes cada vez.
       </p>
+      {registro === null && (
+        <p className="mt-4 max-w-[60ch] text-tinta-2">
+          No se pudo bajar el registro. Revisá la conexión y recargá la página.
+        </p>
+      )}
       {meses.map((mes) => {
         const delMes = filas.filter((f) => f.mes === mes);
         const ng = delMes.find((f) => f.rubro === NG);

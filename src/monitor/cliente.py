@@ -51,7 +51,8 @@ class ClienteHttp:
             ultimo = intento == self.reintentos
             try:
                 r = self.session.get(url, params=params, headers=headers, timeout=self.timeout)
-            except (requests.ConnectionError, requests.Timeout) as e:
+            # conexion caida, timeout o respuesta cortada a mitad: todo se reintenta
+            except requests.RequestException as e:
                 if ultimo:
                     raise ErrorApi(f"{endpoint}: sin respuesta despues de reintentar") from e
                 espera = self._espera(intento)
@@ -71,6 +72,14 @@ class ClienteHttp:
             return r
         raise ErrorApi(f"{endpoint}: se agotaron los reintentos")
 
+    def _json(self, endpoint: str, params: dict, headers: dict | None = None):
+        r = self._get(endpoint, params, headers)
+        try:
+            return r.json()
+        except ValueError as e:
+            # pasa con paginas de mantenimiento que vuelven con status 200
+            raise ErrorApi(f"{endpoint}: la respuesta no es json: {r.text[:200]!r}") from e
+
 
 class ClienteIndec(ClienteHttp):
     def __init__(self, base_url: str, token: str, **kwargs):
@@ -87,7 +96,7 @@ class ClienteIndec(ClienteHttp):
 
     def ultimo_periodo(self, endpoint: str) -> int:
         params = {"select": "periodo", "order": "periodo.desc", "limit": 1}
-        filas = self._get(endpoint, params).json()
+        filas = self._json(endpoint, params)
         if not filas:
             raise ErrorApi(f"{endpoint}: no devolvio ninguna fila")
         return int(filas[0]["periodo"])
@@ -102,7 +111,7 @@ class ClienteIndec(ClienteHttp):
         filas: list[dict] = []
         offset = 0
         for _ in range(max_paginas):
-            pagina = self._get(endpoint, {**base, "limit": self.limite, "offset": offset}).json()
+            pagina = self._json(endpoint, {**base, "limit": self.limite, "offset": offset})
             filas.extend(pagina)
             if len(pagina) < self.limite:
                 break
@@ -122,7 +131,7 @@ class ClienteBcra(ClienteHttp):
         total = None
         for _ in range(MAX_PAGINAS):
             params = {"desde": desde, "hasta": hasta, "limit": self.limite, "offset": len(filas)}
-            datos = self._get(endpoint, params).json()
+            datos = self._json(endpoint, params)
             if total is None:
                 total = datos.get("metadata", {}).get("resultset", {}).get("count")
             resultados = datos.get("results") or []

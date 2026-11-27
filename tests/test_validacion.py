@@ -65,3 +65,16 @@ def test_tildes_no_cuentan_como_valor_nuevo(df_ipc, conf_ipc, caplog):
     with caplog.at_level(logging.WARNING):
         validar(df_ipc, conf_ipc, "ipc")
     assert "valores nuevos" not in caplog.text
+
+
+def test_valor_vacio_sin_la_marca_del_indec_frena(df_ipc, conf_ipc):
+    # el indec marca con /// lo que no pudo relevar. un vacio sin marca es una respuesta rota
+    df_ipc.loc[0, "valor"] = None
+    with pytest.raises(ErrorValidacion, match="vacios"):
+        validar(df_ipc, conf_ipc)
+
+
+def test_valor_vacio_con_la_marca_pasa(df_ipc, conf_ipc):
+    df_ipc["valor_null"] = df_ipc["valor_null"].astype(object)
+    df_ipc.loc[0, ["valor", "valor_null"]] = [None, "///"]
+    assert len(validar(df_ipc, conf_ipc)) == len(df_ipc)

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { Resumen, Series } from "@/lib/tipos";
+import type { Bajando } from "@/lib/cliente";
 import { COLOR_REGION, type RegionId } from "@/lib/colores";
 import {
   NG,
@@ -32,7 +33,7 @@ export function PanelRegion({
   onMes,
 }: {
   resumen: Resumen;
-  series: Series | undefined;
+  series: Bajando<Series>;
   idx: Indice;
   region: RegionId;
   mes: string;
@@ -44,7 +45,11 @@ export function PanelRegion({
   const pron = idx.pronostico(region, NG)!;
 
   // el bloque de barras puede mostrar cualquier mes; lo demas siempre es lo ultimo
-  const delMes = valoresDelMes(resumen, series, region, mes);
+  // memo: si no, cada render arma un Map nuevo y el grafico se vuelve a dibujar sin motivo
+  const delMes = useMemo(
+    () => valoresDelMes(resumen, series, region, mes),
+    [resumen, series, region, mes],
+  );
   const general = delMes?.get(NG);
   const barras: Barra[] = rubros.flatMap((r) => {
     const v = delMes?.get(r.id);
@@ -149,7 +154,14 @@ export function PanelRegion({
         />
         <p className="mt-3 max-w-[60ch]" aria-live="polite">
           {general === undefined ? (
-            <>Cargando {mesLargo(mes)}…</>
+            series === null ? (
+              <>
+                No se pudieron bajar los datos de {mesLargo(mes)}. Revisá la
+                conexión y recargá la página.
+              </>
+            ) : (
+              <>Cargando {mesLargo(mes)}…</>
+            )
           ) : (
             <>
               Los precios subieron {pct(general)} en promedio
@@ -167,6 +179,7 @@ export function PanelRegion({
         <Grafico
           dibujar={dibujarBarras}
           listo={barras.length > 0 && general !== undefined}
+          fallo={series === null && !esUltimo}
           alto={rubros.length * 22 + 36}
           descripcion={`Inflación de ${mesLargo(mes)} en ${region} por rubro, de mayor a menor`}
           className="mt-3"
@@ -209,6 +222,7 @@ export function PanelRegion({
         <Grafico
           dibujar={dibujarAbanico}
           listo={ultimos.length > 0}
+          fallo={series === null}
           alto={220}
           descripcion={`Inflación mensual de ${region} en los últimos 12 meses y pronóstico para ${mesLargo(meta.mesPronosticado)}: ${pct(pron.valor)}`}
           className="mt-3"

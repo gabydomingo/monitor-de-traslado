@@ -57,6 +57,13 @@ def validar(df: pd.DataFrame, conf: dict, nombre: str = "") -> pd.DataFrame:
     except (SchemaError, SchemaErrors) as e:
         raise ErrorValidacion(f"{nombre}: no pasa el esquema\n{e}") from e
 
+    # el indec marca con "///" lo que no pudo relevar. un vacio sin marca es una respuesta
+    # rota: si se guarda, pisa el dato bueno de la version anterior
+    marca = df["valor_null"].notna() if "valor_null" in df else pd.Series(False, index=df.index)
+    rotos = int((df["valor"].isna() & ~marca).sum())
+    if rotos:
+        raise ErrorValidacion(f"{nombre}: {rotos} valores vacios sin la marca del indec")
+
     # un valor nuevo no frena, solo aviso. comparo sin tildes porque el indec no es parejo
     for col, valores in conf.get("valores_conocidos", {}).items():
         conocidos = {sin_tildes(v) for v in valores}

@@ -20,20 +20,22 @@ export function Monitor({ resumen, mapa }: { resumen: Resumen; mapa: Mapa }) {
   // las series se piden apenas carga la pagina: el panel y el rubro las usan enseguida
   const series = useArchivo("series");
 
-  // el mes del panel. arranca en el ultimo dato; con ?mes=2023-12 en el link abre en ese mes
+  // el mes del panel. arranca en el ultimo dato; con ?mes=2023-12 en el link abre en ese mes.
+  // un mes que no existe (2025-13, 2010-01) se ignora y queda el ultimo
   const ultimo = resumen.meta.ultimoMes;
+  const primero = resumen.automatizacion.primerMes;
   const [mes, setMesEstado] = useState(ultimo);
   useEffect(() => {
     const pedido = new URLSearchParams(window.location.search).get("mes");
     if (
       pedido &&
-      /^\d{4}-\d{2}$/.test(pedido) &&
-      pedido >= "2017-01" &&
+      /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido) &&
+      pedido >= primero &&
       pedido < ultimo
     ) {
       setMesEstado(pedido);
     }
-  }, [ultimo]);
+  }, [ultimo, primero]);
   const setMes = useCallback(
     (m: string) => {
       setMesEstado(m);

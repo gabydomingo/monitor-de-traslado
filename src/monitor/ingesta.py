@@ -130,6 +130,10 @@ def main(argv: list[str] | None = None) -> int:
             # si falla uno sigo con el otro
             log.error("%s: %s", nombre, e)
             errores.append(f"{nombre}: {e}")
+        except Exception as e:
+            # algo que no esperaba (la api cambio la forma de la respuesta): igual sigo
+            log.exception("%s: error inesperado", nombre)
+            errores.append(f"{nombre}: error inesperado {type(e).__name__}: {e}")
 
     escribir_resumen(resultados, errores)
     return 1 if errores else 0

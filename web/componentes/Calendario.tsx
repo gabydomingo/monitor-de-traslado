@@ -8,7 +8,8 @@ import { Grafico } from "./Grafico";
 // que dia del mes publico el indec cada dato: de ahi sale cuando corre el pronostico
 export function Calendario() {
   const [ref, cerca] = useCerca<HTMLElement>();
-  const publicaciones = useArchivo("historial", cerca)?.publicaciones ?? [];
+  const historial = useArchivo("historial", cerca);
+  const publicaciones = historial?.publicaciones ?? [];
   const dibujar = useCallback(
     (w: number) =>
       calendario(
@@ -30,6 +31,7 @@ export function Calendario() {
       <Grafico
         dibujar={dibujar}
         listo={publicaciones.length > 0}
+        fallo={historial === null}
         alto={200}
         descripcion="Día del mes en que el INDEC publicó cada IPC y cada índice mayorista desde 2017"
         className="mt-2"

@@ -102,3 +102,12 @@ def test_registro_mantiene_un_solo_formato_de_fecha(tmp_path, monkeypatch):
     assert set(df["fecha"]) == {"2026-11-01", "2026-12-01"}
     assert len(df) == 3
     assert mensual.ya_pronosticado(pd.Timestamp("2026-12-01"), registro)
+
+
+def test_cambio_de_anio():
+    # con el ipc de diciembre el objetivo es enero del anio siguiente
+    objetivo, faltan = mensual.que_falta(e("2026-12-01", "2026-12-01", "2027-01-13"))
+    assert objetivo == pd.Timestamp("2027-01-01")
+    assert faltan == []
+    _, faltan = mensual.que_falta(e("2026-12-01", "2026-12-01", "2027-01-12"))
+    assert faltan == ["el dolar hasta el 13 de 01-2027"]

@@ -46,7 +46,7 @@ export function ComoSeActualiza({ resumen }: { resumen: Resumen }) {
               ],
               [
                 "Enseguida",
-                "Arma la base de datos y corre 80 controles: que no falten meses, que no haya datos repetidos, que las series cierren.",
+                "Arma la base de datos y corre más de 80 controles: que no falten meses, que no haya datos repetidos ni vacíos, que las series cierren.",
               ],
               [
                 "Cuando sale el mayorista del mes",
@@ -156,11 +156,11 @@ export function Metodologia({ resumen }: { resumen: Resumen }) {
       "Regresión con rezagos del mayorista y de la góndola, sobre precios relativos a la inflación general. Errores robustos (HC3) y corrección por comparaciones múltiples (Benjamini-Hochberg): por eso hay rubros en gris.",
     ],
     [
-      "Pronostico",
+      "Pronóstico",
       "Promedio de LightGBM y una regresión por serie. Bandas por conformal, calibradas por rubro con los 12 meses anteriores y agrandadas cuando se mueve el dólar. Probado mes a mes sobre los últimos 36, entrenando solo con lo anterior a cada mes.",
     ],
     [
-      "Limites",
+      "Límites",
       "Es asociación, no causalidad. La correspondencia entre mayorista y góndola es aproximada en algunos rubros. El mayorista es nacional; la góndola, regional.",
     ],
   ];

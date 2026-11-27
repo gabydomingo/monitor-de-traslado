@@ -134,3 +134,23 @@ def test_proximo_pronostico_segun_en_que_punto_del_mes_estamos():
     assert web.proximo_pronostico(pub, nov, nov).mes == "2026-12"
     # el pronostico de diciembre ya se hizo: el que sigue es enero
     assert web.proximo_pronostico(pub, nov, dic).mes == "2027-01"
+
+
+def test_proximo_ipc_en_el_cambio_de_anio():
+    pub = pd.DataFrame(
+        {
+            "dataset": ["ipc"],
+            "fecha": pd.to_datetime(["2026-10-01"]),
+            "publicado": pd.to_datetime(["2026-11-12"]),
+        }
+    )
+    p = web.proximo_ipc(pub, pd.Timestamp("2026-11-01"))
+    assert (p.mes, p.publicacion) == ("2026-12", "2027-01")
+    p = web.proximo_ipc(pub, pd.Timestamp("2026-12-01"))
+    assert (p.mes, p.publicacion) == ("2027-01", "2027-02")
+
+
+def test_el_contrato_no_deja_pasar_nan():
+    # pydantic escribe nan como null y la web espera un numero
+    with pytest.raises(ValidationError):
+        web.Dato(region="GBA", rubro="carnes", valor=float("nan"))

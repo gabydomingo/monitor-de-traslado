@@ -124,3 +124,30 @@ def test_espera_tiene_techo():
     c, esperas = cliente(sesion)
     c.bajar("x", {}, ["periodo"])
     assert esperas == [120]
+
+
+def test_respuesta_que_no_es_json_es_error_de_api():
+    # una pagina de mantenimiento con status 200 no tiene que romper toda la ingesta
+    class NoJson(Respuesta):
+        def json(self):
+            raise requests.JSONDecodeError("Expecting value", "<html>", 0)
+
+    sesion = SesionFalsa(programadas=[NoJson()])
+    c, _ = cliente(sesion)
+    with pytest.raises(ErrorApi, match="json"):
+        c.bajar("x", {}, ["periodo"])
+
+
+def test_reintenta_si_la_respuesta_llega_cortada():
+    class SesionQueCorta(SesionFalsa):
+        cortes = 1
+
+        def get(self, *a, **kw):
+            if self.cortes:
+                self.cortes -= 1
+                raise requests.exceptions.ChunkedEncodingError("cortada")
+            return super().get(*a, **kw)
+
+    c, esperas = cliente(SesionQueCorta([fila_ipc()]))
+    assert len(c.bajar("x", {}, ["periodo"])) == 1
+    assert len(esperas) == 1

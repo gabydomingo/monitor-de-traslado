@@ -25,7 +25,7 @@ Cuando sube el precio mayorista de algo, cuánto de esa suba llega al precio que
 ## Pipeline
 
 1. **Ingesta** (GitHub Actions, todos los días a las 20:23). Baja los últimos 6 meses del INDEC y del BCRA; una vez por mes, toda la historia. Antes de guardar valida columnas, tipos y repetidos con pandera, y cuenta que lleguen todas las filas. Cada versión distinta queda guardada en parquet con un hash, así que nada se pisa.
-2. **Warehouse** (dbt sobre DuckDB). Normaliza nombres y categorías, usa la última versión de cada dato y arma las tablas finales. 80 controles: claves únicas, meses sin huecos, que la variación calculada dé igual que la del INDEC y que la ingesta esté al día.
+2. **Warehouse** (dbt sobre DuckDB). Normaliza nombres y categorías, usa la última versión de cada dato y arma las tablas finales. Más de 80 controles: claves únicas, meses sin huecos, ningún índice vacío sin explicación, que la variación calculada dé igual que la del INDEC y que la ingesta esté al día.
 3. **Modelos.** Cuando ya salió el mayorista del mes, corren el traslado y el pronóstico, y el pronóstico se guarda en un registro que no se reescribe.
 4. **Web.** `monitor.web` arma los json que lee la página, con un contrato en pydantic que también genera los tipos de TypeScript. Si cambió algo, Vercel publica de nuevo.
 

@@ -69,3 +69,18 @@ def test_main_rechaza_dataset_desconocido(monkeypatch):
     monkeypatch.setenv("INDEC_API_TOKEN", "tok")
     with pytest.raises(SystemExit):
         main(["--dataset", "pobreza"])
+
+
+def test_main_sigue_si_un_dataset_rompe_de_forma_inesperada(monkeypatch, tmp_path):
+    # un KeyError en uno (la api cambio la forma de la respuesta) no frena a los demas
+    llamados = []
+
+    def ingerir_falso(cliente, nombre, *a, **k):
+        llamados.append(nombre)
+        raise KeyError("periodo")
+
+    monkeypatch.setenv("INDEC_API_TOKEN", "tok")
+    monkeypatch.setattr("monitor.ingesta.ingerir", ingerir_falso)
+    monkeypatch.setattr("monitor.ingesta.ingerir_bcra", ingerir_falso)
+    assert main(["--modo", "reciente", "--salida", str(tmp_path)]) == 1
+    assert llamados == ["ipc", "mayorista", "bcra"]

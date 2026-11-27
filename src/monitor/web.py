@@ -34,8 +34,11 @@ Banda = tuple[float, float]
 
 
 class Modelo(BaseModel):
-    # snake_case en python, camelCase en el json
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, frozen=True)
+    # snake_case en python, camelCase en el json. sin nan: pydantic los escribe como null y la
+    # web espera un numero. mejor que falle aca que mostrar "NaN%" en la pagina
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, frozen=True, allow_inf_nan=False
+    )
 
 
 # lo general

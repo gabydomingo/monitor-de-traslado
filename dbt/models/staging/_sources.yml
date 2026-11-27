@@ -5,18 +5,30 @@ sources:
     description: Los parquet que guarda la ingesta en data/raw, todas las versiones juntas
     meta:
       external_location: "read_parquet('../data/raw/{name}/*/*.parquet', union_by_name = true)"
+    # _descargado_utc solo cambia cuando hay una version nueva. el indec publica una vez por
+    # mes, asi que 45 dias sin nada nuevo quiere decir que la ingesta se trabo. el dolar
+    # cambia todos los dias habiles. lo corre modelo.yml al final, sin frenar la web
     config:
       loaded_at_field: "cast(_descargado_utc as timestamp)"
-      freshness:
-        warn_after: {count: 3, period: day}
-        error_after: {count: 10, period: day}
     tables:
       - name: ipc
         description: ipc_nacional, desde abr-2016
+        config:
+          freshness:
+            warn_after: {count: 35, period: day}
+            error_after: {count: 45, period: day}
       - name: mayorista
         description: sipm_precios_mayoristas, desde dic-2015
+        config:
+          freshness:
+            warn_after: {count: 35, period: day}
+            error_after: {count: 45, period: day}
       - name: bcra
         description: Dolar mayorista (com. A 3500) y mediana del REM a 12 meses, desde 2015
+        config:
+          freshness:
+            warn_after: {count: 5, period: day}
+            error_after: {count: 10, period: day}
 
   - name: informes
     description: >

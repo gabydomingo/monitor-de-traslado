@@ -1,3 +1,4 @@
+import type { Bajando } from "./cliente";
 import type { Backtest, Resumen, Series } from "./tipos";
 
 export const NG = "nivel_general";
@@ -37,12 +38,12 @@ export function indexar(resumen: Resumen) {
 export type Indice = ReturnType<typeof indexar>;
 
 // series y backtest llegan despues (lib/cliente.ts): pueden no estar todavia
-export function serieDe(series: Series | undefined, rubro: string) {
+export function serieDe(series: Bajando<Series>, rubro: string) {
   return series?.rubros.find((s) => s.rubro === rubro);
 }
 
 export function aciertoDe(
-  backtest: Backtest | undefined,
+  backtest: Bajando<Backtest>,
   region: string,
   rubro: string,
 ) {
@@ -55,7 +56,7 @@ export function aciertoDe(
  */
 export function valoresDelMes(
   resumen: Resumen,
-  series: Series | undefined,
+  series: Bajando<Series>,
   region: string,
   mes: string,
 ): Map<string, number> | undefined {
