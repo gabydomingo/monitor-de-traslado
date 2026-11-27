@@ -1,3 +1,4 @@
+import os
 from datetime import UTC, datetime
 
 import pandas as pd
@@ -12,6 +13,13 @@ T2 = datetime(2026, 11, 27, 12, 0, tzinfo=UTC)
 def test_hash_no_depende_del_orden(df_ipc):
     mezclado = df_ipc.sample(frac=1, random_state=0)[df_ipc.columns[::-1]]
     assert hash_contenido(df_ipc, CLAVE) == hash_contenido(mezclado, CLAVE)
+
+
+def test_hash_igual_en_windows_y_en_linux(df_ipc, monkeypatch):
+    # paso de verdad: la misma descarga daba otro hash en windows y en actions
+    linux = hash_contenido(df_ipc, CLAVE)
+    monkeypatch.setattr(os, "linesep", "\r\n")
+    assert hash_contenido(df_ipc, CLAVE) == linux
 
 
 def test_hash_cambia_si_cambia_un_valor(df_ipc):

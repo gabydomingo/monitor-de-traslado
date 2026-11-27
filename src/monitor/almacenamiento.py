@@ -23,9 +23,11 @@ class Resultado:
 
 
 def hash_contenido(df: pd.DataFrame, clave: list[str]) -> str:
-    # ordeno filas y columnas para que el hash no dependa de como vino la respuesta
+    # ordeno filas y columnas para que el hash no dependa de como vino la respuesta.
+    # el salto de linea fijo: si no, pandas usa el del sistema y en windows da otro hash
     ordenado = df[sorted(df.columns)].sort_values(clave).reset_index(drop=True)
-    return hashlib.sha256(ordenado.to_csv(index=False).encode("utf-8")).hexdigest()
+    texto = ordenado.to_csv(index=False, lineterminator="\n")
+    return hashlib.sha256(texto.encode("utf-8")).hexdigest()
 
 
 def ultimo_hash(carpeta: Path, dataset: str, ventana: str) -> str | None:
