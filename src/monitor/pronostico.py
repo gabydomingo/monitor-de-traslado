@@ -48,6 +48,7 @@ ARBOLES = 300
 # cualquier valor entre 3 y 20 da parecido
 ESCALA_DOLAR = 10
 NIVELES = {"": 0.2, "_90": 0.1}  # banda del 80% (sin sufijo) y del 90%
+NIVEL_GENERAL = "nivel_general"
 PARAMS = {
     "objective": "regression",
     "learning_rate": 0.05,
@@ -385,6 +386,11 @@ def datos(con) -> pd.DataFrame:
     industria = a.serie_por_rubro(precios, "industria")
     primaria = a.serie_por_rubro(precios, "primaria")
     mayorista = industria.combine_first(primaria[primaria.columns.difference(industria.columns)])
+    # el nivel general de cada region entra como una serie mas: su mayorista es el ipim
+    # general. asi la web tiene un pronostico de la inflacion de cada region, no solo por rubro
+    for region, g in gondola.items():
+        g[NIVEL_GENERAL] = general[region]
+    mayorista[NIVEL_GENERAL] = general["mayorista"]
     bcra = con.execute("select * from fct_bcra_mensual").df()
     bcra = bcra.assign(fecha=pd.to_datetime(bcra["fecha"])).set_index("fecha")
     return armar_panel(gondola, mayorista, general, bcra)
@@ -400,6 +406,7 @@ def version_modelo() -> str:
             "arboles": ARBOLES,
             "escala_dolar": ESCALA_DOLAR,
             "niveles": NIVELES,
+            "series_extra": [NIVEL_GENERAL],
         },
         sort_keys=True,
     )
@@ -416,7 +423,17 @@ def main() -> tuple[pd.DataFrame, pd.DataFrame]:
     pred = pred[pred["ajuste"].notna()]
     pred = pred[pred["fecha"] >= sorted(pred["fecha"].unique())[-36]]
     pred.to_csv(salida / "pronostico_backtest.csv", index=False)
-    tabla = metricas(pred, escala_mase(panel, pred["fecha"].min()))
+    # rubros y nivel general por separado: el nivel general es mucho mas suave y bajaria el
+    # error promedio sin que el modelo sea mejor
+    esc = escala_mase(panel, pred["fecha"].min())
+    es_general = pred["par_id"] == NIVEL_GENERAL
+    tabla = pd.concat(
+        {
+            "rubros": metricas(pred[~es_general], esc),
+            "nivel_general": metricas(pred[es_general], esc),
+        },
+        names=["grupo"],
+    )
     tabla.to_csv(salida / "pronostico_metricas.csv")
     log.info("metricas del backtest:\n%s", tabla.round(3))
     ultimos = pred[pred["fecha"] >= sorted(pred["fecha"].unique())[-12]]

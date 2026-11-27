@@ -57,3 +57,21 @@ def test_registro_con_columnas_nuevas_no_queda_corrido(tmp_path, monkeypatch):
     assert df["inf"].tolist() == [1.0, 2.0]
     assert df["inf_90"].isna().tolist() == [True, False]
     assert len(df) == 2
+
+
+def test_registro_suma_series_nuevas_sin_repetir(tmp_path, monkeypatch):
+    registro = tmp_path / "registro.csv"
+    manifest = tmp_path / "manifest.csv"
+    pd.DataFrame({"dataset": ["ipc"], "hash": ["a" * 64]}).to_csv(manifest, index=False)
+    monkeypatch.setattr(mensual, "MANIFEST", manifest)
+    pan = pd.DataFrame(
+        {"par_id": ["pan"], "region": ["GBA"], "fecha": ["2026-11-01"], "inf": [1.0]}
+    )
+    mensual.registrar(pan, registro)
+    # se vuelve a correr el mismo mes con el nivel general agregado: pan no se pisa
+    otra = pd.concat([pan.assign(inf=9.0), pan.assign(par_id="nivel_general", inf=2.0)])
+    mensual.registrar(otra, registro)
+    df = pd.read_csv(registro)
+    assert df.set_index("par_id")["inf"].to_dict() == {"pan": 1.0, "nivel_general": 2.0}
+    mensual.registrar(otra, registro)
+    assert len(pd.read_csv(registro)) == 2

@@ -70,6 +70,13 @@ def registrar(prox: pd.DataFrame, registro: Path = REGISTRO, ahora: datetime | N
         datos=version_datos(),
     )
     if registro.exists():
+        # solo lo que no estaba: si se suma una serie nueva entra sin tocar lo ya registrado
+        clave = ["par_id", "region", "fecha"]
+        ya = pd.read_csv(registro, usecols=clave, dtype=str)
+        nuevas = filas[clave].astype(str).merge(ya, how="left", indicator=True)["_merge"]
+        filas = filas[(nuevas == "left_only").to_numpy()]
+        if filas.empty:
+            return
         previo = pd.read_csv(registro, nrows=0).columns.tolist()
         if previo != filas.columns.tolist():
             # cambiaron las columnas (por ejemplo se sumo la banda del 90%): reescribo todo
@@ -105,13 +112,13 @@ def main(argv: list[str] | None = None) -> int:
 
     traslado.main()
     tabla, prox = pronostico.main()
-    if not ya_pronosticado(objetivo):
-        registrar(prox)
+    registrar(prox)  # no repite lo que ya estaba
+    rubros = tabla.loc["rubros"]
     gba = prox[prox["region"] == "GBA"].set_index("par_id")["pronostico"].round(1)
     resumen(
         f"Pronostico de {objetivo:%m-%Y} (modelo {pronostico.version_modelo()})\n\n"
-        f"Error del backtest, combinado: {tabla.loc['combinado', 'mae_pp']:.2f} pp "
-        f"(naive {tabla.loc['naive', 'mae_pp']:.2f})\n\n"
+        f"Error del backtest en rubros, combinado: {rubros.loc['combinado', 'mae_pp']:.2f} pp "
+        f"(naive {rubros.loc['naive', 'mae_pp']:.2f})\n\n"
         "| rubro (GBA) | % mensual |\n|---|---|\n"
         + "\n".join(f"| {r} | {v} |" for r, v in gba.items())
     )

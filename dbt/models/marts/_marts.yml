@@ -88,3 +88,13 @@ models:
                 where: "not (indicador = 'IPP' and codigo = 'I')"
       - name: publicado
         tests: [not_null]
+
+  - name: fct_publicaciones
+    description: Fecha de publicacion de cada mes del ipc y del mayorista, segun los informes de prensa.
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [dataset, fecha]
+    columns:
+      - name: publicado
+        tests: [not_null]

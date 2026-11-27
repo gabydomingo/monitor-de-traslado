@@ -29,7 +29,8 @@ def cargar_precios(con) -> pd.DataFrame:
 
 
 def nombres_rubros(con) -> dict:
-    return dict(con.execute("select par_id, rubro from dim_rubro").fetchall())
+    nombres = dict(con.execute("select par_id, rubro from dim_rubro").fetchall())
+    return nombres | {"nivel_general": "Nivel general"}
 
 
 def inflacion_general(con) -> pd.DataFrame:
