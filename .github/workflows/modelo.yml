@@ -1,7 +1,8 @@
 name: modelo
 
 # corre despues de cada ingesta. casi todos los dias no hay nada nuevo y termina enseguida;
-# cuando ya salieron el ipc y el mayorista del mes y pasaron 15 dias de dolar, pronostica
+# cuando ya salieron el ipc y el mayorista del mes y el dolar hasta el 13, pronostica.
+# despues arma los json de la web: si cambiaron, el push hace que vercel la vuelva a publicar
 on:
   workflow_run:
     workflows: [ingesta]
@@ -46,15 +47,21 @@ jobs:
           FORZAR: ${{ inputs.forzar && '--forzar' || '' }}
         run: uv run python -m monitor.mensual $FORZAR
 
+      # todos los dias, no solo cuando hay pronostico: si salio el ipc la web tiene que
+      # mostrar el dato nuevo y cuanto le erro al pronostico. si no cambio nada, el json
+      # queda igual y no hay commit
+      - name: datos de la web
+        run: uv run python -m monitor.web
+
       - name: commitear resultados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/resultados
+          git add data/resultados data/web
           if git diff --cached --quiet; then
             echo "Sin resultados nuevos"
             exit 0
           fi
-          git commit -m "modelo: pronostico $(date -u +%Y-%m-%d)"
+          git commit -m "modelo: resultados y web $(date -u +%Y-%m-%d)"
           git pull --rebase
           git push

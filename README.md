@@ -92,13 +92,13 @@ uv run python -m monitor.traslado
 
 ## Pronostico
 
-En [`notebooks/03_pronostico.ipynb`](notebooks/03_pronostico.ipynb), con el codigo en `src/monitor/pronostico.py`. Pronostica la inflacion del mes que viene para cada rubro y region.
+En [`notebooks/03_pronostico.ipynb`](notebooks/03_pronostico.ipynb), con el codigo en `src/monitor/pronostico.py`. Pronostica la inflacion del mes que viene para cada rubro y region, y el nivel general de cada region.
 
 **Cuando y con que.** El pronostico se hace cuando sale el mayorista del mes anterior (desde 2018, entre el 14 y el 23). Para ese momento se sabe el IPC y el mayorista del mes anterior, el REM de fin de mes y el dolar de los dias anteriores a esa publicacion, que salen del calendario real del INDEC. No usa nada mas.
 
 **Modelo.** El promedio de dos:
 
-- un LightGBM global (un solo modelo para las 114 series, con rubro y region como variables), que capta relaciones no lineales;
+- un LightGBM global (un solo modelo para las 120 series: 114 de rubros y 6 de nivel general, con rubro y region como variables), que capta relaciones no lineales;
 - una regresion lineal por serie (ARX), que a diferencia de los arboles puede extrapolar un salto del dolar que nunca vio, como el de diciembre de 2023.
 
 Mitad y mitad, sin ajustar pesos, para no sobreajustar.
@@ -107,15 +107,18 @@ Mitad y mitad, sin ajustar pesos, para no sobreajustar.
 
 | MAE (pp de inflacion mensual) | naive | ARX | LightGBM sin BCRA | LightGBM | combinado |
 |---|---|---|---|---|---|
-| 36 meses | 2.88 | 2.48 | | 2.36 | **2.24** |
-| desarrollo (nov-23 a oct-25) | 3.47 | 2.95 | 3.02 | 2.82 | **2.65** |
-| prueba final (nov-25 a oct-26) | 1.72 | 1.53 | 1.42 | 1.43 | 1.43 |
+| 36 meses | 2.88 | 2.48 | | 2.32 | **2.24** |
+| desarrollo (nov-23 a oct-25) | 3.46 | 2.95 | 3.01 | 2.77 | **2.65** |
+| prueba final (nov-25 a oct-26) | 1.72 | 1.53 | 1.42 | 1.40 | 1.42 |
+
+La tabla es solo de los rubros; el nivel general va aparte, mas abajo.
 
 - El combinado le gana al naive por un 22% y la diferencia es significativa (Diebold-Mariano, p = 0.001).
-- El dolar y el REM mejoran los meses con shock (dic-23 a 2024) y no cambian nada en los tranquilos: en la prueba final, un anio calmo, empatan. Es un seguro, no una mejora en todos los meses. La evidencia de la mejora sale del tramo donde tome las decisiones, asi que puede estar algo inflada.
-- Dos bandas, de 80% y 90%, que salen de cuantiles de LightGBM calibrados con conformal por rubro y se agrandan cuando el dolar se mueve a principio de mes. Cubren 80% y 90% en total. En dic-2023 la del 80% paso de cubrir 36% a 50% gracias al dolar, sin ensanchar los meses tranquilos (en 2026 miden 4.5 y 6.1 pp).
+- El dolar y el REM mejoran los meses con shock (dic-23 a 2024) y no cambian nada en los tranquilos: en la prueba final, un anio calmo, casi empatan. Es un seguro, no una mejora en todos los meses. La evidencia de la mejora sale del tramo donde tome las decisiones, asi que puede estar algo inflada.
+- Dos bandas, de 80% y 90%, que salen de cuantiles de LightGBM calibrados con conformal por rubro y se agrandan cuando el dolar se mueve a principio de mes. Cubren 80% y 90% en total. En dic-2023 la del 80% paso de cubrir 36% a 50% gracias al dolar, sin ensanchar los meses tranquilos (en 2026 miden 4.6 y 6.2 pp).
 - Lo que mas pesa es el REM y despues el mayorista del mes anterior. La region casi no aporta.
 - Los saltos grandes de verduras (clima, cosecha) quedan fuera del intervalo igual.
+- **Nivel general.** Entra como una serie mas por region, con el IPIM general como mayorista, para que la web tenga un pronostico de la inflacion de cada region. En los 36 meses erra 1.02 pp contra 1.34 del naive, pero la diferencia no es significativa (p = 0.16) y en la prueba final pierde: 0.59 contra 0.37. Con la inflacion quieta, repetir el dato del mes pasado es muy dificil de mejorar. No lo corregi mirando la prueba final; la web muestra los dos para que se vea.
 
 El MASE da arriba de 1 para casi todos, porque la escala sale de anios con menos inflacion. Por eso la comparacion va contra el naive del mismo periodo.
 
@@ -143,14 +146,32 @@ La ingesta sigue guardando cada version, asi que si el INDEC corrige algo de aca
 
 ## Corrida mensual
 
-`.github/workflows/modelo.yml` corre despues de cada ingesta. Casi todos los dias termina enseguida porque no hay nada nuevo. Cuando ya salieron el IPC y el mayorista del mes y pasaron 15 dias de dolar, actualiza el warehouse, corre el traslado y el pronostico, y guarda el pronostico en `data/resultados/registro_pronosticos.csv`.
+`.github/workflows/modelo.yml` corre despues de cada ingesta. Casi todos los dias termina enseguida porque no hay nada nuevo. Cuando ya salieron el IPC y el mayorista del mes y hay dolar hasta el 13, actualiza el warehouse, corre el traslado y el pronostico, y guarda el pronostico en `data/resultados/registro_pronosticos.csv`. Despues, todos los dias, regenera los datos de la web (`data/web`); si cambiaron, los sube y Vercel vuelve a publicar la pagina.
 
-Ese registro no se pisa: es lo que el modelo dijo en su momento, con la version de los datos y del modelo que uso. Cuando el INDEC publica el dato se puede medir el error real, no el de un backtest con datos ya revisados.
+Ese registro no se pisa: es lo que el modelo dijo en su momento, con la version de los datos y del modelo que uso. Si se suma una serie nueva (como el nivel general), entran solo las filas que no estaban. Cuando el INDEC publica el dato se puede medir el error real, no el de un backtest con datos ya revisados.
 
 Todo junto tarda menos de un minuto. El backtest reparte los meses entre los nucleos que haya.
 
 ```
 uv run python -m monitor.mensual
+```
+
+## Web
+
+La pagina publica se llama Efecto Gondola. Es un sitio estatico en Next.js (`web/`), sin servidor ni base de datos.
+
+- **Datos.** `monitor.web` arma tres JSON en `data/web` (resumen, series y backtest, unos 350 KB en total) a partir del warehouse y de `data/resultados`. El contrato son los modelos de pydantic de `src/monitor/web.py`: de ahi sale `data/web/esquema.json` y de ese esquema los tipos de TypeScript (`web/lib/tipos.ts`). Si el contrato cambia y los tipos no, falla el CI.
+- **Mapa.** Regiones del IPC con limites del IGN (SIG 250, via CONAE), en GeoJSON por [mgaitan/departamentos_argentina](https://github.com/mgaitan/departamentos_argentina). GBA es la ciudad mas los 24 partidos del conurbano; el resto de Buenos Aires va en Pampeana. Se simplifica con mapshaper (`npm run geo`) y se dibuja en el build con d3-geo: al navegador llegan solo los trazos.
+- **Graficos.** Observable Plot. El pronostico va en gris tinta, nunca en el color de una region. Energia siempre en gris pizarra punteado y con la aclaracion de tarifa regulada.
+- **Publicacion.** Vercel con raiz en `web/`. Solo hace build si cambio algo en `web/` o en `data/web` (`web/vercel.json`).
+
+```
+uv run python -m monitor.web   # regenera data/web
+cd web
+npm install
+npm run dev                     # http://localhost:3000
+npm run tipos                   # tipos desde el esquema
+npm run build                   # sitio estatico en web/out
 ```
 
 ## Carpetas
@@ -163,6 +184,8 @@ dbt/           modelos, seeds y tests
 data/raw/      crudos versionados
 data/resultados/  resultados del modelo
 data/informes/ listado y primeros datos de los informes del indec
+data/web/      los json que lee la pagina
+web/           la pagina (Next.js estatico)
 tests/         tests de python
 docs/          metodologia (fase 8)
 ```

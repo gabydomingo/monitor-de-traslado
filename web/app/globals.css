@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* papel, tinta y filetes. las regiones van aparte, en lib/colores.ts, porque las usan los
+   graficos; aca solo quedan como utilidades para el texto y los rellenos */
+@theme {
+  --color-papel: #faf9f6;
+  --color-papel-2: #f2f0e9;
+  --color-tinta: #1a1a1a;
+  --color-tinta-2: #595752;
+  --color-filete: #dfddd5;
+  --color-contraste: #6b7280;
+
+  --color-gba: #0072b2;
+  --color-pampeana: #009e73;
+  --color-noroeste: #d55e00;
+  --color-noreste: #cc79a7;
+  --color-cuyo: #e69f00;
+  --color-patagonia: #56b4e9;
+
+  --font-sans: "Public Sans", ui-sans-serif, sans-serif;
+  --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
+
+  --radius-sm: 2px;
+}
+
+@layer base {
+  html {
+    background: var(--color-papel);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scrollbar-color: var(--color-tinta-2) var(--color-papel-2);
+  }
+
+  body {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  ::selection {
+    background: #1a1a1a;
+    color: #faf9f6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
+  p,
+  dd,
+  li,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  a {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-tinta-2);
+  }
+
+  a:hover {
+    text-decoration-color: var(--color-tinta);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-tinta);
+    outline-offset: 2px;
+  }
+
+  select {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0ms !important;
+    }
+  }
+}
+
+/* graficos de observable plot: misma letra y cifras tabulares que el resto */
+@layer components {
+  .grafico svg {
+    overflow: visible;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grafico [aria-label="tip"] text {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* regiones del mapa: el atributo pone la opacidad base y esto solo el hover y el foco */
+.region {
+  transition: fill-opacity 150ms ease-out;
+}
+.region:not([aria-pressed="true"]):hover {
+  fill-opacity: 0.72;
+}
+.region:focus-visible {
+  stroke: #1a1a1a;
+  stroke-width: 2.5px;
+}

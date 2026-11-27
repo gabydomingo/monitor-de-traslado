@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+# copia de ../data/web que hace scripts/datos.mjs antes de cada build
+datos/
+# fuente del mapa, se baja con npm run geo
+scripts/fuente/

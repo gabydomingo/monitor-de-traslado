@@ -1,0 +1,511 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-27T15:23:53Z",
+  "title": "Design System: Efecto Gondola",
+  "extensions": {
+    "colorMeta": {
+      "tinta": {
+        "role": "primary",
+        "displayName": "Newsprint Ink",
+        "canonical": "oklch(21.8% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "tinta-2": {
+        "role": "neutral",
+        "displayName": "Faded Ink",
+        "canonical": "oklch(45.7% 0.008 88.7)",
+        "tonalRamp": [
+          "#0D0B07",
+          "#272520",
+          "#44423D",
+          "#63615C",
+          "#84827D",
+          "#A7A59F",
+          "#CBC9C3",
+          "#F1EEE8"
+        ]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(98.2% 0.004 91.4)",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262523",
+          "#434240",
+          "#62615F",
+          "#838280",
+          "#A6A5A2",
+          "#CAC9C6",
+          "#EFEEEB"
+        ]
+      },
+      "papel-2": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "oklch(95.5% 0.010 93.6)",
+        "tonalRamp": [
+          "#0C0B07",
+          "#272520",
+          "#44423C",
+          "#63615B",
+          "#84827C",
+          "#A7A59E",
+          "#CBC9C2",
+          "#F0EEE7"
+        ]
+      },
+      "filete": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "oklch(89.7% 0.011 95.2)",
+        "tonalRamp": [
+          "#0B0B0A",
+          "#262522",
+          "#43423E",
+          "#63615C",
+          "#84827B",
+          "#A7A59F",
+          "#CAC9C4",
+          "#EFEEEB"
+        ]
+      },
+      "contraste": {
+        "role": "tertiary",
+        "displayName": "Energia Slate",
+        "canonical": "oklch(55.1% 0.023 264.4)",
+        "tonalRamp": [
+          "#0A0B0E",
+          "#23252A",
+          "#3E424A",
+          "#5C616D",
+          "#7B8291",
+          "#9FA5B1",
+          "#C4C9D3",
+          "#EBEFF5"
+        ]
+      },
+      "no-significativo": {
+        "role": "tertiary",
+        "displayName": "Doubt Gray",
+        "canonical": "oklch(72.2% 0.013 91.6)",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#262522",
+          "#43423D",
+          "#63615A",
+          "#85827A",
+          "#A7A59E",
+          "#CBC9C3",
+          "#F0EEEA"
+        ]
+      },
+      "region-gba": {
+        "role": "secondary",
+        "displayName": "GBA Blue",
+        "canonical": "oklch(53.2% 0.131 244.0)",
+        "tonalRamp": [
+          "#010C18",
+          "#06273F",
+          "#10466A",
+          "#1C669A",
+          "#2D89CA",
+          "#69ACE2",
+          "#9DD0FA",
+          "#D0F3FF"
+        ]
+      },
+      "region-pampeana": {
+        "role": "secondary",
+        "displayName": "Pampeana Green",
+        "canonical": "oklch(62.0% 0.130 165.5)",
+        "tonalRamp": [
+          "#000F08",
+          "#002D1E",
+          "#004F37",
+          "#007452",
+          "#009A70",
+          "#5FBA95",
+          "#98DABD",
+          "#CEFBE6"
+        ]
+      },
+      "region-noroeste": {
+        "role": "secondary",
+        "displayName": "Noroeste Vermillion",
+        "canonical": "oklch(62.1% 0.170 47.5)",
+        "tonalRamp": [
+          "#190500",
+          "#411600",
+          "#6D2B00",
+          "#9E4100",
+          "#CF5A00",
+          "#E98855",
+          "#FFB58E",
+          "#FFE1C6"
+        ]
+      },
+      "region-noreste": {
+        "role": "secondary",
+        "displayName": "Noreste Purple",
+        "canonical": "oklch(67.9% 0.118 346.3)",
+        "tonalRamp": [
+          "#14060E",
+          "#371A2A",
+          "#5E314A",
+          "#88496C",
+          "#B46491",
+          "#D08DB1",
+          "#EDB7D3",
+          "#FFE2F5"
+        ]
+      },
+      "region-cuyo": {
+        "role": "secondary",
+        "displayName": "Cuyo Amber",
+        "canonical": "oklch(75.3% 0.158 76.8)",
+        "tonalRamp": [
+          "#140800",
+          "#371F00",
+          "#5F3900",
+          "#895400",
+          "#B57200",
+          "#D19A3D",
+          "#EDC181",
+          "#FFEABE"
+        ]
+      },
+      "region-patagonia": {
+        "role": "secondary",
+        "displayName": "Patagonia Sky",
+        "canonical": "oklch(73.5% 0.117 236.2)",
+        "tonalRamp": [
+          "#010D16",
+          "#05283B",
+          "#0E4764",
+          "#196990",
+          "#2A8CBE",
+          "#68AED8",
+          "#9DD1F2",
+          "#D0F4FF"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Masthead only. 2.5rem on mobile, 3.25rem from md."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Headline numbers in the top strip. 2.25rem on mobile, 2.75rem from md."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles and the region name."
+      },
+      "figure-secondary": {
+        "displayName": "Figure secondary",
+        "purpose": "Next release date and region select in the strip. 1.5rem on mobile."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Block headings, chart captions, subsections."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "Long serif prose, max 65ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Sans running text, max 60ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Cell labels, tables, list buttons, toggles. Sentence case, faded ink."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Source and caveat lines under figures and charts."
+      },
+      "chart": {
+        "displayName": "Chart",
+        "purpose": "Axis and in-plot text in Observable Plot, faded ink; 11px for annotations."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "state-color",
+        "value": "150ms ease-out",
+        "purpose": "background-color and color on rows, selects, toggles and links."
+      },
+      {
+        "name": "region-opacity",
+        "value": "fill-opacity 150ms ease-out",
+        "purpose": "Map region hover and selection."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition-duration: 0ms",
+        "purpose": "All transitions removed under prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "container",
+        "value": "1200px"
+      },
+      {
+        "name": "chart-narrow",
+        "value": "480px (chart width; 420px for the forecast chart)"
+      }
+    ],
+    "rules": [
+      {
+        "name": "major",
+        "value": "1px solid #1A1A1A",
+        "purpose": "Section breaks, the strip, table head and total, select underline."
+      },
+      {
+        "name": "minor",
+        "value": "1px solid #DFDDD5",
+        "purpose": "Cells, rows, blocks, chart gridlines, toggle and badge borders."
+      }
+    ],
+    "chartTooltip": {
+      "fill": "#FAF9F6",
+      "stroke": "#DFDDD5",
+      "shadow": "none"
+    },
+    "chartLabelMargin": {
+      "rule": "longest label x 6.4px + 14px, capped at half the chart width",
+      "narrow": "short rubro names under 480px"
+    },
+    "chartDashes": [
+      {
+        "name": "reference",
+        "value": "2 2",
+        "purpose": "General level and 100% pass-through rules."
+      },
+      {
+        "name": "forecast",
+        "value": "3 3",
+        "purpose": "Forecast line, always ink."
+      },
+      {
+        "name": "energia",
+        "value": "4 3",
+        "purpose": "Energia lines, ranges and bar outlines, always slate #6B7280. Nothing else in the charts is dashed except references and the forecast."
+      }
+    ],
+    "chartOpacity": [
+      {
+        "name": "band-80",
+        "value": "0.22",
+        "purpose": "80% forecast band, ink fill."
+      },
+      {
+        "name": "band-90",
+        "value": "0.10",
+        "purpose": "90% forecast band, ink fill."
+      },
+      {
+        "name": "band-ci",
+        "value": "0.08",
+        "purpose": "Confidence bands in the supply-chain chart, ink fill."
+      },
+      {
+        "name": "energia-bar",
+        "value": "0.35",
+        "purpose": "Slate fill of energia bars, with a 1.25px slate stroke dashed 4 3."
+      },
+      {
+        "name": "map-rest",
+        "value": "0.42",
+        "purpose": "Unselected region fill."
+      },
+      {
+        "name": "map-hover",
+        "value": "0.72",
+        "purpose": "Hovered unselected region fill."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Strip Cell",
+      "kind": "card",
+      "refersTo": "strip-cell",
+      "description": "One cell of the top strip: label, serif figure, note with link. Cells are divided by 1px filete rules, the strip by 1px ink rules.",
+      "html": "<div class=\"ds-strip\"><dl class=\"ds-strip-cell\"><dt>Pronostico para noviembre</dt><dd class=\"ds-strip-fig\">2,2%</dd><dd class=\"ds-strip-note\">8 de cada 10 veces el dato cae entre 1,3% y 2,9%. <a href=\"#\">Cuanto le erra</a></dd></dl></div>",
+      "css": ".ds-strip { border-top: 1px solid var(--color-tinta, #1a1a1a); border-bottom: 1px solid var(--color-tinta, #1a1a1a); background: var(--color-papel, #faf9f6); color: var(--color-tinta, #1a1a1a); font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); font-variant-numeric: tabular-nums; } .ds-strip-cell { margin: 0; padding: 20px; display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--color-filete, #dfddd5); max-width: 260px; } .ds-strip-cell dt { font-size: 0.875rem; color: var(--color-tinta-2, #595752); } .ds-strip-cell dd { margin: 0; } .ds-strip-fig { font-family: var(--font-serif, \"Source Serif 4 Variable\", ui-serif, Georgia, serif); font-size: 2.75rem; font-weight: 600; line-height: 1; letter-spacing: -0.025em; } .ds-strip-note { font-size: 0.8125rem; line-height: 1.375; color: var(--color-tinta-2, #595752); } .ds-strip-note a { color: inherit; text-decoration: underline 1px var(--color-tinta-2, #595752); text-underline-offset: 3px; transition: text-decoration-color 150ms ease-out; } .ds-strip-note a:hover { text-decoration-color: var(--color-tinta, #1a1a1a); } .ds-strip-note a:focus-visible { outline: 2px solid var(--color-tinta, #1a1a1a); outline-offset: 2px; }"
+    },
+    {
+      "name": "Region Select",
+      "kind": "input",
+      "refersTo": "region-select",
+      "description": "Underlined serif select with the region swatch on the left and a drawn chevron. No box.",
+      "html": "<div class=\"ds-rsel\"><span class=\"ds-rsel-sw\" aria-hidden=\"true\"></span><select aria-label=\"Elegir region\"><option>GBA</option><option>Pampeana</option><option>Noreste</option><option>Noroeste</option><option>Cuyo</option><option>Patagonia</option></select><svg aria-hidden=\"true\" viewBox=\"0 0 12 8\" class=\"ds-rsel-chev\"><path d=\"M1 1.5 6 6.5 11 1.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>",
+      "css": ".ds-rsel { position: relative; max-width: 240px; color: var(--color-tinta, #1a1a1a); } .ds-rsel select { width: 100%; appearance: none; -webkit-appearance: none; background: transparent; border: 0; border-bottom: 1px solid var(--color-tinta, #1a1a1a); border-radius: 0; padding: 4px 24px 4px 20px; font-family: var(--font-serif, \"Source Serif 4 Variable\", ui-serif, Georgia, serif); font-size: 1.75rem; font-weight: 500; line-height: 1.25; color: var(--color-tinta, #1a1a1a); cursor: pointer; font-variant-numeric: tabular-nums; transition: background-color 150ms ease-out; } .ds-rsel select:hover { background: var(--color-papel-2, #f2f0e9); } .ds-rsel select:focus-visible { outline: 2px solid var(--color-tinta, #1a1a1a); outline-offset: 2px; } .ds-rsel-sw { position: absolute; left: 0; top: 50%; width: 12px; height: 12px; transform: translateY(-50%); border-radius: 2px; background: var(--color-gba, #0072b2); pointer-events: none; } .ds-rsel-chev { position: absolute; right: 4px; top: 50%; width: 12px; transform: translateY(-50%); pointer-events: none; }"
+    },
+    {
+      "name": "Region List",
+      "kind": "nav",
+      "refersTo": "region-list-item",
+      "description": "Non-map alternative under the map: swatch, region, last value. Active row in Paper Shade and 600.",
+      "html": "<ul class=\"ds-rlist\"><li><button type=\"button\" aria-pressed=\"true\"><span class=\"ds-sw\" style=\"background:#0072B2\"></span><span class=\"ds-rlist-n\">GBA</span><span class=\"ds-rlist-v\">2,0%</span></button></li><li><button type=\"button\" aria-pressed=\"false\"><span class=\"ds-sw\" style=\"background:#009E73\"></span><span class=\"ds-rlist-n\">Pampeana</span><span class=\"ds-rlist-v\">2,6%</span></button></li><li><button type=\"button\" aria-pressed=\"false\"><span class=\"ds-sw\" style=\"background:#CC79A7\"></span><span class=\"ds-rlist-n\">Noreste</span><span class=\"ds-rlist-v\">1,5%</span></button></li><li><button type=\"button\" aria-pressed=\"false\"><span class=\"ds-sw\" style=\"background:#E69F00\"></span><span class=\"ds-rlist-n\">Cuyo</span><span class=\"ds-rlist-v\">2,3%</span></button></li></ul>",
+      "css": ".ds-rlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--color-filete, #dfddd5); font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); font-variant-numeric: tabular-nums; max-width: 420px; } .ds-rlist li { border-bottom: 1px solid var(--color-filete, #dfddd5); } .ds-rlist button { display: flex; width: 100%; align-items: center; gap: 8px; padding: 8px; border: 0; background: transparent; color: var(--color-tinta, #1a1a1a); font: inherit; font-size: 0.875rem; text-align: left; cursor: pointer; transition: background-color 150ms ease-out; } .ds-rlist button:hover { background: var(--color-papel-2, #f2f0e9); } .ds-rlist button[aria-pressed=\"true\"] { background: var(--color-papel-2, #f2f0e9); font-weight: 600; } .ds-rlist button:focus-visible { outline: 2px solid var(--color-tinta, #1a1a1a); outline-offset: 2px; } .ds-sw { width: 12px; height: 12px; flex-shrink: 0; border-radius: 2px; } .ds-rlist-n { flex-grow: 1; } .ds-rlist-v { color: var(--color-tinta-2, #595752); }"
+    },
+    {
+      "name": "Segmented Toggle",
+      "kind": "button",
+      "refersTo": "segmented-toggle",
+      "description": "Two-option period switch beside chart captions. Active option filled ink.",
+      "html": "<div class=\"ds-seg\" role=\"group\" aria-label=\"Periodo\"><button type=\"button\" aria-pressed=\"true\">Desde 2024</button><button type=\"button\" aria-pressed=\"false\">Desde 2017</button></div>",
+      "css": ".ds-seg { display: inline-flex; border: 1px solid var(--color-filete, #dfddd5); font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); font-size: 0.875rem; font-variant-numeric: tabular-nums; } .ds-seg button { padding: 4px 12px; border: 0; border-radius: 0; background: transparent; color: var(--color-tinta, #1a1a1a); font: inherit; cursor: pointer; transition: background-color 150ms ease-out, color 150ms ease-out; } .ds-seg button:first-child { border-right: 1px solid var(--color-filete, #dfddd5); } .ds-seg button:hover { background: var(--color-papel-2, #f2f0e9); } .ds-seg button[aria-pressed=\"true\"] { background: var(--color-tinta, #1a1a1a); color: var(--color-papel, #faf9f6); } .ds-seg button:focus-visible { outline: 2px solid var(--color-tinta, #1a1a1a); outline-offset: 2px; }"
+    },
+    {
+      "name": "Energia Badge",
+      "kind": "chip",
+      "refersTo": "energia-badge",
+      "description": "Flag that goes wherever energia appears: slate dash 4 3, label, and the plain explanation.",
+      "html": "<p class=\"ds-energia\"><span class=\"ds-energia-chip\"><svg aria-hidden=\"true\" viewBox=\"0 0 16 4\" width=\"16\"><line x1=\"0\" y1=\"2\" x2=\"16\" y2=\"2\" stroke=\"#6B7280\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/></svg>Tarifa regulada &mdash; referencia de contraste</span><span>Electricidad y gas del hogar tienen tarifas reguladas: lo que suben no es traslado de mercado.</span></p>",
+      "css": ".ds-energia { margin: 8px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); font-size: 0.8125rem; color: var(--color-tinta-2, #595752); } .ds-energia-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 6px; border: 1px solid var(--color-filete, #dfddd5); border-radius: 2px; font-size: 0.75rem; }"
+    },
+    {
+      "name": "Data Table",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Error table: ink rule under the head and on the total, filete between rows, right-aligned tabular numbers, the winning value in 600.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Periodo</th><th>Repetir</th><th>Modelo</th></tr></thead><tbody><tr><th>2025</th><td>0,62</td><td class=\"ds-win\">0,41</td></tr><tr><th>2026</th><td>0,48</td><td class=\"ds-win\">0,39</td></tr><tr class=\"ds-total\"><th>Total</th><td>0,55</td><td>0,40</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; max-width: 420px; border-collapse: collapse; font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); font-size: 0.875rem; color: var(--color-tinta, #1a1a1a); font-variant-numeric: tabular-nums; } .ds-table th, .ds-table td { padding: 8px 8px 8px 0; text-align: right; font-weight: 400; } .ds-table th:first-child { text-align: left; } .ds-table thead tr { border-bottom: 1px solid var(--color-tinta, #1a1a1a); } .ds-table thead th { color: var(--color-tinta-2, #595752); } .ds-table tbody tr { border-bottom: 1px solid var(--color-filete, #dfddd5); } .ds-table td { color: var(--color-tinta-2, #595752); } .ds-table td.ds-win { color: var(--color-tinta, #1a1a1a); font-weight: 600; } .ds-table tr.ds-total { border-bottom: 1px solid var(--color-tinta, #1a1a1a); font-weight: 600; } .ds-table tr.ds-total td, .ds-table tr.ds-total th { font-weight: 600; color: var(--color-tinta, #1a1a1a); }"
+    },
+    {
+      "name": "Forecast Fan",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Signature chart mark: ink line of real values, fan to the forecast month with 90% band at 0.10 and 80% at 0.22, dashed ink forecast, hollow end point.",
+      "html": "<svg class=\"ds-fan\" viewBox=\"0 0 320 140\" role=\"img\" aria-label=\"Pronostico con su rango\"><line x1=\"0\" y1=\"40\" x2=\"300\" y2=\"40\" class=\"ds-grid\"/><line x1=\"0\" y1=\"80\" x2=\"300\" y2=\"80\" class=\"ds-grid\"/><line x1=\"0\" y1=\"120\" x2=\"300\" y2=\"120\" class=\"ds-zero\"/><path d=\"M240 78 L290 44 L290 104 Z\" class=\"ds-b90\"/><path d=\"M240 78 L290 56 L290 96 Z\" class=\"ds-b80\"/><polyline points=\"10,76 40,72 70,64 100,66 130,46 160,64 190,82 220,74 240,78\" class=\"ds-real\"/><line x1=\"240\" y1=\"78\" x2=\"290\" y2=\"72\" class=\"ds-pron\"/><circle cx=\"290\" cy=\"72\" r=\"4\" class=\"ds-end\"/><text x=\"298\" y=\"76\" class=\"ds-lab\">2,2%</text></svg>",
+      "css": ".ds-fan { width: 100%; max-width: 360px; font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); overflow: visible; font-variant-numeric: tabular-nums; } .ds-grid { stroke: var(--color-filete, #dfddd5); stroke-width: 1; } .ds-zero { stroke: var(--color-tinta-2, #595752); stroke-width: 1; } .ds-b90 { fill: var(--color-tinta, #1a1a1a); fill-opacity: 0.1; } .ds-b80 { fill: var(--color-tinta, #1a1a1a); fill-opacity: 0.22; } .ds-real { fill: none; stroke: var(--color-tinta, #1a1a1a); stroke-width: 1.75; } .ds-pron { stroke: var(--color-tinta, #1a1a1a); stroke-width: 1.5; stroke-dasharray: 3 3; } .ds-end { fill: var(--color-papel, #faf9f6); stroke: var(--color-tinta, #1a1a1a); stroke-width: 1.5; } .ds-lab { font-size: 12px; font-weight: 600; fill: var(--color-tinta, #1a1a1a); paint-order: stroke; stroke: var(--color-papel, #faf9f6); stroke-width: 3px; }"
+    },
+    {
+      "name": "Pass-through Rows",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Signature chart mark: dot on its range per category. Ink if significant, Doubt Gray if not, slate dashed 4 3 for energia. Dashed 2 2 rule at 100%.",
+      "html": "<svg class=\"ds-tras\" viewBox=\"0 0 320 96\" role=\"img\" aria-label=\"Traslado por rubro con su rango\"><line x1=\"160\" y1=\"0\" x2=\"160\" y2=\"80\" class=\"ds-ref0\"/><line x1=\"240\" y1=\"0\" x2=\"240\" y2=\"80\" class=\"ds-ref1\"/><text x=\"150\" y=\"16\" class=\"ds-cat\">Carnes</text><line x1=\"200\" y1=\"12\" x2=\"270\" y2=\"12\" class=\"ds-sig\"/><circle cx=\"236\" cy=\"12\" r=\"4\" class=\"ds-sig-d\"/><text x=\"150\" y=\"38\" class=\"ds-cat\">Electricidad y gas</text><line x1=\"180\" y1=\"34\" x2=\"290\" y2=\"34\" class=\"ds-en\"/><circle cx=\"238\" cy=\"34\" r=\"4\" class=\"ds-en-d\"/><text x=\"150\" y=\"60\" class=\"ds-cat\">Frutas</text><line x1=\"120\" y1=\"56\" x2=\"230\" y2=\"56\" class=\"ds-ns\"/><circle cx=\"176\" cy=\"56\" r=\"4\" class=\"ds-ns-d\"/><text x=\"240\" y=\"94\" class=\"ds-ann\">llega todo</text></svg>",
+      "css": ".ds-tras { width: 100%; max-width: 360px; font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); overflow: visible; } .ds-cat { font-size: 12px; fill: var(--color-tinta-2, #595752); text-anchor: end; } .ds-ann { font-size: 11px; fill: var(--color-tinta-2, #595752); text-anchor: middle; } .ds-ref0 { stroke: var(--color-tinta-2, #595752); } .ds-ref1 { stroke: var(--color-tinta-2, #595752); stroke-dasharray: 2 2; } .ds-sig { stroke: var(--color-tinta, #1a1a1a); stroke-width: 1.5; } .ds-sig-d { fill: var(--color-tinta, #1a1a1a); } .ds-en { stroke: var(--color-contraste, #6b7280); stroke-width: 1.5; stroke-dasharray: 4 3; } .ds-en-d { fill: var(--color-contraste, #6b7280); } .ds-ns { stroke: #a8a59c; stroke-width: 1.5; } .ds-ns-d { fill: #a8a59c; }"
+    },
+    {
+      "name": "Map Region",
+      "kind": "custom",
+      "refersTo": "region-swatch",
+      "description": "Region path as a button: fill-opacity 0.42 at rest, 0.72 on hover, 1 with a 1.2px ink outline when selected; labels 400, 700 when selected, with a paper halo.",
+      "html": "<svg class=\"ds-map\" viewBox=\"0 0 200 120\" role=\"group\" aria-label=\"Regiones\"><path d=\"M10 10 H95 V110 H10 Z\" class=\"ds-reg\" role=\"button\" tabindex=\"0\" aria-pressed=\"true\" style=\"fill:#0072B2\"/><path d=\"M105 10 H190 V110 H105 Z\" class=\"ds-reg\" role=\"button\" tabindex=\"0\" aria-pressed=\"false\" style=\"fill:#009E73\"/><text x=\"52\" y=\"64\" class=\"ds-reg-lab ds-on\">GBA</text><text x=\"148\" y=\"64\" class=\"ds-reg-lab\">Pampeana</text></svg>",
+      "css": ".ds-map { width: 100%; max-width: 280px; font-family: var(--font-sans, \"Public Sans\", ui-sans-serif, sans-serif); } .ds-reg { fill-opacity: 0.42; stroke-linejoin: round; cursor: pointer; outline: none; transition: fill-opacity 150ms ease-out; } .ds-reg:not([aria-pressed=\"true\"]):hover { fill-opacity: 0.72; } .ds-reg[aria-pressed=\"true\"] { fill-opacity: 1; stroke: var(--color-tinta, #1a1a1a); stroke-width: 1.2px; } .ds-reg:focus-visible { stroke: var(--color-tinta, #1a1a1a); stroke-width: 2.5px; } .ds-reg-lab { font-size: 15px; font-weight: 400; text-anchor: middle; fill: var(--color-tinta, #1a1a1a); stroke: var(--color-papel, #faf9f6); stroke-width: 3px; paint-order: stroke; pointer-events: none; } .ds-reg-lab.ds-on { font-weight: 700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Newsroom Instrument",
+    "overview": "**Creative North Star: \"The Newsroom Instrument\"**\n\nA single page that reads like a data journalism piece and works like a measuring instrument. Warm paper, black ink, hairline rules and a serif for the numbers that matter. There are no cards, no shadows and no hero: the page is a grid of ruled cells and long columns, and the map of the six IPC regions sits at the top and drives everything under it.\n\nColor is rationed. Ink does the talking, including the forecast. The Okabe-Ito palette exists only to tell regions apart and never carries text. Two grays carry meaning instead of decoration: a slate for energia (regulated tariff, shown as contrast) and a pale warm gray for estimates that cannot be told apart from zero. Uncertainty is always drawn, never implied.\n\nDensity is moderate and editorial: measured text columns (60 to 65ch), tabular figures everywhere, and charts that share one set of axes, fonts and halos so they read as one system.",
+    "keyCharacteristics": [
+      "Paper and ink, flat, square corners (2px at most).",
+      "1px rules as the only structure: ink for major breaks, filete for minor ones.",
+      "Serif for headings and big figures, sans for interface, tables and axes.",
+      "Tabular numerals on every number, including selects and chart tips.",
+      "Region color for identity, ink for forecasts, gray for doubt.",
+      "Interaction is dry: 150ms ease-out, color and opacity only."
+    ],
+    "rules": [
+      {
+        "name": "The Ink Forecast Rule",
+        "body": "The forecast is ink, never region color. Dashed ink line (3 3), hollow end point, and a fan opening from the last real value: 80% band in ink at fill-opacity 0.22, 90% band in ink at 0.10. No forecast number appears without its band.",
+        "section": "colors"
+      },
+      {
+        "name": "The Fill-Only Rule",
+        "body": "Region colors are fills and strokes, never text. Amber and sky fail AA as text on paper, so every label, value and caption stays in ink or faded ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Energia Flag Rule",
+        "body": "Energia is always slate with the 4 3 dash. Bars get a slate fill at 0.35 opacity with a 1.25px dashed slate outline; lines and ranges are dashed slate strokes; points are solid slate. Wherever energia shows up in a chart, table or selector it carries the badge \"Tarifa regulada - referencia de contraste\" plus a one-line plain explanation.",
+        "section": "colors"
+      },
+      {
+        "name": "The Gray Means Zero Rule",
+        "body": "An estimate that cannot be told apart from zero is drawn in Doubt Gray, never in ink or region color, and the prose says so.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Everywhere Rule",
+        "body": "font-variant-numeric: tabular-nums is set on html and repeated on selects, chart SVGs and chart tips. Numbers line up in every column and never jitter when the region changes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Serif Holds the Number Rule",
+        "body": "Big figures and headings are serif; axis labels, tables, selects in body size and controls are sans. Don't set a data table in serif or a headline figure in sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "Structure comes from 1px rules only. Ink rules mark section breaks, the strip, table heads and totals, and the underline of selects. Filete rules divide cells, rows and blocks. No boxes around content.",
+        "section": "layout"
+      },
+      {
+        "name": "The Map Governs Rule",
+        "body": "Choosing a region on the map, the GBA inset, the list under the map or the strip select updates the strip, the panel, the rubro view and the forecast section in the same render. One state, many readers.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "Nothing floats. A state change is a background shift to Paper Shade, a weight change or an ink fill, never a shadow or a lift.",
+        "section": "elevation"
+      },
+      {
+        "name": "The 2px Ceiling Rule",
+        "body": "No radius above 2px, on anything.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do set every number in tabular figures and every big number in Source Serif 4.",
+      "Do draw the forecast in ink with both bands (0.22 and 0.10) and print its 80% range next to the figure.",
+      "Do mark energia in slate with the 4 3 dash and the badge every time it appears.",
+      "Do gray out (no-significativo) any estimate whose range crosses zero, and say it in the text.",
+      "Do separate content with 1px rules: ink between sections, filete inside them.",
+      "Do keep transitions at 150ms ease-out on color and opacity only, and zero them under reduced motion.",
+      "Do label lines directly at their ends with a paper halo instead of using legends."
+    ],
+    "donts": [
+      "Don't draw the forecast in a region color, least of all GBA blue.",
+      "Don't set text in region colors; amber and sky are fill only.",
+      "Don't use shadows, cards or radius above 2px.",
+      "Don't show a forecast or pass-through value without its range.",
+      "Don't use uppercase labels, eyebrows or kicker text above headings.",
+      "Don't draw any series that is not energia in slate; slate with the 4 3 dash means regulated tariff."
+    ]
+  }
+}

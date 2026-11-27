@@ -1,0 +1,1101 @@
+{
+ "$defs": {
+  "Acierto": {
+   "properties": {
+    "region": {
+     "title": "Region",
+     "type": "string"
+    },
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "real": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Real",
+     "type": "array"
+    },
+    "pronostico": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Pronostico",
+     "type": "array"
+    },
+    "naive": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Naive",
+     "type": "array"
+    },
+    "inf80": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Inf80",
+     "type": "array"
+    },
+    "sup80": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Sup80",
+     "type": "array"
+    },
+    "inf90": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Inf90",
+     "type": "array"
+    },
+    "sup90": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Sup90",
+     "type": "array"
+    }
+   },
+   "required": [
+    "region",
+    "rubro",
+    "real",
+    "pronostico",
+    "naive",
+    "inf80",
+    "sup80",
+    "inf90",
+    "sup90"
+   ],
+   "title": "Acierto",
+   "type": "object"
+  },
+  "Automatizacion": {
+   "properties": {
+    "primerMes": {
+     "title": "Primermes",
+     "type": "string"
+    },
+    "mesesIpc": {
+     "title": "Mesesipc",
+     "type": "integer"
+    },
+    "descargas": {
+     "title": "Descargas",
+     "type": "integer"
+    },
+    "mesesRegistrados": {
+     "title": "Mesesregistrados",
+     "type": "integer"
+    },
+    "primerRegistro": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Primerregistro"
+    }
+   },
+   "required": [
+    "primerMes",
+    "mesesIpc",
+    "descargas",
+    "mesesRegistrados",
+    "primerRegistro"
+   ],
+   "title": "Automatizacion",
+   "type": "object"
+  },
+  "Backtest": {
+   "properties": {
+    "meses": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Meses",
+     "type": "array"
+    },
+    "series": {
+     "items": {
+      "$ref": "#/$defs/Acierto"
+     },
+     "title": "Series",
+     "type": "array"
+    }
+   },
+   "required": [
+    "meses",
+    "series"
+   ],
+   "title": "Backtest",
+   "type": "object"
+  },
+  "Cadena": {
+   "properties": {
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "origen": {
+     "enum": [
+      "primaria",
+      "industria"
+     ],
+     "title": "Origen",
+     "type": "string"
+    },
+    "respuesta": {
+     "description": "acumulada, mes 0 en adelante",
+     "items": {
+      "type": "number"
+     },
+     "title": "Respuesta",
+     "type": "array"
+    },
+    "inferior": {
+     "items": {
+      "type": "number"
+     },
+     "title": "Inferior",
+     "type": "array"
+    },
+    "superior": {
+     "items": {
+      "type": "number"
+     },
+     "title": "Superior",
+     "type": "array"
+    }
+   },
+   "required": [
+    "rubro",
+    "origen",
+    "respuesta",
+    "inferior",
+    "superior"
+   ],
+   "title": "Cadena",
+   "type": "object"
+  },
+  "Dato": {
+   "properties": {
+    "region": {
+     "title": "Region",
+     "type": "string"
+    },
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "valor": {
+     "description": "% mensual",
+     "title": "Valor",
+     "type": "number"
+    }
+   },
+   "required": [
+    "region",
+    "rubro",
+    "valor"
+   ],
+   "title": "Dato",
+   "type": "object"
+  },
+  "ErrorAnual": {
+   "properties": {
+    "grupo": {
+     "enum": [
+      "rubros",
+      "nivel_general"
+     ],
+     "title": "Grupo",
+     "type": "string"
+    },
+    "anio": {
+     "title": "Anio",
+     "type": "integer"
+    },
+    "naive": {
+     "title": "Naive",
+     "type": "number"
+    },
+    "combinado": {
+     "title": "Combinado",
+     "type": "number"
+    },
+    "meses": {
+     "title": "Meses",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "grupo",
+    "anio",
+    "naive",
+    "combinado",
+    "meses"
+   ],
+   "title": "ErrorAnual",
+   "type": "object"
+  },
+  "Fuente": {
+   "properties": {
+    "nombre": {
+     "title": "Nombre",
+     "type": "string"
+    },
+    "que": {
+     "title": "Que",
+     "type": "string"
+    },
+    "url": {
+     "title": "Url",
+     "type": "string"
+    },
+    "licencia": {
+     "title": "Licencia",
+     "type": "string"
+    }
+   },
+   "required": [
+    "nombre",
+    "que",
+    "url",
+    "licencia"
+   ],
+   "title": "Fuente",
+   "type": "object"
+  },
+  "Meta": {
+   "properties": {
+    "ultimoMes": {
+     "description": "ultimo mes con IPC publicado",
+     "title": "Ultimomes",
+     "type": "string"
+    },
+    "mesPronosticado": {
+     "title": "Mespronosticado",
+     "type": "string"
+    },
+    "proximoIpc": {
+     "$ref": "#/$defs/ProximoDato"
+    },
+    "datosNuevos": {
+     "description": "la ultima vez que la ingesta trajo algo distinto",
+     "format": "date-time",
+     "title": "Datosnuevos",
+     "type": "string"
+    },
+    "versionModelo": {
+     "title": "Versionmodelo",
+     "type": "string"
+    },
+    "versionDatos": {
+     "title": "Versiondatos",
+     "type": "string"
+    },
+    "repo": {
+     "title": "Repo",
+     "type": "string"
+    },
+    "fuentes": {
+     "items": {
+      "$ref": "#/$defs/Fuente"
+     },
+     "title": "Fuentes",
+     "type": "array"
+    }
+   },
+   "required": [
+    "ultimoMes",
+    "mesPronosticado",
+    "proximoIpc",
+    "datosNuevos",
+    "versionModelo",
+    "versionDatos",
+    "repo",
+    "fuentes"
+   ],
+   "title": "Meta",
+   "type": "object"
+  },
+  "Metricas": {
+   "properties": {
+    "grupo": {
+     "enum": [
+      "rubros",
+      "nivel_general"
+     ],
+     "title": "Grupo",
+     "type": "string"
+    },
+    "meses": {
+     "title": "Meses",
+     "type": "integer"
+    },
+    "series": {
+     "title": "Series",
+     "type": "integer"
+    },
+    "naive": {
+     "description": "error medio en pp",
+     "title": "Naive",
+     "type": "number"
+    },
+    "arx": {
+     "title": "Arx",
+     "type": "number"
+    },
+    "lgbm": {
+     "title": "Lgbm",
+     "type": "number"
+    },
+    "combinado": {
+     "title": "Combinado",
+     "type": "number"
+    },
+    "pValor": {
+     "description": "diebold-mariano, combinado contra naive",
+     "title": "Pvalor",
+     "type": "number"
+    },
+    "cobertura80": {
+     "title": "Cobertura80",
+     "type": "number"
+    },
+    "cobertura90": {
+     "title": "Cobertura90",
+     "type": "number"
+    }
+   },
+   "required": [
+    "grupo",
+    "meses",
+    "series",
+    "naive",
+    "arx",
+    "lgbm",
+    "combinado",
+    "pValor",
+    "cobertura80",
+    "cobertura90"
+   ],
+   "title": "Metricas",
+   "type": "object"
+  },
+  "Pronostico": {
+   "properties": {
+    "region": {
+     "title": "Region",
+     "type": "string"
+    },
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "valor": {
+     "description": "% mensual",
+     "title": "Valor",
+     "type": "number"
+    },
+    "banda80": {
+     "maxItems": 2,
+     "minItems": 2,
+     "prefixItems": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      }
+     ],
+     "title": "Banda80",
+     "type": "array"
+    },
+    "banda90": {
+     "maxItems": 2,
+     "minItems": 2,
+     "prefixItems": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      }
+     ],
+     "title": "Banda90",
+     "type": "array"
+    },
+    "ultimo": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "description": "el dato del mes anterior, o sea el naive",
+     "title": "Ultimo"
+    }
+   },
+   "required": [
+    "region",
+    "rubro",
+    "valor",
+    "banda80",
+    "banda90",
+    "ultimo"
+   ],
+   "title": "Pronostico",
+   "type": "object"
+  },
+  "ProximoDato": {
+   "properties": {
+    "mes": {
+     "description": "el mes que se va a publicar",
+     "title": "Mes",
+     "type": "string"
+    },
+    "publicacion": {
+     "description": "el mes en que sale",
+     "title": "Publicacion",
+     "type": "string"
+    },
+    "diaDesde": {
+     "title": "Diadesde",
+     "type": "integer"
+    },
+    "diaHasta": {
+     "title": "Diahasta",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "mes",
+    "publicacion",
+    "diaDesde",
+    "diaHasta"
+   ],
+   "title": "ProximoDato",
+   "type": "object"
+  },
+  "Publicacion": {
+   "properties": {
+    "dataset": {
+     "enum": [
+      "ipc",
+      "mayorista"
+     ],
+     "title": "Dataset",
+     "type": "string"
+    },
+    "mes": {
+     "title": "Mes",
+     "type": "string"
+    },
+    "publicado": {
+     "format": "date",
+     "title": "Publicado",
+     "type": "string"
+    }
+   },
+   "required": [
+    "dataset",
+    "mes",
+    "publicado"
+   ],
+   "title": "Publicacion",
+   "type": "object"
+  },
+  "Region": {
+   "properties": {
+    "id": {
+     "title": "Id",
+     "type": "string"
+    },
+    "nombre": {
+     "title": "Nombre",
+     "type": "string"
+    },
+    "queAbarca": {
+     "title": "Queabarca",
+     "type": "string"
+    },
+    "provincias": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Provincias",
+     "type": "array"
+    }
+   },
+   "required": [
+    "id",
+    "nombre",
+    "queAbarca",
+    "provincias"
+   ],
+   "title": "Region",
+   "type": "object"
+  },
+  "Registrado": {
+   "properties": {
+    "mes": {
+     "title": "Mes",
+     "type": "string"
+    },
+    "region": {
+     "title": "Region",
+     "type": "string"
+    },
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "pronostico": {
+     "title": "Pronostico",
+     "type": "number"
+    },
+    "banda80": {
+     "maxItems": 2,
+     "minItems": 2,
+     "prefixItems": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      }
+     ],
+     "title": "Banda80",
+     "type": "array"
+    },
+    "banda90": {
+     "anyOf": [
+      {
+       "maxItems": 2,
+       "minItems": 2,
+       "prefixItems": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "number"
+        }
+       ],
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Banda90"
+    },
+    "real": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "description": "vacio hasta que el indec publica el mes",
+     "title": "Real"
+    },
+    "generado": {
+     "format": "date-time",
+     "title": "Generado",
+     "type": "string"
+    },
+    "modelo": {
+     "title": "Modelo",
+     "type": "string"
+    }
+   },
+   "required": [
+    "mes",
+    "region",
+    "rubro",
+    "pronostico",
+    "banda80",
+    "banda90",
+    "real",
+    "generado",
+    "modelo"
+   ],
+   "title": "Registrado",
+   "type": "object"
+  },
+  "Resumen": {
+   "properties": {
+    "meta": {
+     "$ref": "#/$defs/Meta"
+    },
+    "regiones": {
+     "items": {
+      "$ref": "#/$defs/Region"
+     },
+     "title": "Regiones",
+     "type": "array"
+    },
+    "rubros": {
+     "items": {
+      "$ref": "#/$defs/Rubro"
+     },
+     "title": "Rubros",
+     "type": "array"
+    },
+    "ultimoDato": {
+     "items": {
+      "$ref": "#/$defs/Dato"
+     },
+     "title": "Ultimodato",
+     "type": "array"
+    },
+    "pronosticos": {
+     "items": {
+      "$ref": "#/$defs/Pronostico"
+     },
+     "title": "Pronosticos",
+     "type": "array"
+    },
+    "traslado": {
+     "items": {
+      "$ref": "#/$defs/Traslado"
+     },
+     "title": "Traslado",
+     "type": "array"
+    },
+    "trasladoRegimen": {
+     "items": {
+      "$ref": "#/$defs/TrasladoRegimen"
+     },
+     "title": "Trasladoregimen",
+     "type": "array"
+    },
+    "cadena": {
+     "items": {
+      "$ref": "#/$defs/Cadena"
+     },
+     "title": "Cadena",
+     "type": "array"
+    },
+    "metricas": {
+     "items": {
+      "$ref": "#/$defs/Metricas"
+     },
+     "title": "Metricas",
+     "type": "array"
+    },
+    "errorAnual": {
+     "items": {
+      "$ref": "#/$defs/ErrorAnual"
+     },
+     "title": "Erroranual",
+     "type": "array"
+    },
+    "registro": {
+     "items": {
+      "$ref": "#/$defs/Registrado"
+     },
+     "title": "Registro",
+     "type": "array"
+    },
+    "revisiones": {
+     "$ref": "#/$defs/Revisiones"
+    },
+    "automatizacion": {
+     "$ref": "#/$defs/Automatizacion"
+    }
+   },
+   "required": [
+    "meta",
+    "regiones",
+    "rubros",
+    "ultimoDato",
+    "pronosticos",
+    "traslado",
+    "trasladoRegimen",
+    "cadena",
+    "metricas",
+    "errorAnual",
+    "registro",
+    "revisiones",
+    "automatizacion"
+   ],
+   "title": "Resumen",
+   "type": "object"
+  },
+  "Revisiones": {
+   "properties": {
+    "comparados": {
+     "title": "Comparados",
+     "type": "integer"
+    },
+    "corregidos": {
+     "title": "Corregidos",
+     "type": "integer"
+    },
+    "informes": {
+     "title": "Informes",
+     "type": "integer"
+    },
+    "desde": {
+     "title": "Desde",
+     "type": "string"
+    },
+    "hasta": {
+     "title": "Hasta",
+     "type": "string"
+    },
+    "publicaciones": {
+     "items": {
+      "$ref": "#/$defs/Publicacion"
+     },
+     "title": "Publicaciones",
+     "type": "array"
+    }
+   },
+   "required": [
+    "comparados",
+    "corregidos",
+    "informes",
+    "desde",
+    "hasta",
+    "publicaciones"
+   ],
+   "title": "Revisiones",
+   "type": "object"
+  },
+  "Rubro": {
+   "properties": {
+    "id": {
+     "title": "Id",
+     "type": "string"
+    },
+    "nombre": {
+     "title": "Nombre",
+     "type": "string"
+    },
+    "esContraste": {
+     "description": "energia: tarifa regulada, referencia de contraste",
+     "title": "Escontraste",
+     "type": "boolean"
+    },
+    "esGeneral": {
+     "title": "Esgeneral",
+     "type": "boolean"
+    },
+    "etapas": {
+     "items": {
+      "enum": [
+       "industria",
+       "primaria"
+      ],
+      "type": "string"
+     },
+     "title": "Etapas",
+     "type": "array"
+    }
+   },
+   "required": [
+    "id",
+    "nombre",
+    "esContraste",
+    "esGeneral",
+    "etapas"
+   ],
+   "title": "Rubro",
+   "type": "object"
+  },
+  "SerieRubro": {
+   "properties": {
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "mayorista": {
+     "items": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "title": "Mayorista",
+     "type": "array"
+    },
+    "gondola": {
+     "additionalProperties": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array"
+     },
+     "description": "por region",
+     "title": "Gondola",
+     "type": "object"
+    },
+    "trasladoMovil": {
+     "anyOf": [
+      {
+       "items": {
+        "anyOf": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "description": "GBA, ventana movil",
+     "title": "Trasladomovil"
+    }
+   },
+   "required": [
+    "rubro",
+    "mayorista",
+    "gondola",
+    "trasladoMovil"
+   ],
+   "title": "SerieRubro",
+   "type": "object"
+  },
+  "Series": {
+   "properties": {
+    "meses": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Meses",
+     "type": "array"
+    },
+    "rubros": {
+     "items": {
+      "$ref": "#/$defs/SerieRubro"
+     },
+     "title": "Rubros",
+     "type": "array"
+    }
+   },
+   "required": [
+    "meses",
+    "rubros"
+   ],
+   "title": "Series",
+   "type": "object"
+  },
+  "Traslado": {
+   "properties": {
+    "region": {
+     "title": "Region",
+     "type": "string"
+    },
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "etapa": {
+     "enum": [
+      "industria",
+      "primaria"
+     ],
+     "title": "Etapa",
+     "type": "string"
+    },
+    "largoPlazo": {
+     "description": "cuanto de la suba relativa del mayorista llega",
+     "title": "Largoplazo",
+     "type": "number"
+    },
+    "intervalo": {
+     "maxItems": 2,
+     "minItems": 2,
+     "prefixItems": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      }
+     ],
+     "title": "Intervalo",
+     "type": "array"
+    },
+    "significativo": {
+     "description": "despues de corregir por comparaciones multiples",
+     "title": "Significativo",
+     "type": "boolean"
+    },
+    "porMes": {
+     "description": "mes 0 a 3",
+     "maxItems": 4,
+     "minItems": 4,
+     "prefixItems": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      }
+     ],
+     "title": "Pormes",
+     "type": "array"
+    },
+    "n": {
+     "title": "N",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "region",
+    "rubro",
+    "etapa",
+    "largoPlazo",
+    "intervalo",
+    "significativo",
+    "porMes",
+    "n"
+   ],
+   "title": "Traslado",
+   "type": "object"
+  },
+  "TrasladoRegimen": {
+   "properties": {
+    "rubro": {
+     "title": "Rubro",
+     "type": "string"
+    },
+    "regimen": {
+     "enum": [
+      "baja",
+      "media",
+      "alta"
+     ],
+     "title": "Regimen",
+     "type": "string"
+    },
+    "largoPlazo": {
+     "title": "Largoplazo",
+     "type": "number"
+    },
+    "intervalo": {
+     "maxItems": 2,
+     "minItems": 2,
+     "prefixItems": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "number"
+      }
+     ],
+     "title": "Intervalo",
+     "type": "array"
+    },
+    "significativo": {
+     "description": "p < 0.05, sin corregir",
+     "title": "Significativo",
+     "type": "boolean"
+    },
+    "n": {
+     "title": "N",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "rubro",
+    "regimen",
+    "largoPlazo",
+    "intervalo",
+    "significativo",
+    "n"
+   ],
+   "title": "TrasladoRegimen",
+   "type": "object"
+  }
+ },
+ "title": "Monitor"
+}
