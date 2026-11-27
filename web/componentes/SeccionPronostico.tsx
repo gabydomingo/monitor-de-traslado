@@ -86,34 +86,34 @@ export function SeccionPronostico({
           id="titulo-pronostico"
           className="text-[2rem] leading-tight font-semibold"
         >
-          El pronostico: como se hace y cuanto le erra
+          El pronóstico: cómo se hace y cuánto le erra
         </h2>
 
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
           <div className="max-w-[65ch] space-y-4 font-serif text-[1.0625rem] leading-relaxed">
             <p>
               Cada mes, cuando el INDEC publica los precios mayoristas, un
-              modelo de aprendizaje automatico (machine learning) estima la
-              inflacion del mes en curso para cada rubro y cada region. Mira lo
-              que paso el mes anterior en el mayorista y en la gondola, el dolar
-              de los primeros dias del mes y lo que esperan los analistas que
+              modelo de aprendizaje automático (machine learning) estima la
+              inflación del mes en curso para cada rubro y cada región. Mira lo
+              que pasó el mes anterior en el mayorista y en la góndola, el dólar
+              de los primeros días del mes y lo que esperan los analistas que
               encuesta el Banco Central.
             </p>
             <p>
-              Son dos modelos promediados: uno de arboles de decision, que
-              aprende de las {totalSeries} series juntas, y una regresion por
-              serie, que puede seguir un salto del dolar que nunca vio.
+              Son dos modelos promediados: uno de árboles de decisión, que
+              aprende de las {totalSeries} series juntas, y una regresión por
+              serie, que puede seguir un salto del dólar que nunca vio.
             </p>
             <p>
               <strong>Puede errar.</strong> No es un dato oficial: por eso cada
-              numero va con dos franjas. La oscura es donde cayo el dato 8 de
-              cada 10 veces cuando se probo hacia atras; la clara, 9 de cada 10.
-              Si el dolar salta a principio de mes, las franjas se agrandan
+              número va con dos franjas. La oscura es donde cayó el dato 8 de
+              cada 10 veces cuando se probó hacia atrás; la clara, 9 de cada 10.
+              Si el dólar salta a principio de mes, las franjas se agrandan
               solas.
             </p>
             <p>
-              Donde mas falla es con devaluaciones bruscas (en diciembre de 2023
-              la franja de 8 de 10 acerto la mitad de las veces) y con frutas y
+              Donde más falla es con devaluaciones bruscas (en diciembre de 2023
+              la franja de 8 de 10 acertó la mitad de las veces) y con frutas y
               verduras, que dependen del clima y de la cosecha.
             </p>
           </div>
@@ -121,11 +121,11 @@ export function SeccionPronostico({
           <figure>
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <figcaption className="font-serif text-[1.25rem] font-semibold">
-                Lo que dijo y lo que paso en {region}
+                Lo que dijo y lo que pasó en {region}
               </figcaption>
               <div
                 role="group"
-                aria-label="Periodo"
+                aria-label="Período"
                 className="flex border border-filete text-sm"
               >
                 {[false, true].map((k) => (
@@ -164,13 +164,13 @@ export function SeccionPronostico({
             <Grafico
               dibujar={dibujar}
               alto={300}
-              descripcion={`Pronostico y dato real de ${rubro.nombre} en ${region}, mes a mes. El dato cayo en la franja de 8 de cada 10 ${adentro} de ${puntos.length} veces`}
+              descripcion={`Pronóstico y dato real de ${rubro.nombre} en ${region}, mes a mes. El dato cayó en la franja de 8 de cada 10 ${adentro} de ${puntos.length} veces`}
               className="mt-3"
             />
             <p className="mt-2 max-w-[65ch] text-[0.8125rem] text-tinta-2">
-              Linea punteada: lo que dijo el modelo con los datos que habia ese
-              mes. Puntos: el dato del INDEC, lleno si cayo en la franja oscura
-              y vacio si no. En estos {puntos.length} meses el dato cayo{" "}
+              Línea punteada: lo que dijo el modelo con los datos que había ese
+              mes. Puntos: el dato del INDEC, lleno si cayó en la franja oscura
+              y vacío si no. En estos {puntos.length} meses el dato cayó{" "}
               {adentro} veces en la oscura y {adentro90} en la clara.
             </p>
             {rubro.esContraste && <NotaEnergia />}
@@ -180,16 +180,16 @@ export function SeccionPronostico({
         <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-x-12 gap-y-10 lg:grid-cols-2">
           <div>
             <h3 className="text-[1.25rem] font-semibold">
-              Cuanto le erro, en promedio
+              Cuánto le erró, en promedio
             </h3>
             <p className="mt-2 max-w-[60ch]">
-              Error medio en puntos de inflacion mensual, todas las regiones. La
-              vara es lo mas simple: suponer que el mes que viene va a ser igual
+              Error medio en puntos de inflación mensual, todas las regiones. La
+              vara es lo más simple: suponer que el mes que viene va a ser igual
               a este.
             </p>
             <table className="mt-4 w-full text-sm">
               <caption className="sr-only">
-                Error medio por periodo del modelo y de repetir el ultimo dato
+                Error medio por período del modelo y de repetir el último dato
               </caption>
               <thead>
                 <tr className="border-b border-tinta text-left">
@@ -197,7 +197,7 @@ export function SeccionPronostico({
                     scope="col"
                     className="py-2 pr-2 font-normal text-tinta-2"
                   >
-                    Periodo
+                    Período
                   </th>
                   <th
                     scope="col"
@@ -286,7 +286,7 @@ export function SeccionPronostico({
                 En los rubros el modelo erra{" "}
                 {num(100 - (rubros.combinado / rubros.naive) * 100)}% menos que
                 repetir el dato
-                {rubrosSiempre ? ", en todos los periodos" : ""}
+                {rubrosSiempre ? ", en todos los períodos" : ""}
                 {rubros.pValor < 0.05 ? ", y la diferencia es clara" : ""}.{" "}
                 {pierde.length > 0 ? (
                   <>
@@ -298,16 +298,16 @@ export function SeccionPronostico({
                       ? " pero sin una diferencia clara"
                       : ""}
                     , y en {pierde.join(" y ")} repetir el dato anterior anduvo
-                    mejor: con la inflacion quieta, casi no se mueve de un mes a
-                    otro y es muy dificil de mejorar. Por eso el panel de cada
-                    region muestra tambien lo que daria repetir el dato.
+                    mejor: con la inflación quieta, casi no se mueve de un mes a
+                    otro y es muy difícil de mejorar. Por eso el panel de cada
+                    región muestra también lo que daría repetir el dato.
                   </>
                 ) : (
-                  <>En el nivel general tambien gana en todos los periodos.</>
+                  <>En el nivel general también gana en todos los períodos.</>
                 )}
               </p>
               <p className="text-tinta-2">
-                Las franjas cumplen lo que prometen: en los rubros el dato cayo
+                Las franjas cumplen lo que prometen: en los rubros el dato cayó
                 en la oscura el {pct(rubros.cobertura80 * 100, 0)} de las veces
                 y en la clara el {pct(rubros.cobertura90 * 100, 0)}; en el nivel
                 general, {pct(general.cobertura80 * 100, 0)} y{" "}
@@ -354,9 +354,9 @@ function Registro({
         En vivo: lo que dijo antes de saberlo
       </h3>
       <p className="mt-2 max-w-[60ch]">
-        Cada pronostico se guarda el dia que se hace, antes de que salga el
-        dato, y no se toca mas. Cuando el INDEC publica, se compara aca. El
-        registro empezo en{" "}
+        Cada pronóstico se guarda el día que se hace, antes de que salga el
+        dato, y no se toca más. Cuando el INDEC publica, se compara acá. El
+        registro empezó en{" "}
         {meses.length ? mesLargo(meses[meses.length - 1]) : "este mes"} y suma
         un mes cada vez.
       </p>
@@ -406,7 +406,7 @@ function TablaRegistro({
       <thead className="sr-only">
         <tr>
           <th scope="col">Serie</th>
-          <th scope="col">Pronostico</th>
+          <th scope="col">Pronóstico</th>
           <th scope="col">Franja de 8 de cada 10</th>
           <th scope="col">Dato real</th>
         </tr>

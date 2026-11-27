@@ -84,51 +84,51 @@ export function PanelRegion({
       </h2>
       <p className="mt-1 max-w-[60ch] text-tinta-2">{info.queAbarca}.</p>
 
-      <Bloque titulo={`Que subio en ${nombreMes(meta.ultimoMes)}`}>
+      <Bloque titulo={`Qué subió en ${nombreMes(meta.ultimoMes)}`}>
         <p className="max-w-[60ch]">
-          Los precios subieron {pct(general)} en promedio. El rubro que mas subio fue{" "}
+          Los precios subieron {pct(general)} en promedio. El rubro que más subió fue{" "}
           {mayor.nombre.toLowerCase()}, con {pct(mayor.valor)}.
         </p>
         <Grafico
           dibujar={dibujarBarras}
           alto={barras.length * 22 + 36}
-          descripcion={`Inflacion de ${mesLargo(meta.ultimoMes)} en ${region} por rubro, de mayor a menor`}
+          descripcion={`Inflación de ${mesLargo(meta.ultimoMes)} en ${region} por rubro, de mayor a menor`}
           className="mt-3"
         />
         <NotaEnergia />
       </Bloque>
 
-      <Bloque titulo={`Que se espera para ${nombreMes(meta.mesPronosticado)}`}>
+      <Bloque titulo={`Qué se espera para ${nombreMes(meta.mesPronosticado)}`}>
         <p className="max-w-[60ch]">
-          El modelo dice {pct(pron.valor)}. Con lo que le erro antes, 8 de cada 10 veces el dato cae
+          El modelo dice {pct(pron.valor)}. Con lo que le erró antes, 8 de cada 10 veces el dato cae
           en la franja oscura (de {pct(pron.banda80[0])} a {pct(pron.banda80[1])}) y 9 de cada 10 en
           la clara (de {pct(pron.banda90[0])} a {pct(pron.banda90[1])}).
           {pron.ultimo !== null && (
-            <> Si se repitiera el dato de {nombreMes(meta.ultimoMes)}, seria {pct(pron.ultimo)}.</>
+            <> Si se repitiera el dato de {nombreMes(meta.ultimoMes)}, sería {pct(pron.ultimo)}.</>
           )}
         </p>
         <Grafico
           dibujar={dibujarAbanico}
           alto={220}
-          descripcion={`Inflacion mensual de ${region} en los ultimos 12 meses y pronostico para ${mesLargo(meta.mesPronosticado)}: ${pct(pron.valor)}`}
+          descripcion={`Inflación mensual de ${region} en los últimos 12 meses y pronóstico para ${mesLargo(meta.mesPronosticado)}: ${pct(pron.valor)}`}
           className="mt-3"
         />
         <p className="mt-2 max-w-[65ch] text-[0.8125rem] text-tinta-2">
-          Es un pronostico estadistico, no un dato oficial. <a href="#pronostico">Como se hace y cuanto le erra</a>.
+          Es un pronóstico estadístico, no un dato oficial. <a href="#pronostico">Cómo se hace y cuánto le erra</a>.
         </p>
       </Bloque>
 
-      <Bloque titulo="Cuanto del mayorista llega a la gondola">
+      <Bloque titulo="Cuánto del mayorista llega a la góndola">
         <p className="max-w-[60ch]">
-          Cuando el precio mayorista de un rubro sube mas que la inflacion general, la gondola no
-          siempre sigue. El punto es la parte de esa suba que termina en el precio que pagas, con
+          Cuando el precio mayorista de un rubro sube más que la inflación general, la góndola no
+          siempre sigue. El punto es la parte de esa suba que termina en el precio que pagás, con
           su rango. En {region} se puede afirmar para {significativos} de {filas.length - 1} rubros;
           el resto, en gris, no se distingue de cero.
         </p>
         <Grafico
           dibujar={dibujarTraslado}
           alto={filas.length * 22 + 50}
-          descripcion={`Traslado del mayorista a la gondola por rubro en ${region}, con su rango`}
+          descripcion={`Traslado del mayorista a la góndola por rubro en ${region}, con su rango`}
           className="mt-3"
         />
         <p className="mt-2 max-w-[65ch] text-[0.8125rem] text-tinta-2">

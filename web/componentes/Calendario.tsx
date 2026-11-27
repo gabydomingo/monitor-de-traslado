@@ -18,17 +18,17 @@ export function Calendario({ publicaciones }: { publicaciones: Publicacion[] }) 
   return (
     <figure className="mt-8 border-t border-filete pt-4">
       <figcaption className="font-sans text-[0.9375rem] font-semibold">
-        Que dia del mes publica el INDEC
+        Qué día del mes publica el INDEC
       </figcaption>
       <Grafico
         dibujar={dibujar}
         alto={200}
-        descripcion="Dia del mes en que el INDEC publico cada IPC y cada indice mayorista desde 2017"
+        descripcion="Día del mes en que el INDEC publicó cada IPC y cada índice mayorista desde 2017"
         className="mt-2"
       />
       <p className="mt-1 max-w-[65ch] text-[0.8125rem] text-tinta-2">
-        Puntos llenos: IPC. Vacios: mayoristas. Salen de las mismas paginas de los informes. El
-        pronostico se hace el dia que sale el mayorista.
+        Puntos llenos: IPC. Vacíos: mayoristas. Salen de las mismas páginas de los informes. El
+        pronóstico se hace el día que sale el mayorista.
       </p>
     </figure>
   );

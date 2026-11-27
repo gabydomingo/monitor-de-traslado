@@ -27,34 +27,34 @@ export function Franja({
     <div className="border-y border-tinta">
       <dl id="franja" className="mx-auto grid max-w-[1200px] grid-cols-2 md:grid-cols-4 md:px-8">
         <Celda
-          titulo={`Inflacion de ${nombreMes(meta.ultimoMes)}`}
+          titulo={`Inflación de ${nombreMes(meta.ultimoMes)}`}
           className="border-r border-b border-filete md:border-b-0"
         >
           <Cifra>{pct(ultimo?.valor)}</Cifra>
-          <Nota>Nivel general del IPC en {region}, segun el INDEC</Nota>
+          <Nota>Nivel general del IPC en {region}, según el INDEC</Nota>
         </Celda>
 
-        <Celda titulo={`Pronostico para ${nombreMes(meta.mesPronosticado)}`} className="border-b border-filete md:border-r md:border-b-0">
+        <Celda titulo={`Pronóstico para ${nombreMes(meta.mesPronosticado)}`} className="border-b border-filete md:border-r md:border-b-0">
           <Cifra>{pct(pron?.valor)}</Cifra>
           {pron && (
             <Nota>
               8 de cada 10 veces el dato cae entre {pct(pron.banda80[0])} y {pct(pron.banda80[1])}.{" "}
-              <a href="#pronostico">Cuanto le erra</a>
+              <a href="#pronostico">Cuánto le erra</a>
             </Nota>
           )}
         </Celda>
 
-        <Celda titulo="Proximo dato del INDEC" className="border-r border-filete">
+        <Celda titulo="Próximo dato del INDEC" className="border-r border-filete">
           <p className="font-serif text-[1.5rem] leading-tight font-medium md:text-[1.75rem]">
             {prox.diaDesde} al {prox.diaHasta} de {nombreMes(prox.publicacion)}
           </p>
           <Nota>
-            Sale el IPC de {nombreMes(prox.mes)} y esta pagina se actualiza sola.{" "}
-            <a href="#como-se-actualiza">Como</a>
+            Sale el IPC de {nombreMes(prox.mes)} y esta página se actualiza sola.{" "}
+            <a href="#como-se-actualiza">Cómo</a>
           </Nota>
         </Celda>
 
-        <Celda titulo="Region">
+        <Celda titulo="Región">
           <div className="relative">
             <span
               aria-hidden
@@ -62,7 +62,7 @@ export function Franja({
               style={{ background: COLOR_REGION[region] }}
             />
             <select
-              aria-label="Elegir region"
+              aria-label="Elegir región"
               value={region}
               onChange={(e) => onRegion(e.target.value as RegionId)}
               className="w-full cursor-pointer appearance-none border-b border-tinta bg-transparent py-1 pr-6 pl-5 font-serif text-[1.5rem] leading-tight font-medium transition-colors duration-150 ease-out hover:bg-papel-2 md:text-[1.75rem]"

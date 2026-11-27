@@ -11,14 +11,14 @@ const sitio = process.env.VERCEL_PROJECT_PRODUCTION_URL
   : "http://localhost:3000";
 
 const descripcion =
-  "Cuanto de lo que sube en el mayorista llega a la gondola, region por region, con un pronostico del mes que viene y cuanto le erra. Datos del INDEC y del BCRA, actualizados solos.";
+  "Cuánto de lo que sube en el mayorista llega a la góndola, región por región, con un pronóstico del mes que viene y cuánto le erra. Datos del INDEC y del BCRA, actualizados solos.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(sitio),
-  title: "Efecto Gondola",
+  title: "Efecto Góndola",
   description: descripcion,
   openGraph: {
-    title: "Efecto Gondola",
+    title: "Efecto Góndola",
     description: descripcion,
     type: "website",
     locale: "es_AR",

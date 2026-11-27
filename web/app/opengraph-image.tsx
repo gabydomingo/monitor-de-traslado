@@ -13,7 +13,7 @@ export const dynamic = "force-static";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt =
-  "Efecto Gondola: mapa de las regiones del IPC con la inflacion y el pronostico";
+  "Efecto Góndola: mapa de las regiones del IPC con la inflación y el pronóstico";
 
 const fuente = (paquete: string, archivo: string) =>
   readFileSync(
@@ -70,7 +70,7 @@ export default function Imagen() {
               lineHeight: 1,
             }}
           >
-            Efecto Gondola
+            Efecto Góndola
           </div>
           <div
             style={{
@@ -81,8 +81,8 @@ export default function Imagen() {
               lineHeight: 1.3,
             }}
           >
-            Cuanto de lo que sube en el mayorista llega al precio que pagas,
-            region por region.
+            Cuánto de lo que sube en el mayorista llega al precio que pagás,
+            región por región.
           </div>
         </div>
         <div
@@ -95,7 +95,7 @@ export default function Imagen() {
           <div style={{ display: "flex", flexDirection: "column", width: 300 }}>
             <div
               style={{ fontSize: 22, color: "#595752" }}
-            >{`Inflacion de ${nombreMes(meta.ultimoMes)}, GBA`}</div>
+            >{`Inflación de ${nombreMes(meta.ultimoMes)}, GBA`}</div>
             <div
               style={{
                 fontFamily: "Source Serif",
@@ -116,7 +116,7 @@ export default function Imagen() {
           >
             <div
               style={{ fontSize: 22, color: "#595752" }}
-            >{`Pronostico para ${nombreMes(meta.mesPronosticado)}`}</div>
+            >{`Pronóstico para ${nombreMes(meta.mesPronosticado)}`}</div>
             <div
               style={{
                 fontFamily: "Source Serif",

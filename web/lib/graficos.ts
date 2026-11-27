@@ -41,14 +41,14 @@ const TIP = { fill: "#FAF9F6", stroke: FILETE, pathFilter: "none" } as const;
 
 // en celular los nombres largos no entran al lado de las barras
 const CORTOS: Record<string, string> = {
-  "Electricidad gas y combustibles": "Electricidad y gas",
-  "Diarios libros y papeleria": "Diarios y libros",
+  "Electricidad, gas y combustibles": "Electricidad y gas",
+  "Diarios, libros y papelería": "Diarios y libros",
   "Aguas gaseosas y jugos": "Gaseosas y jugos",
   "Equipamiento del hogar": "Equip. del hogar",
   "Productos medicinales": "Medicamentos",
   "Verduras y legumbres": "Verduras",
-  "Bebidas alcoholicas": "Bebidas alcoh.",
-  "Compra de vehiculos": "Vehiculos",
+  "Bebidas alcohólicas": "Bebidas alcoh.",
+  "Compra de vehículos": "Vehículos",
 };
 export const corto = (nombre: string, angosto: boolean) => (angosto ? (CORTOS[nombre] ?? nombre) : nombre);
 
@@ -301,7 +301,7 @@ export function trasladoRubros(filas: FilaTraslado[], ancho: number) {
 export interface PuntoSerie {
   mes: string;
   valor: number;
-  serie: "Mayorista" | "Gondola";
+  serie: "Mayorista" | "Góndola";
 }
 
 /** variacion mensual del mayorista y de la gondola del rubro */
@@ -313,7 +313,7 @@ export function mayoristaVsGondola(
 ) {
   const ultimos = (s: PuntoSerie["serie"]) => datos.filter((d) => d.serie === s).at(-1);
   const m = ultimos("Mayorista");
-  const g = ultimos("Gondola");
+  const g = ultimos("Góndola");
   const valores = datos.map((d) => d.valor);
   const [dm, dg] =
     m && g ? separar(m.valor, g.valor, Math.max(...valores) - Math.min(...valores)) : [0, 0];
@@ -337,7 +337,7 @@ export function mayoristaVsGondola(
         strokeWidth: 1.25,
       }),
       Plot.lineY(datos, {
-        filter: (d: PuntoSerie) => d.serie === "Gondola",
+        filter: (d: PuntoSerie) => d.serie === "Góndola",
         x: (d: PuntoSerie) => fechaMes(d.mes),
         y: "valor",
         stroke: contraste ? CONTRASTE : color,
@@ -356,7 +356,7 @@ export function mayoristaVsGondola(
       Plot.text(g ? [g] : [], {
         x: (d: PuntoSerie) => fechaMes(d.mes),
         y: "valor",
-        text: () => "Gondola",
+        text: () => "Góndola",
         dx: 6,
         dy: dg,
         textAnchor: "start",
@@ -583,7 +583,7 @@ export function calendario(datos: PuntoPublicacion[], ancho: number) {
     marginBottom: 28,
     style: ESTILO,
     x: { type: "utc", tickFormat: (d: Date) => `${d.getUTCFullYear()}`, ticks: ancho < 480 ? 4 : 9, label: null },
-    y: { domain: [8, 26], ticks: [10, 15, 20, 25], label: null, grid: true, tickFormat: (d: number) => `dia ${num(d)}` },
+    y: { domain: [8, 26], ticks: [10, 15, 20, 25], label: null, grid: true, tickFormat: (d: number) => `día ${num(d)}` },
     marks: [
       Plot.gridY({ stroke: FILETE, strokeOpacity: 1, ticks: [10, 15, 20, 25] }),
       Plot.dot(datos, {

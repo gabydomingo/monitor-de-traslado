@@ -69,7 +69,7 @@ export function VistaRubro({
     if (m !== null && m !== undefined)
       out.push({ mes, valor: m, serie: "Mayorista" });
     if (g !== null && g !== undefined)
-      out.push({ mes, valor: g, serie: "Gondola" });
+      out.push({ mes, valor: g, serie: "Góndola" });
     return out;
   });
 
@@ -128,8 +128,8 @@ export function VistaRubro({
               Rubro por rubro
             </h2>
             <p className="mt-1 max-w-[60ch] text-tinta-2">
-              Del mayorista a la gondola en {region}. El mayorista es uno solo
-              para todo el pais.
+              Del mayorista a la góndola en {region}. El mayorista es uno solo
+              para todo el país.
             </p>
           </div>
           <label className="flex w-full flex-col gap-1 text-sm text-tinta-2 sm:w-auto">
@@ -157,11 +157,11 @@ export function VistaRubro({
           <figure>
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <figcaption className="font-serif text-[1.25rem] font-semibold">
-                Cuanto subio cada mes
+                Cuánto subió cada mes
               </figcaption>
               <div
                 role="group"
-                aria-label="Periodo"
+                aria-label="Período"
                 className="flex border border-filete text-sm"
               >
                 {(Object.keys(DESDE) as (keyof typeof DESDE)[]).map((k) => (
@@ -182,33 +182,33 @@ export function VistaRubro({
             <Grafico
               dibujar={dibujarSerie}
               alto={280}
-              descripcion={`Variacion mensual del precio mayorista y de gondola de ${info.nombre} en ${region}`}
+              descripcion={`Variación mensual del precio mayorista y de góndola de ${info.nombre} en ${region}`}
               className="mt-3"
             />
             <p className="mt-2 max-w-[65ch] text-[0.8125rem] text-tinta-2">
-              Variacion mensual. Mayorista: indice de precios internos al por
+              Variación mensual. Mayorista: índice de precios internos al por
               mayor (IPIM) o, para frutas y verduras, precios del productor.
-              Gondola: IPC de {region}.
+              Góndola: IPC de {region}.
             </p>
           </figure>
 
           <div>
             <h3 className="text-[1.25rem] font-semibold">
-              Cuanto llega y cuando
+              Cuánto llega y cuándo
             </h3>
             {t ? (
               <>
                 <p className="mt-2 max-w-[60ch]">
                   {t.significativo ? (
                     <>
-                      De cada suba del mayorista por encima de la inflacion
-                      general, a la gondola llega{" "}
+                      De cada suba del mayorista por encima de la inflación
+                      general, a la góndola llega{" "}
                       <strong>{parte(t.largoPlazo)}</strong> (entre{" "}
                       {parte(t.intervalo[0])} y {parte(t.intervalo[1])}).
                     </>
                   ) : (
                     <>
-                      La estimacion da {parte(t.largoPlazo)}, pero el rango va
+                      La estimación da {parte(t.largoPlazo)}, pero el rango va
                       de {parte(t.intervalo[0])} a {parte(t.intervalo[1])}: no
                       se puede distinguir de cero. Con estos datos no se puede
                       afirmar que haya traslado.
@@ -229,24 +229,24 @@ export function VistaRubro({
               </>
             ) : (
               <p className="mt-2 text-tinta-2">
-                No hay estimacion para este rubro en {region}.
+                No hay estimación para este rubro en {region}.
               </p>
             )}
           </div>
 
           {filasRegimen.length > 0 && (
             <div>
-              <h3 className="text-[1.25rem] font-semibold">Segun la epoca</h3>
+              <h3 className="text-[1.25rem] font-semibold">Según la época</h3>
               <p className="mt-2 max-w-[60ch]">
-                Solo para GBA, que tiene la serie mas larga: el mismo calculo
-                separado por epocas de inflacion. En {masConAlta} de los{" "}
-                {conAmbas} rubros llega mas con inflacion alta que con baja,
-                pero cada epoca tiene pocos datos y los rangos son anchos.
+                Solo para GBA, que tiene la serie más larga: el mismo cálculo
+                separado por épocas de inflación. En {masConAlta} de los{" "}
+                {conAmbas} rubros llega más con inflación alta que con baja,
+                pero cada época tiene pocos datos y los rangos son anchos.
               </p>
               <Grafico
                 dibujar={dibujarRegimen}
                 alto={filasRegimen.length * 34 + 44}
-                descripcion={`Traslado de ${info.nombre} en GBA segun la epoca de inflacion`}
+                descripcion={`Traslado de ${info.nombre} en GBA según la época de inflación`}
                 className="mt-3"
               />
             </div>
@@ -255,19 +255,19 @@ export function VistaRubro({
           {puntosCadena.length > 0 && (
             <div>
               <h3 className="text-[1.25rem] font-semibold">
-                Del campo a la gondola
+                Del campo a la góndola
               </h3>
               <p className="mt-2 max-w-[60ch]">
                 Para {info.nombre.toLowerCase()} hay precio del productor y de
-                la industria. Esto es cuanto sube la gondola de GBA, acumulado
-                mes a mes, despues de una suba en cada eslabon. La linea gris
-                parte del productor; la negra, de la industria. Tambien solo
+                la industria. Esto es cuánto sube la góndola de GBA, acumulado
+                mes a mes, después de una suba en cada eslabón. La línea gris
+                parte del productor; la negra, de la industria. También solo
                 para GBA.
               </p>
               <Grafico
                 dibujar={dibujarCadena}
                 alto={220}
-                descripcion={`Respuesta acumulada de la gondola de ${info.nombre} a una suba del productor y de la industria`}
+                descripcion={`Respuesta acumulada de la góndola de ${info.nombre} a una suba del productor y de la industria`}
                 className="mt-3"
               />
             </div>

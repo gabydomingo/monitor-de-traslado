@@ -36,7 +36,7 @@ export function MapaRegiones({
         viewBox={`0 0 ${ANCHO} ${ALTO}`}
         className="mx-auto block h-auto w-full max-w-[460px]"
         role="group"
-        aria-label="Mapa de las regiones del IPC. Elegi una region para ver sus datos"
+        aria-label="Mapa de las regiones del IPC. Elegí una región para ver sus datos"
       >
         <g>
           {mapa.regiones.map((t) => (
@@ -95,7 +95,7 @@ export function MapaRegiones({
       </svg>
 
       <figcaption className="mt-4">
-        <p className="sr-only">Tambien se puede elegir la region con esta lista.</p>
+        <p className="sr-only">También se puede elegir la región con esta lista.</p>
         <ul className="grid grid-cols-2 border-t border-filete sm:grid-cols-3">
           {REGIONES.map((r) => {
             const v = idx.ultimo(r, NG)?.valor;
@@ -119,7 +119,7 @@ export function MapaRegiones({
           })}
         </ul>
         <p className="mt-2 max-w-[65ch] text-[0.8125rem] text-tinta-2">
-          Inflacion de {nombreMes(resumen.meta.ultimoMes)}. El INDEC mide por region, no por provincia.
+          Inflación de {nombreMes(resumen.meta.ultimoMes)}. El INDEC mide por región, no por provincia.
         </p>
       </figcaption>
     </figure>
