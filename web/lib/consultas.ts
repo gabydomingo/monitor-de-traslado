@@ -49,6 +49,33 @@ export function aciertoDe(
   return backtest?.series.find((s) => s.region === region && s.rubro === rubro);
 }
 
+/**
+ * inflacion de cada rubro (y el nivel general) en una region y un mes. el ultimo mes sale del
+ * resumen, que ya viene en el html; los anteriores de las series, que se bajan aparte
+ */
+export function valoresDelMes(
+  resumen: Resumen,
+  series: Series | undefined,
+  region: string,
+  mes: string,
+): Map<string, number> | undefined {
+  if (mes === resumen.meta.ultimoMes) {
+    return new Map(
+      resumen.ultimoDato
+        .filter((d) => d.region === region)
+        .map((d) => [d.rubro, d.valor]),
+    );
+  }
+  const i = series?.meses.indexOf(mes) ?? -1;
+  if (!series || i < 0) return undefined;
+  const salida = new Map<string, number>();
+  for (const s of series.rubros) {
+    const v = s.gondola[region]?.[i];
+    if (v !== null && v !== undefined) salida.set(s.rubro, v);
+  }
+  return salida;
+}
+
 /** "2026-10" + n meses */
 export function sumarMeses(mes: string, n: number): string {
   const total = Number(mes.slice(0, 4)) * 12 + Number(mes.slice(5, 7)) - 1 + n;

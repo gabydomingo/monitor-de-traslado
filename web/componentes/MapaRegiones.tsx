@@ -1,10 +1,10 @@
 "use client";
 
-import type { Resumen } from "@/lib/tipos";
+import type { Resumen, Series } from "@/lib/tipos";
 import { ANCHO, ALTO, RECUADRO, type Mapa, type Trazo } from "@/lib/medidas";
 import { COLOR_REGION, REGIONES, type RegionId } from "@/lib/colores";
-import { NG, type Indice } from "@/lib/consultas";
-import { nombreMes, pct } from "@/lib/formato";
+import { NG, valoresDelMes, type Indice } from "@/lib/consultas";
+import { mesLargo, nombreMes, pct } from "@/lib/formato";
 
 // mapa de las seis regiones del ipc con un recuadro del gba. cada region es un boton:
 // se elige con el mouse, con el dedo o con el teclado (tab y enter)
@@ -14,13 +14,23 @@ export function MapaRegiones({
   idx,
   region,
   onRegion,
+  series,
+  mes,
 }: {
   mapa: Mapa;
   resumen: Resumen;
   idx: Indice;
   region: RegionId;
   onRegion: (r: RegionId) => void;
+  series: Series | undefined;
+  mes: string;
 }) {
+  // la lista de regiones muestra el mes elegido en el panel
+  const esUltimo = mes === resumen.meta.ultimoMes;
+  const valor = (r: RegionId) =>
+    esUltimo
+      ? idx.ultimo(r, NG)?.valor
+      : valoresDelMes(resumen, series, r, mes)?.get(NG);
   const { marca } = mapa;
   // la linea al recuadro sale del borde derecho de la marca del gba
   const linea = {
@@ -44,7 +54,13 @@ export function MapaRegiones({
           ))}
         </g>
         {/* limites de provincia, finitos y en color papel: orientan sin competir */}
-        <path d={mapa.provincias} fill="none" stroke="#FAF9F6" strokeWidth={0.6} pointerEvents="none" />
+        <path
+          d={mapa.provincias}
+          fill="none"
+          stroke="#FAF9F6"
+          strokeWidth={0.6}
+          pointerEvents="none"
+        />
         <g pointerEvents="none">
           {mapa.regiones
             .filter((t) => t.region !== "GBA")
@@ -63,7 +79,12 @@ export function MapaRegiones({
           strokeWidth={0.8}
           pointerEvents="none"
         />
-        <line {...linea} stroke="#1A1A1A" strokeWidth={0.8} pointerEvents="none" />
+        <line
+          {...linea}
+          stroke="#1A1A1A"
+          strokeWidth={0.8}
+          pointerEvents="none"
+        />
 
         <g>
           <rect
@@ -76,7 +97,13 @@ export function MapaRegiones({
             strokeWidth={1}
           />
           {mapa.recuadro.regiones.map((t) => (
-            <Region key={t.region} t={t} elegida={region} onRegion={onRegion} recuadro />
+            <Region
+              key={t.region}
+              t={t}
+              elegida={region}
+              onRegion={onRegion}
+              recuadro
+            />
           ))}
           <path
             d={mapa.recuadro.limites}
@@ -85,7 +112,13 @@ export function MapaRegiones({
             strokeWidth={0.5}
             pointerEvents="none"
           />
-          <text x={RECUADRO.x} y={RECUADRO.y - 8} fontSize={15} fill="#1A1A1A" pointerEvents="none">
+          <text
+            x={RECUADRO.x}
+            y={RECUADRO.y - 8}
+            fontSize={15}
+            fill="#1A1A1A"
+            pointerEvents="none"
+          >
             <tspan fontWeight={700}>GBA</tspan>
             <tspan fill="#595752" fontSize={12} dx={6}>
               ciudad y 24 partidos
@@ -95,10 +128,12 @@ export function MapaRegiones({
       </svg>
 
       <figcaption className="mt-4">
-        <p className="sr-only">También se puede elegir la región con esta lista.</p>
+        <p className="sr-only">
+          También se puede elegir la región con esta lista.
+        </p>
         <ul className="grid grid-cols-2 border-t border-filete sm:grid-cols-3">
           {REGIONES.map((r) => {
-            const v = idx.ultimo(r, NG)?.valor;
+            const v = valor(r);
             const activa = r === region;
             return (
               <li key={r} className="border-b border-filete">
@@ -110,7 +145,11 @@ export function MapaRegiones({
                     activa ? "bg-papel-2 font-semibold" : ""
                   }`}
                 >
-                  <span aria-hidden className="size-3 shrink-0 rounded-sm" style={{ background: COLOR_REGION[r] }} />
+                  <span
+                    aria-hidden
+                    className="size-3 shrink-0 rounded-sm"
+                    style={{ background: COLOR_REGION[r] }}
+                  />
                   <span className="grow">{r}</span>
                   <span className="text-tinta-2">{pct(v)}</span>
                 </button>
@@ -119,7 +158,8 @@ export function MapaRegiones({
           })}
         </ul>
         <p className="mt-2 max-w-[65ch] text-[0.8125rem] text-tinta-2">
-          Inflación de {nombreMes(resumen.meta.ultimoMes)}. El INDEC mide por región, no por provincia.
+          Inflación de {esUltimo ? nombreMes(mes) : mesLargo(mes)}. El INDEC
+          mide por región, no por provincia.
         </p>
       </figcaption>
     </figure>

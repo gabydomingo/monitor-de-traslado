@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Resumen } from "@/lib/tipos";
 import { useArchivo } from "@/lib/cliente";
 import type { Mapa } from "@/lib/medidas";
@@ -19,6 +19,31 @@ export function Monitor({ resumen, mapa }: { resumen: Resumen; mapa: Mapa }) {
   const idx = useMemo(() => indexar(resumen), [resumen]);
   // las series se piden apenas carga la pagina: el panel y el rubro las usan enseguida
   const series = useArchivo("series");
+
+  // el mes del panel. arranca en el ultimo dato; con ?mes=2023-12 en el link abre en ese mes
+  const ultimo = resumen.meta.ultimoMes;
+  const [mes, setMesEstado] = useState(ultimo);
+  useEffect(() => {
+    const pedido = new URLSearchParams(window.location.search).get("mes");
+    if (
+      pedido &&
+      /^\d{4}-\d{2}$/.test(pedido) &&
+      pedido >= "2017-01" &&
+      pedido < ultimo
+    ) {
+      setMesEstado(pedido);
+    }
+  }, [ultimo]);
+  const setMes = useCallback(
+    (m: string) => {
+      setMesEstado(m);
+      const url = new URL(window.location.href);
+      if (m === ultimo) url.searchParams.delete("mes");
+      else url.searchParams.set("mes", m);
+      window.history.replaceState(null, "", url);
+    },
+    [ultimo],
+  );
 
   return (
     <>
@@ -40,6 +65,8 @@ export function Monitor({ resumen, mapa }: { resumen: Resumen; mapa: Mapa }) {
             idx={idx}
             region={region}
             onRegion={setRegion}
+            series={series}
+            mes={mes}
           />
         </div>
         <PanelRegion
@@ -47,6 +74,8 @@ export function Monitor({ resumen, mapa }: { resumen: Resumen; mapa: Mapa }) {
           series={series}
           idx={idx}
           region={region}
+          mes={mes}
+          onMes={setMes}
         />
       </section>
 

@@ -3,7 +3,13 @@
 import { useCallback } from "react";
 import type { Resumen, Series } from "@/lib/tipos";
 import { COLOR_REGION, type RegionId } from "@/lib/colores";
-import { NG, serieDe, sumarMeses, type Indice } from "@/lib/consultas";
+import {
+  NG,
+  serieDe,
+  sumarMeses,
+  valoresDelMes,
+  type Indice,
+} from "@/lib/consultas";
 import { mesLargo, nombreMes, pct } from "@/lib/formato";
 import {
   abanico,
@@ -14,6 +20,7 @@ import {
 } from "@/lib/graficos";
 import { Grafico } from "./Grafico";
 import { NotaEnergia } from "./NotaEnergia";
+import { SelectorMes } from "./SelectorMes";
 
 // lo que se ve al elegir una region: que subio, que se espera y cuanto del mayorista llega
 export function PanelRegion({
@@ -21,27 +28,36 @@ export function PanelRegion({
   series,
   idx,
   region,
+  mes,
+  onMes,
 }: {
   resumen: Resumen;
   series: Series | undefined;
   idx: Indice;
   region: RegionId;
+  mes: string;
+  onMes: (m: string) => void;
 }) {
   const { meta } = resumen;
   const info = resumen.regiones.find((r) => r.id === region)!;
   const rubros = resumen.rubros.filter((r) => !r.esGeneral);
-  const general = idx.ultimo(region, NG)!.valor;
   const pron = idx.pronostico(region, NG)!;
 
+  // el bloque de barras puede mostrar cualquier mes; lo demas siempre es lo ultimo
+  const delMes = valoresDelMes(resumen, series, region, mes);
+  const general = delMes?.get(NG);
   const barras: Barra[] = rubros.flatMap((r) => {
-    const d = idx.ultimo(region, r.id);
-    return d
-      ? [{ nombre: r.nombre, valor: d.valor, contraste: r.esContraste }]
-      : [];
+    const v = delMes?.get(r.id);
+    return v === undefined
+      ? []
+      : [{ nombre: r.nombre, valor: v, contraste: r.esContraste }];
   });
   const mayor = [...barras]
     .filter((b) => !b.contraste)
     .sort((a, b) => b.valor - a.valor)[0];
+  const esUltimo = mes === meta.ultimoMes;
+  const tituloMes = esUltimo ? nombreMes(mes) : mesLargo(mes);
+  const mesesDisponibles = series?.meses ?? [meta.ultimoMes];
 
   const filas: FilaTraslado[] = rubros.flatMap((r) => {
     const t = idx.traslado(region, r.id);
@@ -82,9 +98,9 @@ export function PanelRegion({
 
   const color = COLOR_REGION[region];
   const dibujarBarras = useCallback(
-    (w: number) => barrasMes(barras, general, color, w),
+    (w: number) => barrasMes(barras, general ?? 0, color, w),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [region],
+    [region, mes, delMes],
   );
   const dibujarAbanico = useCallback(
     (w: number) =>
@@ -124,15 +140,35 @@ export function PanelRegion({
       </h2>
       <p className="mt-1 max-w-[60ch] text-tinta-2">{info.queAbarca}.</p>
 
-      <Bloque titulo={`Qué subió en ${nombreMes(meta.ultimoMes)}`}>
-        <p className="max-w-[60ch]">
-          Los precios subieron {pct(general)} en promedio. El rubro que más
-          subió fue {mayor.nombre.toLowerCase()}, con {pct(mayor.valor)}.
+      <Bloque titulo={`Qué subió en ${tituloMes}`}>
+        <SelectorMes
+          meses={mesesDisponibles}
+          mes={mes}
+          ultimo={meta.ultimoMes}
+          onMes={onMes}
+        />
+        <p className="mt-3 max-w-[60ch]" aria-live="polite">
+          {general === undefined ? (
+            <>Cargando {mesLargo(mes)}…</>
+          ) : (
+            <>
+              Los precios subieron {pct(general)} en promedio
+              {esUltimo ? "" : ` en ${mesLargo(mes)}`}.
+              {mayor && (
+                <>
+                  {" "}
+                  El rubro que más subió fue {mayor.nombre.toLowerCase()}, con{" "}
+                  {pct(mayor.valor)}.
+                </>
+              )}
+            </>
+          )}
         </p>
         <Grafico
           dibujar={dibujarBarras}
-          alto={barras.length * 22 + 36}
-          descripcion={`Inflación de ${mesLargo(meta.ultimoMes)} en ${region} por rubro, de mayor a menor`}
+          listo={barras.length > 0 && general !== undefined}
+          alto={rubros.length * 22 + 36}
+          descripcion={`Inflación de ${mesLargo(mes)} en ${region} por rubro, de mayor a menor`}
           className="mt-3"
         />
         <NotaEnergia />

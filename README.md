@@ -164,6 +164,7 @@ La pagina publica se llama Efecto Gondola. Es un sitio estatico en Next.js (`web
 - **Mapa.** Regiones del IPC con limites del IGN (SIG 250, via CONAE), en GeoJSON por [mgaitan/departamentos_argentina](https://github.com/mgaitan/departamentos_argentina). GBA es la ciudad mas los 24 partidos del conurbano; el resto de Buenos Aires va en Pampeana. Se simplifica con mapshaper (`npm run geo`) y se dibuja en el build con d3-geo: al navegador llegan solo los trazos.
 - **Graficos.** Observable Plot. El pronostico va en gris tinta, nunca en el color de una region. Energia siempre en gris pizarra punteado y con la aclaracion de tarifa regulada.
 - **Publicacion.** [efectogondola.vercel.app](https://efectogondola.vercel.app/), en Vercel con raiz en `web/`. Solo hace build si cambio algo en `web/` o en `data/web` desde el ultimo deploy (`web/vercel.json`).
+- **Cualquier mes.** El panel de cada region tiene un selector de mes desde enero de 2017, que tambien cambia la lista de regiones debajo del mapa. Se puede compartir un mes con el link: `efectogondola.vercel.app/?mes=2023-12`. La franja de arriba y el pronostico siempre muestran lo ultimo.
 - **Entre un mes y otro.** Cuando sale el IPC del mes pronosticado y todavia no el mayorista, el pronostico que hay ya es viejo: la pagina lo muestra como "dijo y fue" y avisa cuando sale el siguiente.
 
 ```
