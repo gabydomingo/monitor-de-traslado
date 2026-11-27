@@ -43,8 +43,8 @@ def que_falta(e: dict) -> tuple[pd.Timestamp, list[str]]:
     faltan = []
     if e["mayorista"] < e["ipc"]:
         faltan.append(f"el mayorista de {e['ipc']:%m-%Y}")
-    if e["dolar"] < objetivo + pd.Timedelta(days=14):
-        faltan.append(f"el dolar hasta el 15 de {objetivo:%m-%Y}")
+    if e["dolar"] < objetivo + pd.Timedelta(days=12):
+        faltan.append(f"el dolar hasta el 13 de {objetivo:%m-%Y}")
     return objetivo, faltan
 
 

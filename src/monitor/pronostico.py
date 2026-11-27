@@ -1,8 +1,8 @@
 """Pronostico de la inflacion del mes que viene por rubro y region.
 
-Cada fila es un mes objetivo T. El pronostico se hace cuando sale el mayorista de T-1, cerca
-del 19 de T. Para ese momento se conoce: el ipc y el mayorista de T-1, el rem de fines de T-1
-y el dolar de la primera quincena de T. Nada mas.
+Cada fila es un mes objetivo T. El pronostico se hace cuando sale el mayorista de T-1 (desde
+2018 entre el 14 y el 23 de T). Para ese momento se conoce: el ipc y el mayorista de T-1, el rem
+de fines de T-1 y el dolar del 1 al 13 de T. Nada mas.
 """
 
 import hashlib
@@ -38,8 +38,8 @@ FEATURES = [
     "gen_m12",
     "genmay_l1",
 ]
-# del bcra: dolar del mes anterior, dolar de la primera quincena y rem
-FEATURES_BCRA = ["tc_l1", "tc_quincena", "rem_l1"]
+# del bcra: dolar del mes anterior, dolar del 1 al 13 del mes y rem
+FEATURES_BCRA = ["tc_l1", "tc_inicio_mes", "rem_l1"]
 FEATURES = [*FEATURES, *FEATURES_BCRA]
 CATEGORICAS = ["par_id", "region"]
 ARBOLES = 300
@@ -66,8 +66,8 @@ def features_bcra(bcra: pd.DataFrame | None, fechas: pd.DatetimeIndex) -> pd.Dat
     out = pd.DataFrame(
         {
             "tc_l1": tc.diff().shift(1),
-            # lo que se movio el dolar en la primera quincena contra el promedio del mes anterior
-            "tc_quincena": np.log(b["tc_quincena"]) - tc.shift(1),
+            # lo que se movio el dolar del 1 al 13 contra el promedio del mes anterior
+            "tc_inicio_mes": np.log(b["tc_inicio_mes"]) - tc.shift(1),
             # el rem es inflacion esperada a 12 meses, la paso a mensual
             "rem_l1": np.log1p(b["rem_12m"].shift(1) / 100) / 12,
         }
@@ -145,7 +145,7 @@ def estacional(train, test):
 
 def arx(train, test):
     """Una regresion lineal por serie: inercia, mayorista, inflacion general y dolar."""
-    cols = ["y_l1", "may_l1", "may_l2", "gen_l1", "tc_l1", "tc_quincena"]
+    cols = ["y_l1", "may_l1", "may_l2", "gen_l1", "tc_l1", "tc_inicio_mes"]
     pred = test["y_l1"].to_numpy(dtype=float).copy()
     # todo en numpy: con pandas se iba casi todo el tiempo en indexar, no en las cuentas
     X_tr, y_tr = train[cols].to_numpy(dtype=float), train["y"].to_numpy(dtype=float)

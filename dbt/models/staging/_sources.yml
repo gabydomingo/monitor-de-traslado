@@ -17,3 +17,15 @@ sources:
         description: sipm_precios_mayoristas, desde dic-2015
       - name: bcra
         description: Dolar mayorista (com. A 3500) y mediana del REM a 12 meses, desde 2015
+
+  - name: informes
+    description: >
+      Lo que sale de los informes de prensa del INDEC (monitor.informes y
+      monitor.extraer_pdf). Se actualiza a mano, por eso no tiene freshness.
+    meta:
+      external_location: "read_csv('../data/informes/{name}.csv', header = true, all_varchar = true)"
+    tables:
+      - name: listado
+        description: Cada informe del mayorista y del ipc, con la fecha en que se publico
+      - name: primeros_datos
+        description: La variacion mensual por division tal como salio el dia que se publico

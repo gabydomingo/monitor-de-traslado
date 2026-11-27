@@ -21,9 +21,9 @@ def test_espera_al_mayorista():
     assert faltan == ["el mayorista de 10-2026"]
 
 
-def test_espera_la_quincena_del_dolar():
+def test_espera_el_dolar_hasta_el_13():
     _, faltan = mensual.que_falta(e("2026-10-01", "2026-10-01", "2026-11-12"))
-    assert faltan == ["el dolar hasta el 15 de 11-2026"]
+    assert faltan == ["el dolar hasta el 13 de 11-2026"]
 
 
 def test_registro_no_se_pisa(tmp_path, monkeypatch):

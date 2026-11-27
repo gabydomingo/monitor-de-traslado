@@ -12,7 +12,7 @@ En LinkedIn lo vengo contando como **Efecto Gondola**. Esta en construccion.
 - [x] Fase 3: analisis exploratorio
 - [x] Fase 4: modelo de traslado
 - [x] Fase 5: pronostico
-- [ ] Fase 6: analisis de las revisiones
+- [x] Fase 6: analisis de las revisiones
 - [ ] Fase 7: web con mapa por regiones
 - [ ] Fase 8: metodologia y documentacion
 
@@ -91,7 +91,7 @@ uv run python -m monitor.traslado
 
 En [`notebooks/03_pronostico.ipynb`](notebooks/03_pronostico.ipynb), con el codigo en `src/monitor/pronostico.py`. Pronostica la inflacion del mes que viene para cada rubro y region.
 
-**Cuando y con que.** El pronostico se hace cuando sale el mayorista del mes anterior, cerca del 19. Para ese momento se sabe el IPC y el mayorista del mes anterior, el REM de fin de mes y el dolar de la primera quincena. No usa nada mas.
+**Cuando y con que.** El pronostico se hace cuando sale el mayorista del mes anterior (desde 2018, entre el 14 y el 23). Para ese momento se sabe el IPC y el mayorista del mes anterior, el REM de fin de mes y el dolar de los dias anteriores a esa publicacion, que salen del calendario real del INDEC. No usa nada mas.
 
 **Modelo.** El promedio de dos:
 
@@ -104,13 +104,13 @@ Mitad y mitad, sin ajustar pesos, para no sobreajustar.
 
 | MAE (pp de inflacion mensual) | naive | ARX | LightGBM sin BCRA | LightGBM | combinado |
 |---|---|---|---|---|---|
-| 36 meses | 2.88 | 2.50 | | 2.32 | **2.24** |
-| desarrollo (nov-23 a oct-25) | 3.47 | 2.99 | 3.02 | 2.76 | **2.64** |
+| 36 meses | 2.88 | 2.48 | | 2.36 | **2.24** |
+| desarrollo (nov-23 a oct-25) | 3.47 | 2.95 | 3.02 | 2.82 | **2.65** |
 | prueba final (nov-25 a oct-26) | 1.72 | 1.53 | 1.42 | 1.43 | 1.43 |
 
 - El combinado le gana al naive por un 22% y la diferencia es significativa (Diebold-Mariano, p = 0.001).
 - El dolar y el REM mejoran los meses con shock (dic-23 a 2024) y no cambian nada en los tranquilos: en la prueba final, un anio calmo, empatan. Es un seguro, no una mejora en todos los meses. La evidencia de la mejora sale del tramo donde tome las decisiones, asi que puede estar algo inflada.
-- Los intervalos del 80% salen de cuantiles de LightGBM calibrados con conformal por rubro: cubren el 81% en total y entre 76% y 84% en cada rubro.
+- Los intervalos del 80% salen de cuantiles de LightGBM calibrados con conformal por rubro: cubren el 81% en total y entre 78% y 84% en cada rubro.
 - Lo que mas pesa es el REM y despues el mayorista del mes anterior. La region casi no aporta.
 - Los saltos grandes de verduras (clima, cosecha) quedan fuera del intervalo igual.
 
@@ -119,6 +119,24 @@ El MASE da arriba de 1 para casi todos, porque la escala sale de anios con menos
 ```
 uv run python -m monitor.pronostico
 ```
+
+## Revisiones
+
+En [`notebooks/04_revisiones.ipynb`](notebooks/04_revisiones.ipynb). La API solo tiene el dato vigente, asi que para ver cuanto corrige el INDEC reconstrui la historia con los informes de prensa, que quedan online tal como salieron:
+
+```
+uv run python -m monitor.informes bajar      # listado y pdf del mayorista y del ipc
+uv run python -m monitor.informes procesar   # saca la variacion mensual de cada pdf
+```
+
+Los pdf no se suben al repo (pesan 250 MB). Se suben el listado, con el hash de cada pdf, y lo que se saco de ellos (`data/informes/`). En dbt, `fct_primer_dato` cruza cada primer dato con el valor de hoy en la API.
+
+- En mas de 20 mil datos (IPC desde 2017, mayorista desde 2018, por division y region), el INDEC no corrigio ninguna variacion mensual al decimal que publica. El "provisorio" del mayorista nunca cambio.
+- Por eso el backtest del pronostico no esta sesgado por usar datos ya revisados.
+- Restaurantes de abril a julio de 2020 tiene la variacion del nivel general: se imputo porque estaban cerrados y nunca se reemplazo.
+- El mayorista se publica entre el 14 y el 23. Con ese calendario encontre una filtracion chica en el pronostico (usaba el dolar hasta el 15 y 4 meses salio antes): ahora el corte sale de la fecha real.
+
+La ingesta sigue guardando cada version, asi que si el INDEC corrige algo de aca en adelante va a aparecer en `fct_revisiones`.
 
 ## Corrida mensual
 
@@ -150,6 +168,7 @@ docs/          metodologia
 - IPC (`ipc_nacional`): desde abril de 2016, 6 regiones mas el total nacional.
 - Precios mayoristas (`sipm_precios_mayoristas`): desde diciembre de 2015, total del pais.
 - BCRA, principales variables: dolar mayorista de referencia (variable 5, diario) y mediana del REM a 12 meses (variable 29, mensual desde junio de 2016).
+- Informes tecnicos del INDEC (pdf): el primer dato publicado y la fecha de publicacion de cada mes.
 
 El INDEC no publica precios por provincia, por eso todo va por region.
 

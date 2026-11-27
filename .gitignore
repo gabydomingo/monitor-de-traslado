@@ -8,6 +8,8 @@ __pycache__/
 # salidas locales
 exploracion/
 data/prueba/
+# los pdf del indec pesan mucho, se guarda solo lo que se saca de ellos
+data/informes/pdf/
 
 # dbt
 dbt/target/

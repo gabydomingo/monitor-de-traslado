@@ -83,3 +83,24 @@ models:
                 values: [tipo_cambio_mayorista, rem_12m]
       - name: valor
         tests: [not_null]
+
+  - name: stg_informes__calendario
+    description: Fecha en que se publico cada mes del mayorista y del ipc.
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [dataset, fecha]
+    columns:
+      - name: publicado
+        tests: [not_null]
+
+  - name: stg_informes__primeros_datos
+    description: Variacion mensual tal como salio en el informe, con el codigo de la api.
+    tests:
+      - combinacion_unica:
+          arguments:
+            columnas: [dataset, indicador, region, codigo, fecha]
+    columns:
+      - name: codigo
+        description: Si un nombre nuevo no esta en el seed informes_codigos, queda vacio y falla.
+        tests: [not_null]

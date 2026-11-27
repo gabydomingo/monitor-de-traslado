@@ -62,12 +62,29 @@ models:
 
   - name: fct_bcra_mensual
     description: >
-      Dolar mayorista y expectativa de inflacion del REM por mes. tc_quincena es el
-      promedio del 1 al 15, que ya se conoce cuando se hace el pronostico.
+      Dolar mayorista y expectativa de inflacion del REM por mes. tc_inicio_mes es el
+      promedio del 1 al 13, que ya se conoce cuando se hace el pronostico.
     columns:
       - name: fecha
         tests: [unique, not_null]
       - name: tc_promedio
         tests: [not_null]
-      - name: tc_quincena
+      - name: tc_inicio_mes
+        tests: [not_null]
+      - name: corte
+        description: Hasta que dia (sin incluir) se promedia tc_inicio_mes.
+        tests: [not_null]
+
+  - name: fct_primer_dato
+    description: >
+      El primer dato que publico el indec (informes de prensa) contra el vigente en la
+      api. revision = actual - publicado, con un decimal.
+    columns:
+      - name: valor_actual
+        description: El ipp de productos importados no existe (///), por eso queda afuera.
+        tests:
+          - not_null:
+              config:
+                where: "not (indicador = 'IPP' and codigo = 'I')"
+      - name: publicado
         tests: [not_null]

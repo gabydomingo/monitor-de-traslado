@@ -163,7 +163,7 @@ def test_features_del_bcra_solo_usan_lo_que_se_sabe():
     bcra = pd.DataFrame(
         {
             "tc_promedio": [350.0, 350.0, 360.0, 700.0],
-            "tc_quincena": [350.0, 350.0, 355.0, 400.0],
+            "tc_inicio_mes": [350.0, 350.0, 355.0, 400.0],
             "rem_12m": [100.0, 120.0, 150.0, 200.0],
         },
         index=fechas,
@@ -171,11 +171,11 @@ def test_features_del_bcra_solo_usan_lo_que_se_sabe():
     f = p.features_bcra(bcra, fechas)
     dic = f.loc["2023-12-01"]
     assert dic["tc_l1"] == pytest.approx(np.log(360 / 350))  # noviembre contra octubre
-    assert dic["tc_quincena"] == pytest.approx(np.log(400 / 360))  # quincena de dic vs nov
+    assert dic["tc_inicio_mes"] == pytest.approx(np.log(400 / 360))  # 1 al 13 de dic vs nov
     assert dic["rem_l1"] == pytest.approx(np.log(2.5) / 12)  # el rem de fines de noviembre
     # el promedio de todo diciembre (700) no puede aparecer en la fila de diciembre
     assert not np.isclose(f.loc["2023-12-01"].to_numpy(), np.log(700 / 360)).any()
 
 
 def test_sin_bcra_las_columnas_quedan_vacias(panel):
-    assert panel[["tc_l1", "tc_quincena", "rem_l1"]].isna().all().all()
+    assert panel[["tc_l1", "tc_inicio_mes", "rem_l1"]].isna().all().all()

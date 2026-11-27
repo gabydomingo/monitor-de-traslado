@@ -1,0 +1,51 @@
+dataset,nombre,codigo
+ipc,nivel general,0
+ipc,alimentos y bebidas no alcoholicas,01
+ipc,bebidas alcoholicas y tabaco,02
+ipc,prendas de vestir y calzado,03
+ipc,"vivienda, agua, electricidad, gas y otros combustibles",04
+ipc,"vivienda, agua, electricidad, gas y otros",04
+ipc,combustibles,04
+ipc,otros combustibles,04
+ipc,equipamiento y mantenimiento del hogar,05
+ipc,salud,06
+ipc,transporte,07
+ipc,comunicacion,08
+ipc,comunicaciones,08
+ipc,recreacion y cultura,09
+ipc,educacion,10
+ipc,restaurantes y hoteles,11
+ipc,bienes y servicios varios,12
+ipc,otros bienes y servicios,12
+mayorista,nivel general,NG
+mayorista,productos nacionales,N
+mayorista,productos primarios,1
+mayorista,productos agropecuarios,01
+mayorista,productos pesqueros,05
+mayorista,petroleo crudo y gas,11
+mayorista,productos minerales no metaliferos,14
+mayorista,manufacturados y energia electrica,2
+mayorista,productos manufacturados,D
+mayorista,alimentos y bebidas,15
+mayorista,tabaco,16
+mayorista,productos textiles,17
+mayorista,prendas de materiales textiles,18
+mayorista,"cuero, articulos de marroquineria y calzado",19
+mayorista,madera y productos de madera excepto muebles,20
+mayorista,papel y productos de papel,21
+mayorista,impresiones y reproduccion de grabaciones,22
+mayorista,productos refinados del petroleo,23
+mayorista,sustancias y productos quimicos,24
+mayorista,productos de caucho y plastico,25
+mayorista,productos de minerales no metalicos,26
+mayorista,productos metalicos basicos,27
+mayorista,productos metalicos excepto maquinas y equipos,28
+mayorista,maquinas y equipos,29
+mayorista,maquinas y aparatos electricos,31
+mayorista,equipos y aparatos de radio y television,32
+mayorista,equipos para medicina e instrumentos de medicion,33
+mayorista,"vehiculos automotores, carrocerias y repuestos",34
+mayorista,otros medios de transporte,35
+mayorista,muebles y otros productos industriales,36
+mayorista,energia electrica,40
+mayorista,productos importados,I

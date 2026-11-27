@@ -32,3 +32,6 @@ seeds:
     provincias:
       +column_types:
         provincia_id: varchar
+    informes_codigos:
+      +column_types:
+        codigo: varchar

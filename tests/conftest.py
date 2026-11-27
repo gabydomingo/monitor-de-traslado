@@ -26,3 +26,9 @@ def filas_ipc():
 @pytest.fixture
 def df_ipc(filas_ipc):
     return pd.DataFrame(filas_ipc)
+
+
+@pytest.fixture(autouse=True)
+def sin_resumen_de_actions(monkeypatch):
+    # si no, los tests que corren main() escriben su resumen en la pagina del ci
+    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
