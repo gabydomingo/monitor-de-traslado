@@ -105,7 +105,7 @@ def test_backtest_alinea_los_meses():
 
 def test_esquema_tiene_los_tres_archivos():
     defs = web.esquema()["$defs"]
-    assert {"Resumen", "Series", "Backtest"} <= set(defs)
+    assert {"Resumen", "Series", "Backtest", "Historial"} <= set(defs)
     assert "largoPlazo" in defs["Traslado"]["properties"]
 
 

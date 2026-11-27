@@ -9,8 +9,11 @@ export function Grafico({
   alto,
   descripcion,
   className = "",
+  listo = true,
 }: {
   dibujar: (ancho: number) => SVGSVGElement | HTMLElement;
+  // false mientras se bajan los datos: reserva el lugar y no dibuja
+  listo?: boolean;
   alto: number;
   descripcion: string;
   className?: string;
@@ -21,18 +24,20 @@ export function Grafico({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new ResizeObserver(([e]) => setAncho(Math.floor(e.contentRect.width)));
+    const obs = new ResizeObserver(([e]) =>
+      setAncho(Math.floor(e.contentRect.width)),
+    );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || ancho === 0) return;
+    if (!el || ancho === 0 || !listo) return;
     const grafico = dibujar(ancho);
     el.replaceChildren(grafico);
     return () => grafico.remove();
-  }, [dibujar, ancho]);
+  }, [dibujar, ancho, listo]);
 
   return (
     <div

@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { Backtest, Resumen } from "@/lib/tipos";
+import type { Registrado, Resumen } from "@/lib/tipos";
+import { useArchivo, useCerca } from "@/lib/cliente";
 import type { RegionId } from "@/lib/colores";
-import { NG, type Indice } from "@/lib/consultas";
+import { NG, aciertoDe, type Indice } from "@/lib/consultas";
 import { fechaLarga, mesLargo, nombreMes, num, pct } from "@/lib/formato";
 import { aciertos, type PuntoAcierto } from "@/lib/graficos";
 import { Grafico } from "./Grafico";
@@ -13,25 +14,28 @@ import { Chevron } from "./Chevron";
 // como se hace el pronostico, cuanto le erro hacia atras y el registro en vivo
 export function SeccionPronostico({
   resumen,
-  backtest,
   idx,
   region,
 }: {
   resumen: Resumen;
-  backtest: Backtest;
   idx: Indice;
   region: RegionId;
 }) {
+  // el backtest y el registro se bajan cuando la seccion se acerca a la pantalla
+  const [ref, cerca] = useCerca<HTMLElement>();
+  const backtest = useArchivo("backtest", cerca);
+  const historial = useArchivo("historial", cerca);
   const [serie, setSerie] = useState(NG);
   // por defecto los ultimos 24 meses: con diciembre de 2023 adentro no se ve el resto
   const [todo, setTodo] = useState(false);
   const { meta } = resumen;
   const rubro = idx.rubro(serie);
-  const a = idx.acierto(region, serie);
+  const a = aciertoDe(backtest, region, serie);
+  const meses = backtest?.meses ?? [];
 
-  const desde = todo ? 0 : Math.max(0, backtest.meses.length - 24);
+  const desde = todo ? 0 : Math.max(0, meses.length - 24);
   const puntos: PuntoAcierto[] = a
-    ? backtest.meses.slice(desde).flatMap((mes, j) => {
+    ? meses.slice(desde).flatMap((mes, j) => {
         const i = desde + j;
         const v = [
           a.real[i],
@@ -56,7 +60,7 @@ export function SeccionPronostico({
   const dibujar = useCallback(
     (w: number) => aciertos(puntos, w),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [region, serie, todo],
+    [region, serie, todo, a],
   );
 
   const general = resumen.metricas.find((m) => m.grupo === "nivel_general")!;
@@ -77,6 +81,7 @@ export function SeccionPronostico({
 
   return (
     <section
+      ref={ref}
       id="pronostico"
       aria-labelledby="titulo-pronostico"
       className="scroll-mt-4 border-t border-tinta"
@@ -138,7 +143,7 @@ export function SeccionPronostico({
                       todo === k ? "bg-tinta text-papel" : "hover:bg-papel-2"
                     }`}
                   >
-                    {k ? `${backtest.meses.length} meses` : "24 meses"}
+                    {k ? `${meses.length || 36} meses` : "24 meses"}
                   </button>
                 ))}
               </div>
@@ -163,6 +168,7 @@ export function SeccionPronostico({
             </div>
             <Grafico
               dibujar={dibujar}
+              listo={puntos.length > 0}
               alto={300}
               descripcion={`Pronóstico y dato real de ${rubro.nombre} en ${region}, mes a mes. El dato cayó en la franja de 8 de cada 10 ${adentro} de ${puntos.length} veces`}
               className="mt-3"
@@ -316,7 +322,12 @@ export function SeccionPronostico({
             </div>
           </div>
 
-          <Registro resumen={resumen} idx={idx} region={region} />
+          <Registro
+            resumen={resumen}
+            registro={historial?.registro}
+            idx={idx}
+            region={region}
+          />
         </div>
       </div>
     </section>
@@ -336,15 +347,17 @@ function Celda({ valor, gana }: { valor: number; gana: boolean }) {
 // los pronosticos guardados antes de conocer el dato, con el dato cuando sale
 function Registro({
   resumen,
+  registro,
   idx,
   region,
 }: {
   resumen: Resumen;
+  registro: Registrado[] | undefined;
   idx: Indice;
   region: RegionId;
 }) {
   const { meta } = resumen;
-  const filas = resumen.registro.filter((r) => r.region === region);
+  const filas = (registro ?? []).filter((r) => r.region === region);
   const meses = [...new Set(filas.map((f) => f.mes))].sort().reverse();
   const prox = meta.proximoIpc;
 
@@ -357,8 +370,10 @@ function Registro({
         Cada pronóstico se guarda el día que se hace, antes de que salga el
         dato, y no se toca más. Cuando el INDEC publica, se compara acá. El
         registro empezó en{" "}
-        {meses.length ? mesLargo(meses[meses.length - 1]) : "este mes"} y suma
-        un mes cada vez.
+        {resumen.automatizacion.primerRegistro
+          ? mesLargo(resumen.automatizacion.primerRegistro)
+          : "este mes"}{" "}
+        y suma un mes cada vez.
       </p>
       {meses.map((mes) => {
         const delMes = filas.filter((f) => f.mes === mes);
@@ -393,13 +408,7 @@ function Registro({
   );
 }
 
-function TablaRegistro({
-  filas,
-  idx,
-}: {
-  filas: Resumen["registro"];
-  idx: Indice;
-}) {
+function TablaRegistro({ filas, idx }: { filas: Registrado[]; idx: Indice }) {
   if (!filas.length) return null;
   return (
     <table className="w-full text-sm">

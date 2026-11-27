@@ -178,7 +178,6 @@ class Revisiones(Modelo):
     informes: int
     desde: Mes
     hasta: Mes
-    publicaciones: list[Publicacion]
 
 
 class Automatizacion(Modelo):
@@ -200,12 +199,17 @@ class Resumen(Modelo):
     cadena: list[Cadena]
     metricas: list[Metricas]
     error_anual: list[ErrorAnual]
-    registro: list[Registrado]
     revisiones: Revisiones
     automatizacion: Automatizacion
 
 
-# series largas, en otro archivo
+# lo que esta mas abajo en la pagina va en otros archivos: el navegador los baja despues y
+# quedan fuera del html. el registro ademas crece todos los meses
+
+
+class Historial(Modelo):
+    registro: list[Registrado]
+    publicaciones: list[Publicacion]
 
 
 class SerieRubro(Modelo):
@@ -237,7 +241,7 @@ class Backtest(Modelo):
     series: list[Acierto]
 
 
-ARCHIVOS = {"resumen": Resumen, "series": Series, "backtest": Backtest}
+ARCHIVOS = {"resumen": Resumen, "series": Series, "backtest": Backtest, "historial": Historial}
 
 FUENTES = [
     Fuente(
@@ -509,10 +513,6 @@ def armar_revisiones(con, pub: pd.DataFrame) -> Revisiones:
         informes=informes,
         desde=mes(desde),
         hasta=mes(hasta),
-        publicaciones=[
-            Publicacion(dataset=f.dataset, mes=mes(f.fecha), publicado=f.publicado)
-            for f in pub.sort_values(["dataset", "fecha"]).itertuples()
-        ],
     )
 
 
@@ -605,7 +605,6 @@ def armar(con) -> dict[str, Modelo]:
         cadena=armar_cadena(),
         metricas=metricas,
         error_anual=anual,
-        registro=registro,
         revisiones=armar_revisiones(con, pub),
         automatizacion=Automatizacion(
             primer_mes=mes(gondola["GBA"][NG].dropna().index.min()),
@@ -619,6 +618,13 @@ def armar(con) -> dict[str, Modelo]:
         "resumen": resumen,
         "series": armar_series(gondola, mayorista, rubros),
         "backtest": armar_backtest(bt),
+        "historial": Historial(
+            registro=registro,
+            publicaciones=[
+                Publicacion(dataset=f.dataset, mes=mes(f.fecha), publicado=f.publicado)
+                for f in pub.sort_values(["dataset", "fecha"]).itertuples()
+            ],
+        ),
     }
 
 

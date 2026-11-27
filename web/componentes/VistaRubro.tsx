@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import type { Resumen, Series } from "@/lib/tipos";
 import { COLOR_REGION, type RegionId } from "@/lib/colores";
-import type { Indice } from "@/lib/consultas";
+import { serieDe, type Indice } from "@/lib/consultas";
 import { parte } from "@/lib/formato";
 import {
   cadena,
@@ -35,7 +35,7 @@ export function VistaRubro({
   onRubro,
 }: {
   resumen: Resumen;
-  series: Series;
+  series: Series | undefined;
   idx: Indice;
   region: RegionId;
   rubro: string;
@@ -43,7 +43,7 @@ export function VistaRubro({
 }) {
   const [desde, setDesde] = useState<keyof typeof DESDE>("reciente");
   const info = idx.rubro(rubro);
-  const s = idx.serie(rubro)!;
+  const s = serieDe(series, rubro);
   const etapas = idx.trasladoEtapas(region, rubro);
   const t = idx.traslado(region, rubro);
   const reg = idx.regimen(rubro);
@@ -61,10 +61,11 @@ export function VistaRubro({
     if (alta.largoPlazo > baja.largoPlazo) masConAlta += 1;
   }
 
-  const inicio = series.meses.indexOf(DESDE[desde]);
-  const puntos: PuntoSerie[] = series.meses.slice(inicio).flatMap((mes, i) => {
-    const m = s.mayorista[inicio + i];
-    const g = s.gondola[region]?.[inicio + i];
+  const meses = series?.meses ?? [];
+  const inicio = meses.indexOf(DESDE[desde]);
+  const puntos: PuntoSerie[] = meses.slice(inicio).flatMap((mes, i) => {
+    const m = s?.mayorista[inicio + i];
+    const g = s?.gondola[region]?.[inicio + i];
     const out: PuntoSerie[] = [];
     if (m !== null && m !== undefined)
       out.push({ mes, valor: m, serie: "Mayorista" });
@@ -73,7 +74,7 @@ export function VistaRubro({
     return out;
   });
 
-  const clave = `${region}|${rubro}|${desde}`;
+  const clave = `${region}|${rubro}|${desde}|${s ? 1 : 0}`;
   const dibujarSerie = useCallback(
     (w: number) =>
       mayoristaVsGondola(puntos, COLOR_REGION[region], info.esContraste, w),
@@ -181,6 +182,7 @@ export function VistaRubro({
             </div>
             <Grafico
               dibujar={dibujarSerie}
+              listo={puntos.length > 0}
               alto={280}
               descripcion={`Variación mensual del precio mayorista y de góndola de ${info.nombre} en ${region}`}
               className="mt-3"

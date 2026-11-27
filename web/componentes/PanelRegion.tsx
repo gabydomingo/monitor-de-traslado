@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import type { Resumen, Series } from "@/lib/tipos";
 import { COLOR_REGION, type RegionId } from "@/lib/colores";
-import { NG, sumarMeses, type Indice } from "@/lib/consultas";
+import { NG, serieDe, sumarMeses, type Indice } from "@/lib/consultas";
 import { mesLargo, nombreMes, pct } from "@/lib/formato";
 import {
   abanico,
@@ -23,7 +23,7 @@ export function PanelRegion({
   region,
 }: {
   resumen: Resumen;
-  series: Series;
+  series: Series | undefined;
   idx: Indice;
   region: RegionId;
 }) {
@@ -63,17 +63,18 @@ export function PanelRegion({
   ).length;
 
   // ultimos 13 meses del nivel general y el pronostico
-  const ng = idx.serie(NG)!;
+  const ng = serieDe(series, NG);
+  const meses = series?.meses ?? [];
   // si ya salio el dato del mes pronosticado, el abanico termina en ese mes y muestra lo que fue
   const vigente = meta.pronosticoVigente;
   const fue = vigente ? null : (idx.ultimo(region, NG)?.valor ?? null);
   const hasta = vigente ? meta.ultimoMes : sumarMeses(meta.ultimoMes, -1);
-  const desde = series.meses.indexOf(sumarMeses(hasta, -12));
-  const ultimos = series.meses
-    .slice(desde, series.meses.indexOf(hasta) + 1)
+  const desde = meses.indexOf(sumarMeses(hasta, -12));
+  const ultimos = meses
+    .slice(desde, meses.indexOf(hasta) + 1)
     .map((mes, i) => ({
       mes,
-      valor: ng.gondola[region]?.[desde + i] ?? null,
+      valor: ng?.gondola[region]?.[desde + i] ?? null,
     }));
   const sig = meta.proximoPronostico;
   const adentro =
@@ -100,7 +101,7 @@ export function PanelRegion({
         fue,
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [region],
+    [region, ng],
   );
   const dibujarTraslado = useCallback(
     (w: number) => trasladoRubros(filas, w),
@@ -171,6 +172,7 @@ export function PanelRegion({
         </p>
         <Grafico
           dibujar={dibujarAbanico}
+          listo={ultimos.length > 0}
           alto={220}
           descripcion={`Inflación mensual de ${region} en los últimos 12 meses y pronóstico para ${mesLargo(meta.mesPronosticado)}: ${pct(pron.valor)}`}
           className="mt-3"

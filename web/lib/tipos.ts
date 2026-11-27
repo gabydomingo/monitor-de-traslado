@@ -4,6 +4,7 @@ export interface Archivos {
   resumen: Resumen;
   series: Series;
   backtest: Backtest;
+  historial: Historial;
 }
 /**
  * This interface was referenced by `Archivos`'s JSON-Schema
@@ -20,7 +21,6 @@ export interface Resumen {
   cadena: Cadena[];
   metricas: Metricas[];
   errorAnual: ErrorAnual[];
-  registro: Registrado[];
   revisiones: Revisiones;
   automatizacion: Automatizacion;
 }
@@ -250,28 +250,6 @@ export interface ErrorAnual {
 }
 /**
  * This interface was referenced by `Archivos`'s JSON-Schema
- * via the `definition` "Registrado".
- */
-export interface Registrado {
-  mes: string;
-  region: string;
-  rubro: string;
-  pronostico: number;
-  /**
-   * @minItems 2
-   * @maxItems 2
-   */
-  banda80: [number, number];
-  banda90: [number, number] | null;
-  /**
-   * vacio hasta que el indec publica el mes
-   */
-  real: number | null;
-  generado: string;
-  modelo: string;
-}
-/**
- * This interface was referenced by `Archivos`'s JSON-Schema
  * via the `definition` "Revisiones".
  */
 export interface Revisiones {
@@ -280,16 +258,6 @@ export interface Revisiones {
   informes: number;
   desde: string;
   hasta: string;
-  publicaciones: Publicacion[];
-}
-/**
- * This interface was referenced by `Archivos`'s JSON-Schema
- * via the `definition` "Publicacion".
- */
-export interface Publicacion {
-  dataset: "ipc" | "mayorista";
-  mes: string;
-  publicado: string;
 }
 /**
  * This interface was referenced by `Archivos`'s JSON-Schema
@@ -350,4 +318,43 @@ export interface Acierto {
   sup80: (number | null)[];
   inf90: (number | null)[];
   sup90: (number | null)[];
+}
+/**
+ * This interface was referenced by `Archivos`'s JSON-Schema
+ * via the `definition` "Historial".
+ */
+export interface Historial {
+  registro: Registrado[];
+  publicaciones: Publicacion[];
+}
+/**
+ * This interface was referenced by `Archivos`'s JSON-Schema
+ * via the `definition` "Registrado".
+ */
+export interface Registrado {
+  mes: string;
+  region: string;
+  rubro: string;
+  pronostico: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  banda80: [number, number];
+  banda90: [number, number] | null;
+  /**
+   * vacio hasta que el indec publica el mes
+   */
+  real: number | null;
+  generado: string;
+  modelo: string;
+}
+/**
+ * This interface was referenced by `Archivos`'s JSON-Schema
+ * via the `definition` "Publicacion".
+ */
+export interface Publicacion {
+  dataset: "ipc" | "mayorista";
+  mes: string;
+  publicado: string;
 }

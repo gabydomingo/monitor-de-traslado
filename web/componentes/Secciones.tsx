@@ -138,7 +138,7 @@ export function ElIndecNoCorrige({ resumen }: { resumen: Resumen }) {
               INDEC cambia un número, queda registrado.
             </p>
           </div>
-          <Calendario publicaciones={r.publicaciones} />
+          <Calendario />
         </article>
       </div>
     </section>
