@@ -69,6 +69,14 @@ def registrar(prox: pd.DataFrame, registro: Path = REGISTRO, ahora: datetime | N
         modelo=pronostico.version_modelo(),
         datos=version_datos(),
     )
+    if registro.exists():
+        previo = pd.read_csv(registro, nrows=0).columns.tolist()
+        if previo != filas.columns.tolist():
+            # cambiaron las columnas (por ejemplo se sumo la banda del 90%): reescribo todo
+            # para que no queden filas corridas. lo ya registrado no cambia
+            todo = pd.concat([pd.read_csv(registro), filas], ignore_index=True)
+            todo.to_csv(registro, index=False)
+            return
     filas.to_csv(registro, mode="a", header=not registro.exists(), index=False)
 
 

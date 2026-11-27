@@ -43,6 +43,11 @@ FEATURES_BCRA = ["tc_l1", "tc_inicio_mes", "rem_l1"]
 FEATURES = [*FEATURES, *FEATURES_BCRA]
 CATEGORICAS = ["par_id", "region"]
 ARBOLES = 300
+# el intervalo se agranda segun cuanto se movio el dolar en los primeros dias del mes: en
+# dic-2023 pasa de cubrir 36% a 50% sin perder cobertura en el resto. el 10 no esta ajustado,
+# cualquier valor entre 3 y 20 da parecido
+ESCALA_DOLAR = 10
+NIVELES = {"": 0.2, "_90": 0.1}  # banda del 80% (sin sufijo) y del 90%
 PARAMS = {
     "objective": "regression",
     "learning_rate": 0.05,
@@ -195,6 +200,7 @@ def un_mes(con_y: pd.DataFrame, mes, intervalo: bool = True) -> pd.DataFrame:
     if {"lgbm", "arx"} <= set(out):
         out["combinado"] = combinar(out["lgbm"], out["arx"])
     if intervalo:
+        out["escala"] = escala(test)
         out["lgbm_q10"] = lgbm(train, test, 0.1)
         out["lgbm_q90"] = lgbm(train, test, 0.9)
         if "combinado" in out:
@@ -232,9 +238,20 @@ def backtest(
     return pd.concat(salidas, ignore_index=True)
 
 
+def escala(df: pd.DataFrame) -> np.ndarray:
+    """Cuanto se agranda el intervalo ese mes. Sin datos del dolar, nada."""
+    if "escala" in df:
+        return df["escala"].to_numpy(dtype=float)
+    if "tc_inicio_mes" in df:
+        return 1 + ESCALA_DOLAR * df["tc_inicio_mes"].abs().fillna(0).to_numpy(dtype=float)
+    return np.ones(len(df))
+
+
 def puntajes(pred: pd.DataFrame) -> pd.Series:
-    # cuanto le falto al intervalo para contener el dato (negativo si lo contenia)
-    return np.maximum(pred["lgbm_q10"] - pred["y"], pred["y"] - pred["lgbm_q90"])
+    # cuanto le falto al intervalo para contener el dato (negativo si lo contenia), en
+    # unidades de la escala del mes
+    falta = np.maximum(pred["lgbm_q10"] - pred["y"], pred["y"] - pred["lgbm_q90"])
+    return falta / escala(pred)
 
 
 def ajuste_conformal(puntajes_previos: pd.Series, alfa: float = 0.2) -> float:
@@ -251,24 +268,25 @@ def ajustes(previos: pd.DataFrame, alfa: float = 0.2, grupo: str = "par_id") -> 
 
 def aplicar_ajuste(df: pd.DataFrame, aj: pd.Series, grupo: str = "par_id") -> np.ndarray:
     # un rubro sin historia (no deberia pasar) se lleva el ensanche mas grande
-    return df[grupo].astype(str).map(aj).fillna(aj.max()).to_numpy(dtype=float)
+    return df[grupo].astype(str).map(aj).fillna(aj.max()).to_numpy(dtype=float) * escala(df)
 
 
-def calibrar(pred: pd.DataFrame, ventana: int = 12, minimo: int = 6, alfa: float = 0.2):
+def calibrar(pred: pd.DataFrame, ventana: int = 12, minimo: int = 6, niveles: dict = NIVELES):
     """Para cada mes ensancho el intervalo segun cuanto se quedo corto cada rubro en los
-    `ventana` meses anteriores. Solo usa el pasado."""
+    `ventana` meses anteriores. Solo usa el pasado. Una banda por nivel (80% y 90%)."""
     pred = pred.copy()
-    pred["ajuste"] = np.nan
     meses = sorted(pred["fecha"].unique())
-    for i, mes in enumerate(meses):
-        anteriores = meses[max(0, i - ventana) : i]
-        if len(anteriores) < minimo:
-            continue
-        ahora = pred["fecha"] == mes
-        aj = ajustes(pred[pred["fecha"].isin(anteriores)], alfa)
-        pred.loc[ahora, "ajuste"] = aplicar_ajuste(pred[ahora], aj)
-    pred["lgbm_inf"] = pred["lgbm_q10"] - pred["ajuste"]
-    pred["lgbm_sup"] = pred["lgbm_q90"] + pred["ajuste"]
+    for sufijo, alfa in niveles.items():
+        pred["ajuste" + sufijo] = np.nan
+        for i, mes in enumerate(meses):
+            anteriores = meses[max(0, i - ventana) : i]
+            if len(anteriores) < minimo:
+                continue
+            ahora = pred["fecha"] == mes
+            aj = ajustes(pred[pred["fecha"].isin(anteriores)], alfa)
+            pred.loc[ahora, "ajuste" + sufijo] = aplicar_ajuste(pred[ahora], aj)
+        pred["lgbm_inf" + sufijo] = pred["lgbm_q10"] - pred["ajuste" + sufijo]
+        pred["lgbm_sup" + sufijo] = pred["lgbm_q90"] + pred["ajuste" + sufijo]
     return pred
 
 
@@ -302,6 +320,10 @@ def metricas(pred: pd.DataFrame, escala: pd.Series) -> pd.DataFrame:
         tabla.loc["combinado", "cobertura_80_calibrada"] = (
             pred["y"].between(pred["lgbm_inf"], pred["lgbm_sup"]).mean()
         )
+    if "lgbm_inf_90" in pred:
+        tabla.loc["combinado", "cobertura_90_calibrada"] = (
+            pred["y"].between(pred["lgbm_inf_90"], pred["lgbm_sup_90"]).mean()
+        )
     return tabla
 
 
@@ -323,8 +345,11 @@ def importancia(panel: pd.DataFrame) -> pd.Series:
     return pd.Series(np.abs(contrib).mean(axis=0) * 100, index=FEATURES).sort_values()
 
 
-def pronosticar_proximo(panel: pd.DataFrame, aj: pd.Series) -> pd.DataFrame:
-    """aj: el ensanche conformal por rubro que sale de los ultimos meses del backtest."""
+def pronosticar_proximo(
+    panel: pd.DataFrame, aj: pd.Series, aj_90: pd.Series | None = None
+) -> pd.DataFrame:
+    """aj y aj_90: el ensanche conformal por rubro (80% y 90%) que sale de los ultimos meses
+    del backtest."""
     ultimo = panel["fecha"].max()
     train, test = panel[panel["y"].notna()], panel[panel["fecha"] == ultimo].reset_index(drop=True)
     out = test[["par_id", "region", "fecha"]].copy()
@@ -337,13 +362,17 @@ def pronosticar_proximo(panel: pd.DataFrame, aj: pd.Series) -> pd.DataFrame:
     )
     out["pronostico"] = combinar(q["lgbm"], arx(train, test))
     q10, q90 = centrar(q, out["pronostico"]).T
-    ensanche = aplicar_ajuste(test, aj)
-    out["inf"] = q10 - ensanche
-    out["sup"] = q90 + ensanche
-    # son modelos separados: me aseguro de que el pronostico quede dentro de su intervalo
+    for sufijo, ajuste in [("", aj), ("_90", aj if aj_90 is None else aj_90)]:
+        ensanche = aplicar_ajuste(test, ajuste)
+        out["inf" + sufijo] = q10 - ensanche
+        out["sup" + sufijo] = q90 + ensanche
+    # son modelos separados: me aseguro de que el pronostico quede dentro de la banda del 80
+    # y la del 80 dentro de la del 90
     out["inf"] = np.minimum(out["inf"], out["pronostico"])
     out["sup"] = np.maximum(out["sup"], out["pronostico"])
-    for c in ["pronostico", "inf", "sup"]:
+    out["inf_90"] = np.minimum(out["inf_90"], out["inf"])
+    out["sup_90"] = np.maximum(out["sup_90"], out["sup"])
+    for c in ["pronostico", "inf", "sup", "inf_90", "sup_90"]:
         out[c] = 100 * np.expm1(out[c])  # en % mensual
     return out
 
@@ -364,7 +393,16 @@ def datos(con) -> pd.DataFrame:
 def version_modelo() -> str:
     # cambia si cambian las variables o los parametros: sirve para saber con que modelo
     # se hizo cada pronostico del registro
-    texto = json.dumps({"features": FEATURES, "params": PARAMS, "arboles": ARBOLES}, sort_keys=True)
+    texto = json.dumps(
+        {
+            "features": FEATURES,
+            "params": PARAMS,
+            "arboles": ARBOLES,
+            "escala_dolar": ESCALA_DOLAR,
+            "niveles": NIVELES,
+        },
+        sort_keys=True,
+    )
     return hashlib.sha256(texto.encode()).hexdigest()[:8]
 
 
@@ -382,7 +420,7 @@ def main() -> tuple[pd.DataFrame, pd.DataFrame]:
     tabla.to_csv(salida / "pronostico_metricas.csv")
     log.info("metricas del backtest:\n%s", tabla.round(3))
     ultimos = pred[pred["fecha"] >= sorted(pred["fecha"].unique())[-12]]
-    prox = pronosticar_proximo(panel, ajustes(ultimos))
+    prox = pronosticar_proximo(panel, ajustes(ultimos, 0.2), ajustes(ultimos, 0.1))
     prox.to_csv(salida / "pronostico_proximo.csv", index=False)
     log.info("pronostico para %s guardado", f"{prox['fecha'].iloc[0]:%m-%Y}")
     return tabla, prox

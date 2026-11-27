@@ -113,7 +113,7 @@ Mitad y mitad, sin ajustar pesos, para no sobreajustar.
 
 - El combinado le gana al naive por un 22% y la diferencia es significativa (Diebold-Mariano, p = 0.001).
 - El dolar y el REM mejoran los meses con shock (dic-23 a 2024) y no cambian nada en los tranquilos: en la prueba final, un anio calmo, empatan. Es un seguro, no una mejora en todos los meses. La evidencia de la mejora sale del tramo donde tome las decisiones, asi que puede estar algo inflada.
-- Los intervalos del 80% salen de cuantiles de LightGBM calibrados con conformal por rubro: cubren el 81% en total y entre 78% y 84% en cada rubro.
+- Dos bandas, de 80% y 90%, que salen de cuantiles de LightGBM calibrados con conformal por rubro y se agrandan cuando el dolar se mueve a principio de mes. Cubren 80% y 90% en total. En dic-2023 la del 80% paso de cubrir 36% a 50% gracias al dolar, sin ensanchar los meses tranquilos (en 2026 miden 4.5 y 6.1 pp).
 - Lo que mas pesa es el REM y despues el mayorista del mes anterior. La region casi no aporta.
 - Los saltos grandes de verduras (clima, cosecha) quedan fuera del intervalo igual.
 

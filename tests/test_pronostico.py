@@ -154,8 +154,10 @@ def test_diebold_mariano():
 def test_pronostico_dentro_del_intervalo(panel):
     prox = p.pronosticar_proximo(panel, pd.Series({"cualquiera": 0.0}))
     assert len(prox) == 4
+    assert (prox["inf_90"] <= prox["inf"]).all()
     assert (prox["inf"] <= prox["pronostico"]).all()
     assert (prox["pronostico"] <= prox["sup"]).all()
+    assert (prox["sup"] <= prox["sup_90"]).all()
 
 
 def test_features_del_bcra_solo_usan_lo_que_se_sabe():
@@ -226,3 +228,16 @@ def test_conformal_cubre_80_con_volatilidad_estable():
     pred = pred[pred["ajuste"].notna()]
     cobertura = pred["y"].between(pred["lgbm_inf"], pred["lgbm_sup"]).mean()
     assert 0.78 <= cobertura <= 0.82
+    cobertura_90 = pred["y"].between(pred["lgbm_inf_90"], pred["lgbm_sup_90"]).mean()
+    assert 0.88 <= cobertura_90 <= 0.92
+    # la banda del 90 siempre contiene a la del 80
+    assert (pred["lgbm_inf_90"] <= pred["lgbm_inf"]).all()
+    assert (pred["lgbm_sup_90"] >= pred["lgbm_sup"]).all()
+
+
+def test_el_intervalo_se_agranda_si_salto_el_dolar():
+    aj = pd.Series({"carnes": 0.01})
+    df = pd.DataFrame({"par_id": ["carnes", "carnes"], "tc_inicio_mes": [0.0, 0.3]})
+    tranquilo, devaluacion = p.aplicar_ajuste(df, aj)
+    assert tranquilo == pytest.approx(0.01)
+    assert devaluacion == pytest.approx(0.01 * (1 + p.ESCALA_DOLAR * 0.3))
